@@ -1,0 +1,1 @@
+[05-Nov-2021 20:53:15 UTC] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 114688 bytes) in /home/lodevue1/public_html/backend/vendor/dompdf/dompdf/lib/Cpdf.php on line 3668
