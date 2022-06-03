@@ -16,7 +16,9 @@ class Examen extends Model
     protected $fillable = [
         'codigo',
         'nombre',
-        'precio',
+        'precio_lab',
+        'precio_pac',
+        'precio_par',
         'kids',
         'tipo_examens_id'
     ];

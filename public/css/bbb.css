@@ -86,7 +86,7 @@ body {
 
 hr {
   margin: 1rem 0;
-  color: inherit;
+  color: rgba(0, 0, 0, 0.47);
   background-color: currentColor;
   border: 0;
   opacity: 0.25;

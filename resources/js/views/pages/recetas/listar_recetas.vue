@@ -5,23 +5,17 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Listado Recetas</h4>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row mt-4">
-                            <div class="col-12">
+                    <div class="card-body row">
+                        <div class="col-8">
+                            <h4 class="card-title">Listado Recetas</h4>
+                        </div>
+                        <div class="col-4">
                                 <form
                                     class="needs-validation"
                                     @submit.prevent="formSubmit"
                                 >
                                     <div class="row">
-                                        <div class="col-12 col-lg-3">
+                                        <div class="col-8">
                                             <div class="mb-3">
                                                 <label for="rut"
                                                     >RUT DEL PACIENTE</label
@@ -30,7 +24,7 @@
                                                     id="rut"
                                                     v-model="form.rut"
                                                     type="text"
-                                                    class="form-control inputRUT"
+                                                    class="form-control form-control-sm inputRUT"
                                                     :class="{
                                                         'is-invalid':
                                                             submitted &&
@@ -58,17 +52,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-lg-6 mt-4">
+                                        <div class="col-3" style="margin-top: 1.8rem !important;">
                                             <button
                                                 type="submit"
-                                                class="btn btn-success waves-effect waves-light float-star btnSubmit"
-                                            >
-                                                Buscar
+                                                class="btn btn-success btn-soft-success btn-sm waves-effect waves-light float-star btnSubmit"
+                                            ><i class="fa fa-search"></i>Buscar
                                             </button>
                                         </div>
                                     </div>
                                 </form>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -138,7 +130,7 @@
                                     >
                                         <li class="list-inline-item">
                                             <a
-                                                :href="'/receta/'+data.item.codigo"
+                                                :href="'/'+  urlImprimirReceta +'/'+data.item.codigo"
                                                 target="_blank" rel="noopener noreferrer"
                                                 class="px-2 text-primary"
                                                 v-b-tooltip.hover
@@ -149,13 +141,13 @@
 
                                             </a>
                                         </li>
-                                        <li class="list-inline-item">
+                                        <li class="list-inline-item" v-if="urlImprimirReceta == 'receta'">
                                             <a
                                                 href="javascript:void(0);"
-                                                v-on:click="envioreceta(data.item)"
+                                                v-on:click="ImpresionSecretaria(data.item)"
                                                 class="px-2 text-danger"
                                                 v-b-tooltip.hover
-                                                title="Enviar Receta"
+                                                title="Enviar Impresion"
                                             >
                                                 <i
                                                     class="uil-fast-mail font-size-18"
@@ -188,9 +180,7 @@
                 </div>
             </div>
 
-            <div class="col-12 text-center" v-else>
-                <h4 class="text-danger">NO HAY RECETAS DISPONIBLE</h4>
-            </div>
+           
         </div>
     </Layout>
 </template>

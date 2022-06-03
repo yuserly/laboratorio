@@ -6,7 +6,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Examenes</h4>
+                        <h4 class="card-title">Gestión Examenes</h4>
                     </div>
                 </div>
             </div>
@@ -29,18 +29,20 @@
                                         >Tipo de Examen</span
                                     >
                                 </template>
-
+ 
                                 <div class="row">
                                     <div class="col-12 mt-5">
-                                        <button
-                                            type="button"
-                                            class="btn btn-success waves-effect waves-light float-end"
-                                            v-b-modal.creartipo
-                                            @click="modalNuevoTipo"
-                                        >
+                                        <div class="d-grid gap-2">
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end"
+                                                v-b-modal.creartipo
+                                                @click="modalNuevoTipo"
+                                            >
                                             <i class="fas fa-plus-circle"></i>
-                                            Crear Tipo de Examen
-                                        </button>
+                                                Nuevo Tipo de Examen
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="card">
@@ -218,15 +220,17 @@
 
                                 <div class="row">
                                     <div class="col-12 mt-5">
-                                        <button
-                                            type="button"
-                                            class="btn btn-success waves-effect waves-light float-end"
-                                            v-b-modal.crearexamen
-                                            @click="modalNuevoExamen"
-                                        >
+                                        <div class="d-grid gap-2">
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end"
+                                                v-b-modal.crearexamen
+                                                @click="modalNuevoExamen"
+                                            >
                                             <i class="fas fa-plus-circle"></i>
-                                            Crear Examen
-                                        </button>
+                                                Nuevo Examen
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="card">
@@ -410,15 +414,18 @@
 
                                 <div class="row">
                                     <div class="col-12 mt-5">
-                                        <button
-                                            type="button"
-                                            class="btn btn-success waves-effect waves-light float-end"
-                                            v-b-modal.crearanalisis
-                                            @click="modalNuevoAnalisis"
-                                        >
+                                        <div class="d-grid gap-2">
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary btn-block btn-soft-primary btn-sm waves-effect waves-light float-end"
+                                                v-b-modal.crearanalisis
+                                                @click="modalNuevoAnalisis"
+                                            >
                                             <i class="fas fa-plus-circle"></i>
-                                            Analisis de Examen
-                                        </button>
+                                                Analisis de Examen
+                                            </button>  
+                                        </div> 
+                                        
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="card">
@@ -641,14 +648,14 @@
 
                     <button
                         v-if="btnCreate === true"
-                        class="btn btn-primary float-end "
+                        class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
                     >
-                        <i class="far fa-save"></i> Crear
+                        <i class="far fa-save"></i> Ingresar
                     </button>
                     <button
                         v-else
-                        class="btn btn-primary float-end btnSubmit"
+                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
                     >
                         <i class="fas fa-sync"></i> Actualizar
@@ -679,7 +686,7 @@
                                 <multiselect
                                     v-model="formexamen.tipoexamen"
                                     :options="tipoexamen"
-                                    track-by="id"
+                                    track-by="id_tipo_examens"
                                     label="nombre"
                                 ></multiselect>
 
@@ -715,7 +722,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-12">
                             <div class="mb-3">
                                 <label for="nombre">Nombre</label>
                                 <input
@@ -749,28 +756,54 @@
                                 >
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        
+                        <div class="col-12 col-lg-4">
                             <div class="mb-3">
-                                <label for="precio">Precio</label>
+                                <label for="precio_lab">Precio Laboratorio</label>
                                 <input
-                                    id="precio"
-                                    v-model="formexamen.precio"
+                                    id="precio_lab"
+                                    v-model="formexamen.precio_lab"
                                     type="number"
-                                    class="form-control"
+                                    class="form-control form-control-sm"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="mb-3">
+                                <label for="precio_pac">Precio Copago</label>
+                                <input
+                                    id="precio_pac"
+                                    v-model="formexamen.precio_pac"
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                />
+
+                                
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-4">
+                            <div class="mb-3">
+                                <label for="precio_par">Precio Particular</label>
+                                <input
+                                    id="precio_par"
+                                    v-model="formexamen.precio_par"
+                                    type="number"
+                                    class="form-control form-control-sm"
                                     :class="{
                                         'is-invalid':
                                             submitted &&
-                                            $v.formexamen.precio.$error
+                                            $v.formexamen.precio_par.$error
                                     }"
                                 />
 
                                 <div
                                     v-if="
-                                        submitted && $v.formexamen.precio.$error
+                                        submitted && $v.formexamen.precio_par.$error
                                     "
                                     class="invalid-feedback"
                                 >
-                                    <span v-if="!$v.formexamen.precio.required"
+                                    <span v-if="!$v.formexamen.precio_par.required"
                                         >El precio es requerido.</span
                                     >
                                 </div>
@@ -800,14 +833,14 @@
 
                     <button
                         v-if="btnCreate === true"
-                        class="btn btn-primary float-end "
+                        class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
                     >
-                        <i class="far fa-save"></i> Crear
+                        <i class="far fa-save"></i> Nuevo
                     </button>
                     <button
                         v-else
-                        class="btn btn-primary float-end btnSubmit"
+                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
                     >
                         <i class="fas fa-sync"></i> Actualizar
@@ -894,14 +927,14 @@
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-3">
-                                                <label for="tipo">Tipo</label>
+                                                <label for="tipo"><small> Tipo </small></label>
                                                 <input
                                                     id="tipo"
                                                     v-model="
                                                         formvalores[i].tipo
                                                     "
                                                     type="text"
-                                                    class="form-control"
+                                                    class="form-control form-control-sm"
                                                 />
                                                 <span
                                                     class="text-danger"
@@ -914,7 +947,7 @@
                                             </div>
                                             <div class="col-3">
                                                 <label for="valor_minimo"
-                                                    >Valor minimo</label
+                                                    ><small> Valor minimo </small></label
                                                 >
                                                 <input
                                                     id="valor_minimo"
@@ -923,7 +956,7 @@
                                                             .valor_minimo
                                                     "
                                                     type="text"
-                                                    class="form-control"
+                                                    class="form-control form-control-sm"
                                                 />
                                                 <span
                                                     class="text-danger"
@@ -937,7 +970,7 @@
                                             </div>
                                             <div class="col-3">
                                                 <label for="valor_maximo"
-                                                    >Valor Maximo</label
+                                                    ><small> Valor Maximo </small></label
                                                 >
                                                 <input
                                                     id="valor_maximo"
@@ -946,7 +979,7 @@
                                                             .valor_maximo
                                                     "
                                                     type="text"
-                                                    class="form-control"
+                                                    class="form-control form-control-sm"
                                                 />
                                                 <span
                                                     class="text-danger"
@@ -960,7 +993,7 @@
                                                 >
                                             </div>
                                             <div class="col-1">
-                                                <label for="">Eliminar</label>
+                                                <label for=""> <small> Eliminar </small></label>
                                                 <div
                                                     class="col-lg-2 align-self-center d-grid"
                                                 >
@@ -981,10 +1014,10 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-6">
                             <button
                                 type="button"
-                                class="btn btn-success mt-3 mt-lg-0 mb-3 float-end"
+                                class="btn btn-warning btn-soft-warning btn-sm mt-3 mt-lg-0 mb-3 float-end"
                                 @click="AddformData"
                                 style="margin-right: 10px;"
                             >
@@ -992,26 +1025,29 @@
                                 Agregar Valores Referenciales
                             </button>
                         </div>
+                        <div class="col-6">
+                            <button
+                                v-if="btnCreate === true"
+                                class="btn btn-success btn-soft-success btn-sm float-end "
+                                type="submit"
+                            >
+                                <i class="far fa-save"></i> Nuevo
+                            </button>
+                            <button
+                                v-else
+                                class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
+                                type="submit"
+                            >
+                                <i class="fas fa-sync"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
 
-                    <button
-                        v-if="btnCreate === true"
-                        class="btn btn-primary float-end "
-                        type="submit"
-                    >
-                        <i class="far fa-save"></i> Crear
-                    </button>
-                    <button
-                        v-else
-                        class="btn btn-primary float-end btnSubmit"
-                        type="submit"
-                    >
-                        <i class="fas fa-sync"></i> Actualizar
-                    </button>
+                    
                 </form>
             </b-modal>
 
             <!-- modal analisis -->
-        </div>
+        </div> 
     </Layout>
 </template>

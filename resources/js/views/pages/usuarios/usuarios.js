@@ -3,11 +3,13 @@ import PageHeader from "../../../compontents/page-header.vue";
 import { required, email } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
 import Multiselect from "vue-multiselect";
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 import $ from "jquery";
 
 export default {
-    components: { Layout, PageHeader, Multiselect },
+    components: { Layout, PageHeader, Multiselect, Cropper },
 
     page: {
         title: "Usuarios",
@@ -21,19 +23,23 @@ export default {
 
     data() {
         return {
+            img: 'https://images.pexels.com/photos/4323307/pexels-photo-4323307.jpeg',
             urlbackend: this.$urlBackend,
             roles: [],
 
             // form
-            rol: "",
+            rol: "", 
             emailexist: false,
             rutexist: false,
+            FileCropper: false,
+            requireFirma: 0,
             formsa: {
                 nombres: "",
                 apellidos: "",
                 email: "",
                 rol: this.rol,
-                id: ""
+                id: "",
+                imagenCheck: 0,
             },
             formp: {
                 nombres: "",
@@ -41,10 +47,9 @@ export default {
                 email: "",
                 rol: this.rol,
                 profesion: "",
-                firma: "",
-                antfirma:"",
                 rut: "",
-                id: ""
+                id: "",
+                imagenCheck: 0,
             },
             submitted: false,
             typeform: "create",
@@ -185,9 +190,6 @@ export default {
             profesion: {
                 required
             },
-            firma: {
-                required
-            },
             rut: {
                 required
             }
@@ -243,12 +245,47 @@ export default {
             this.currentPageSecretaria = 1;
         },
 
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
+        uploadImage(event) {
+            if (typeof this.$refs.file.files[0] == "undefined") {
+                this.imgCr = null;
+                this.FileCropper = false;
+            } else {
+                var input = event.target;
+
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = e => {
+                        this.imgCr = e.target.result;
+                        this.FileCropper = true;
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        },
+
+        onFileImagen(event) {
+            this.nuevoProducto.imagen = event.target.files[0];
+        },
+
         traerAdministradores() {
             this.axios
                 .get(`/api/obtenerusuario/Administrador`)
                 .then(response => {
-                    console.log(response);
                     this.tableData = response.data;
+                }, error => {
+                     this.validarSessionActive(error);
+                    return error;
                 });
         },
 
@@ -256,25 +293,31 @@ export default {
             this.axios
                 .get(`/api/obtenerusuarioprofesionales`)
                 .then(response => {
-                    console.log(response);
                     this.tableDataProfesional = response.data;
-                });
+                }, error => {
+                    this.validarSessionActive(error);
+                   return error;
+               });
         },
 
         traerSecretaria() {
             this.axios
                 .get(`/api/obtenerusuariosecretaria`)
                 .then(response => {
-                    console.log(response);
                     this.tableDataSecretaria = response.data;
-                });
+                }, error => {
+                    this.validarSessionActive();
+                   return error;
+               });
         },
 
         obtroles() {
             this.axios.get(`/api/obtenerroles`).then(response => {
-                console.log(response);
                 this.roles = response.data;
-            });
+            }, error => {
+                this.validarSessionActive();
+               return error;
+           });
         },
         modalNuevo() {
             this.modal = true;
@@ -298,8 +341,6 @@ export default {
                 email: "",
                 rol: this.rol,
                 profesion: "",
-                firma: "",
-                antfirma:"",
                 rut: "",
                 id: ""
             };
@@ -324,8 +365,16 @@ export default {
                         } else {
                             this.emailexist = false;
                         }
-                    });
+                    }, error => {
+                        this.validarSessionActive(error);
+                       return error;
+                   });
             }
+        },
+
+        SelectUsuario()
+        {
+            console.log(this.rol);
         },
 
         checkRut() {
@@ -372,112 +421,255 @@ export default {
             $(".inputRUT").attr("style", "border-color: #40A944 !important"); // Si todo sale bien, eliminar errores (decretar que es válido)
             $(".btnSubmit").prop("disabled", false);
 
-            this.validarrut();
         },
 
-        validarrut() {
-            this.axios
-                .get(`/api/validarrut/${this.formp.rut}`)
-                .then(response => {
-                    if (response.data == 1) {
-                        this.rutexist = true;
-                    } else {
-                        this.rutexist = false;
-                    }
-                });
-        },
-
-        change({ coordinates, canvas }) {
-            console.log(coordinates, canvas);
-        },
-
-        formpSubmit() {
+        formpSubmit() 
+        {
             this.submitted = true;
             this.$v.formp.$touch();
 
             if (!this.$v.formp.$invalid && !this.emailexist && !this.rutexist) {
-                var fd = new FormData();
-                fd.append("rut", this.formp.rut);
-                fd.append("nombres", this.formp.nombres);
-                fd.append("apellidos", this.formp.apellidos);
-                fd.append("profesion", this.formp.profesion);
-                fd.append("email", this.formp.email);
-                fd.append("id", this.formp.id);
-                fd.append("firma", this.formp.firma);
-                fd.append("antfirma", this.formp.antfirma);
-                fd.append("rol", this.rol.id);
 
-                this.axios
-                    .post(`/api/crearusuario`, fd, {
-                        headers: {
-                            "content-type": "multipart/form-data"
-                        }
-                    })
-                    .then(res => {
-                        if (res.data) {
-                            if (this.formp.id == "") {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Crear Usuarios",
-                                    text: "Usuarios creado con exitosamente",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Crear Usuarios",
-                                    text: "Usuarios editado exitosamente",
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            }
-                            this.modal = false;
-                            this.emailexist = false;
-                            this.rutexist = false;
-                            this.btnCreate = false;
-
-                            this.$v.formp.$reset();
-                            this.traerAdministradores();
-                            this.traerProfesionales();
-                            this.traerSecretaria();
-                        }
-                    })
-                    .catch(error => {
-                        console.log("error", error);
-
-                        $.each(error.response.data.errors, function(
-                            key,
-                            value
-                        ) {
-                            const Toast = Swal.mixin({
-                                toast: true,
-                                position: "top-end",
-                                showConfirmButton: false,
-                                timer: 4000,
-                                timerProgressBar: true,
-                                didOpen: toast => {
-                                    toast.addEventListener(
-                                        "mouseenter",
-                                        Swal.stopTimer
-                                    );
-                                    toast.addEventListener(
-                                        "mouseleave",
-                                        Swal.resumeTimer
-                                    );
-                                }
-                            });
-
-                            Toast.fire({
-                                icon: "warning",
-                                title: value[0]
-                            });
+                if(this.rol.name == "Profesional Laboratorio"){
+                    if (typeof this.$refs.file.files[0] == "undefined") {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "FIRMA",
+                            text: "Debes seleccionar una imagen para la firma.",
+                            timer: 1500,
+                            showConfirmButton: false
                         });
+                        return false;
+                    }
+    
+                    const { canvas } = this.$refs.cropper.getResult();
+                    
+                    var fd = new FormData();
+    
+                    if (canvas) {
+                        canvas.toBlob(blob => {
+                            fd.append("rut", this.formp.rut);
+                            fd.append("nombres", this.formp.nombres);
+                            fd.append("apellidos", this.formp.apellidos);
+                            fd.append("profesion", this.formp.profesion);
+                            fd.append("email", this.formp.email);
+                            fd.append("id", this.formp.id);
+                            fd.append("rol", this.rol.id);
+                            fd.append("imagen", blob);
+                            fd.append('imagenCheck', 1);
+    
+                            this.axios
+                        .post(`/api/crearusuario`, fd, {
+                            headers: {
+                                "content-type": "multipart/form-data"
+                            }
+                        })
+                        .then(res => {
+                            if(res.data == 0)
+                            {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "RUT",
+                                    text: "RUT usuario por otro usuario.",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                return false;
+                            }
+                            if(res.data == 1)
+                            {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "RUT",
+                                    text: "RUT usuado por otro usuario.",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                return false;
+                            }
+                            if (res.data) {
+                                
+                                if (this.formp.id == "") {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Nuevo Usuarios",
+                                        text: "Usuarios ingreso con exitosamente",
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Usuarios Actualizado",
+                                        text: "Usuarios actualizado exitosamente",
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                }
+                                this.modal = false;
+                                this.emailexist = false;
+                                this.rutexist = false;
+                                this.btnCreate = false;
 
-                        this.modal = false;
-                        this.btnCreate = false;
-                        this.$v.formp.$reset();
-                    });
+                                this.FileCropper = false;
+                                this.imgCr = null;
+                                $('.inputImg').val(""),
+                                this.formp.firma = "";
+    
+                                this.$v.formp.$reset();
+                                this.traerAdministradores();
+                                this.traerProfesionales();
+                                this.traerSecretaria();
+                            }
+                        })
+                        .catch(error => {
+                            this.validarSessionActive(error);
+    
+                            $.each(error.response.data.errors, function(
+                                key,
+                                value
+                            ) {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: "top-end",
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true,
+                                    didOpen: toast => {
+                                        toast.addEventListener(
+                                            "mouseenter",
+                                            Swal.stopTimer
+                                        );
+                                        toast.addEventListener(
+                                            "mouseleave",
+                                            Swal.resumeTimer
+                                        );
+                                    }
+                                });
+    
+                                Toast.fire({
+                                    icon: "warning",
+                                    title: value[0]
+                                });
+                            });
+    
+                            this.modal = false;
+                            this.btnCreate = false;
+                            this.$v.formp.$reset();
+                        });
+                                  
+                        }, "image/png");
+                    }
+    
+                }else{
+                        var fd = new FormData();
+
+                        fd.append("rut", this.formp.rut);
+                        fd.append("nombres", this.formp.nombres);
+                        fd.append("apellidos", this.formp.apellidos);
+                        fd.append("profesion", this.formp.profesion);
+                        fd.append("email", this.formp.email);
+                        fd.append("id", this.formp.id);
+                        fd.append("rol", this.rol.id);
+                        fd.append("imagenCheck", 0);
+    
+                    this.axios
+                        .post(`/api/crearusuario`, fd, {
+                            headers: {
+                                "content-type": "multipart/form-data"
+                            }
+                        })
+                        .then(res => {
+                            if(res.data == 0)
+                            {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "RUT",
+                                    text: "RUT usuario por otro usuario.",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                return false;
+                            }
+                            if(res.data == 1)
+                            {
+                                Swal.fire({
+                                    icon: "warning",
+                                    title: "RUT",
+                                    text: "RUT usuado por otro usuario.",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                return false;
+                            }
+                            if (res.data) {
+                                
+                                if (this.formp.id == "") {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Nuevo Usuarios",
+                                        text: "Usuarios ingreso con exitosamente",
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: "Usuarios Actualizado",
+                                        text: "Usuarios actualizado exitosamente",
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                }
+                                this.modal = false;
+                                this.emailexist = false;
+                                this.rutexist = false;
+                                this.btnCreate = false;
+    
+                                this.$v.formp.$reset();
+                                this.traerAdministradores();
+                                this.traerProfesionales();
+                                this.traerSecretaria();
+                            }
+                        })
+                        .catch(error => {
+                            this.validarSessionActive(error);
+    
+                            $.each(error.response.data.errors, function(
+                                key,
+                                value
+                            ) {
+                                const Toast = Swal.mixin({
+                                    toast: true,
+                                    position: "top-end",
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true,
+                                    didOpen: toast => {
+                                        toast.addEventListener(
+                                            "mouseenter",
+                                            Swal.stopTimer
+                                        );
+                                        toast.addEventListener(
+                                            "mouseleave",
+                                            Swal.resumeTimer
+                                        );
+                                    }
+                                });
+    
+                                Toast.fire({
+                                    icon: "warning",
+                                    title: value[0]
+                                });
+                            });
+    
+                            this.modal = false;
+                            this.btnCreate = false;
+                            this.$v.formp.$reset();
+                        });
+                }
+
+                
             }
         },
 
@@ -491,18 +683,34 @@ export default {
                 this.axios
                     .post(`/api/crearusuario`, this.formsa)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
+                        if(res.data == 0)
+                        {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "RUT",
+                                text: "RUT usuario por otro usuario.",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            return false;
+                        }
                         if (res.data) {
                             if (this.formsa.id == "") {
-                                title = "Crear Usuario";
-                                message = "Usuario creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Nuevo Usuarios",
+                                    text: "Usuarios ingreso con exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                title = "Editar Usuario";
-                                message = "Usuario editado con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Usuarios Actualizado",
+                                    text: "Usuarios actualizado con exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             }
                             this.modal = false;
                             this.emailexist = false;
@@ -514,11 +722,10 @@ export default {
                             this.traerAdministradores();
                             this.traerProfesionales();
                             this.traerSecretaria();
-                            this.successmsg(title, message, type);
                         }
                     })
                     .catch(error => {
-                        console.log("error", error);
+                        this.validarSessionActive(error);
 
                         $.each(error.response.data.errors, function(
                             key,
@@ -552,8 +759,6 @@ export default {
         },
 
         editar(data) {
-            console.log(data);
-
             this.titlemodal = "Editar Usuario";
             this.formp.rut = data.rut;
             this.formp.nombres = data.nombres;
@@ -631,13 +836,12 @@ export default {
                     this.traerAdministradores();
                     this.traerProfesionales();
                     this.traerSecretaria();
-                  });
+                  }, error => {
+                    this.validarSessionActive(error);
+                    return error;
+                });
               }
             });
           },
-
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
     }
 };

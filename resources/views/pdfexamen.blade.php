@@ -3,7 +3,7 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Document</title>
+        <title>Examen Paciente {{$examen->paciente['nombres']}} {{$examen->paciente['apellidos']}}</title>
         <style>
         @page {
                 margin: 0cm 0cm;
@@ -63,11 +63,11 @@
                     </td>
                 </tr>
 
-                <tr>
-                    <td>
-                        <h5>NOMBRE: {{$examen->paciente['nombres']}} {{$examen->paciente['apellidos']}}</h5>
-                        <h5>RUT: {{$examen->paciente['rut']}}</h5>
-                        <h5>EDAD: {{$examen->paciente['edad']}}</h5>
+                <tr>    
+                    <td>  
+                        <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">NOMBRE: {{$examen->paciente['nombres']}} {{$examen->paciente['apellidos']}} <span style="position: absolute; right: 50px;"> FECHA EMISIÓN: {{$examen->created_at}} </span> </h6>
+                        <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">RUT: {{$examen->paciente['rut']}}</h6>
+                        <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">EDAD: {{$examen->paciente['edad']}} años</h6>
                     </td>
                 </tr>
             </table>
@@ -88,7 +88,7 @@
 
                         <div style="width: 100%; color: #000" align="center">
 
-                            <img src="../public/storage/{{$examen->profesional['firma']}}" style="margin-left:20px" height="100" width="100" />
+                            <img src="../public/storage/{{$examen->profesional['url_firma']}}" style="margin-left:20px" height="100" width="100" />
 
 
                             <hr style="color: #000; margin-bottom:10px">
@@ -109,34 +109,33 @@
 
         </footer>
 
-        <main >
+        @php
+            $cantidad = count($examen->examenorden);
+        @endphp
+
+        <main>
 
             @foreach ($examen->examenorden as $item)
 
-                <img src="../public/images/isotipo.png" style="opacity: 0.1;
+                <img src="../public/images/isotipo.png" style="opacity: 0.2;
                         position: fixed; width:8cm; height:8cm; bottom: 10cm; left:7cm" height="40%" width="50%" />
 
                     <table class="default" style="border:none !important; margin-top:100px; width:100%">
 
                     <br>
-
-                    <tr>
-                        <td style="width: 100%">
-                            <h5 style="margin-left:70%;"> FECHA {{$examen->fecha}} </h5>
-                        </td>
-                    </tr>
-                    <br>
+                        <br>
+                        <br>
 
                     <tr>
 
                         <table style=" margin-top:5px; width:100%">
-
+                                <hr style="color:#eee">
                                 <tr>
                                     <td> <strong style="text-transform: uppercase"> {{$item->examen->nombre}}</strong> </td>
                                 </tr>
 
                                 <hr style="color:#eee">
-
+                                <span>{{$examen->profesinal['name']}}</span>
                                     <tr>
 
                                         <table style=" margin-top:5px; width:100%">
@@ -185,12 +184,17 @@
 
                             </tr>
                     </table>
+                    @php
+                        $cantidad--;
+                    @endphp
 
-                    <div style="page-break-after:always;"></div>
 
-
+                    @if($cantidad != 0)
+                        <div style="page-break-after:always;"></div>
+                    @endif
+                
             @endforeach
-
+    
         </main>
 
 

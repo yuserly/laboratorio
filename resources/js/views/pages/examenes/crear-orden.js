@@ -12,7 +12,7 @@ export default {
     page: {
         title: "Orden Examenes",
         meta: [
-            {
+            { 
                 name: "description",
                 content: "Pagina de Orden Examenes "
             }
@@ -32,7 +32,7 @@ export default {
                 telefono:"",
                 fecha:"",
                 examen:"",
-                id_orden_examenes:""
+                id_orden_examenes:"" 
             },
             options:[],
             submitted: false,
@@ -157,10 +157,7 @@ export default {
         this.traerOrden();
 
         this.totalRows = this.items.length;
-
-
     },
-
 
     methods: {
 
@@ -183,6 +180,17 @@ export default {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
+
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
         checkRut() {
             var valor = this.form.rut.replace(".", ""); // Quita Punto
             valor = valor.replace("-", ""); // Quita Guión
@@ -236,6 +244,9 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.options= response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error; 
                 });
         },
 
@@ -245,11 +256,13 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.tableData = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
 
         traerordenpaciente(){
-
             this.axios
                 .get(`/api/traerordenpaciente/${this.form.rut}`)
                 .then(response => {
@@ -264,8 +277,10 @@ export default {
                         this.ordenpaciente = false;
 
                     }
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
-
         },
 
         validarrut() {
@@ -282,6 +297,9 @@ export default {
 
                         this.traerordenpaciente();
                     }
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
 
@@ -301,15 +319,23 @@ export default {
                         if (res.data) {
 
                             if (this.form.id_orden_examenes == "") {
-
-                                this.successmsg('Orden de Examenes', 'creada con éxito', 'success');
-
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Orden de Examenes',
+                                    text: "Ha sido emitida exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-
-                                this.successmsg('Orden de Examenes', 'Editada con éxito', 'success');
-
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Orden de Examen Actualizada',
+                                    text: "Ha sido actualizada exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             }
-                        }
+                        }  
 
                         this.btnCreate = true;
                         this.submitted = false;
@@ -330,7 +356,7 @@ export default {
                     })
                     .catch(error => {
                         console.log("error", error);
-
+                        this.validarSessionActive(error);
                         $.each(error.response.data.errors, function(
                             key,
                             value
@@ -402,6 +428,7 @@ export default {
         },
 
         editar(data) {
+            
             this.btnCreate = false;
             this.form.id_orden_examenes = data.id_orden_examenes;
             this.form.rut = data.paciente.rut;
@@ -434,10 +461,6 @@ export default {
             this.titlemodal = "Examenes de la Orden "+ data.codigo;
             this.modal = true;
         },
-
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
 
     },
 

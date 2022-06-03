@@ -6,10 +6,10 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Crear Orden de Examenes</h4>
+                        <h4 class="card-title">Nueva Orden de Examen</h4>
                     </div>
                 </div>
-            </div>
+            </div> 
 
             <div class="col-lg-12">
                 <div class="card">
@@ -17,11 +17,11 @@
                         <form
                             class="needs-validation"
                             @submit.prevent="formSubmit"
-                        >
+                        > 
                             <div class="row">
                                 <div class="col-12 col-lg-3">
                                     <div class="mb-3">
-                                        <label for="rut">Rut</label>
+                                        <label for="rut">RUT</label> 
                                         <input
                                             id="rut"
                                             v-model="form.rut"
@@ -250,7 +250,7 @@
                                 </div>
                                 <div class="col-12 ">
                                     <div class="mb-3 float-end">
-                                        <label for="fecha">Fecha</label>
+                                        <label for="fecha">Fecha de Emisión</label>
                                         <input
                                             id="fecha"
                                             v-model="form.fecha"
@@ -280,11 +280,11 @@
 
                             <button
                                 v-if="btnCreate === true"
-                                class="btn btn-primary float-end "
+                                class="btn btn-primary btn-soft-primary btn-sm float-end "
                                 :disabled="disable"
                                 type="submit"
                             >
-                                <i class="far fa-save"></i> Crear
+                                <i class="far fa-save"></i> Emitir Orden
                             </button>
                             <button
                                 v-else

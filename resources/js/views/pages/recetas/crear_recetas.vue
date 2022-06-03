@@ -6,14 +6,14 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Crear Recetas</h4>
+                        <h4 class="card-title">Nueva Receta</h4>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body"> 
                         <form
                             class="needs-validation"
                             @submit.prevent="formSubmit"
@@ -21,7 +21,7 @@
                             <div class="row">
                                 <div class="col-12 col-lg-3">
                                     <div class="mb-3">
-                                        <label for="rut">Rut</label>
+                                        <label for="rut">RUT</label>
                                         <input
                                             id="rut"
                                             v-model="form.rut"
@@ -268,9 +268,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 ">
-                                    <div class="mb-3 float-end">
-                                        <label for="fecha">Fecha</label>
+                                <div class="col-3">
+                                    <div class="mb-3">
+                                        <label for="fecha">Fecha Emisión</label>
                                         <input
                                             id="fecha"
                                             v-model="form.fecha"
@@ -296,7 +296,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-12 ">
                                     <div class="mb-3">
                                         <label for="fecha">Prescripción</label>
@@ -304,16 +303,25 @@
                                         <ckeditor
                                             v-model="form.preinscripcion"
                                             :editor="editor"
+                                            required
                                         ></ckeditor>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="invalidCheck" type="checkbox" v-model="form.enviarSecretaria" class="custom-control-input"> 
+                                            <label for="invalidCheck" class="custom-control-label">Permitir impresion secretaria.</label> 
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <button
-                                class="btn btn-primary float-end btnSubmit"
+                                class="btn btn-primary btn-soft-primary btn-sm float-end btnSubmit"
                                 type="submit"
                             >
-                                <i class="far fa-save"></i> Crear
+                                <i class="far fa-save"></i> Generar Receta
                             </button>
                         </form>
                     </div>

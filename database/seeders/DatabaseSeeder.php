@@ -20,13 +20,49 @@ class DatabaseSeeder extends Seeder
 
 
         $user1 = User::create([
-                            'name'  => 'Yuserly Bracho',
+                            'name'  => 'Administrador',
                             'password' => Hash::make('12345678'),
-                            'nombres' => 'Yuserly',
-                            'apellidos' => 'Bracho',
-                            'email' => 'yuserlybracho@gmail.com'
+                            'nombres' => 'Roberto',
+                            'apellidos' => 'Ruiz',
+                            'email' => 'novakimen@gmail.com'
                             ]);
         $user1->assignRole(1);
+
+        $user1 = User::create([
+            'name'  => 'Profesional Box',
+            'password' => Hash::make('12345678'),
+            'nombres' => 'Profesional',
+            'apellidos' => 'Box',
+            'email' => 'box@correo.com'
+            ]);
+        $user1->assignRole(2);
+
+        $user1 = User::create([
+            'name'  => 'Profesional Laboratorio',
+            'password' => Hash::make('12345678'),
+            'nombres' => 'Profesional',
+            'apellidos' => 'Laboratorio',
+            'email' => 'laboratorio@correo.com'
+            ]);
+        $user1->assignRole(3);
+
+        $user1 = User::create([
+            'name'  => 'Profesional Ejecutor',
+            'password' => Hash::make('12345678'),
+            'nombres' => 'Profesional',
+            'apellidos' => 'Ejecutor',
+            'email' => 'ejecutor@correo.com'
+            ]);
+        $user1->assignRole(4);
+
+        $user1 = User::create([
+            'name'  => 'Secretaria',
+            'password' => Hash::make('12345678'),
+            'nombres' => 'Secretaria',
+            'apellidos' => 'Novakimen',
+            'email' => 'secretaria@correo.com'
+            ]);
+        $user1->assignRole(5);
 
     }
 }

@@ -27,11 +27,11 @@ export default {
             // tipo de examen
             formtipo: {
                 nombre: "",
-                id_tipo_examens:""
+                id_tipo_examens:"" 
             },
             submitted: false,
             typeform: "create",
-            titlemodaltipo: "Crear Tipo de examen",
+            titlemodaltipo: "Nuevo Tipo de examen",
             // btncreate se usa para todos los formularios
             btnCreate: true,
             modaltipo: false,
@@ -71,14 +71,16 @@ export default {
             // examen
             formexamen: {
                 nombre: "",
-                precio:"",
+                precio_lab: 0,
+                precio_pac: 0,
+                precio_par:0,
                 kids: false,
                 codigo:"",
                 id_examen:"",
                 tipoexamen:""
             },
             tipoexamen : [],
-            titlemodalexamen: "Crear examen",
+            titlemodalexamen: "Nuevo examen",
             // btncreate se usa para todos los formularios
             btnCreate: true,
             modalexamen: false,
@@ -115,7 +117,7 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "precio",
+                    key: "precio_par",
                     sortable: true,
                     label: "Precio",
                     formatter: (precio, key, item) => {
@@ -152,7 +154,7 @@ export default {
             optionsExamen : [],
             formvalores : [],
             tienevalores:false,
-            titlemodalanalisis: "Crear analisis",
+            titlemodalanalisis: "Nuevo Análisis",
             // btncreate se usa para todos los formularios
             modalanalisis: false,
             nombreanalisisexist:false,
@@ -210,7 +212,7 @@ export default {
             nombre: {
                 required
             },
-            precio:{
+            precio_par:{
                 required
             },
             codigo:{
@@ -231,9 +233,7 @@ export default {
     },
 
     computed: {
-        /**
-         * Total no. of records
-         */
+      
         rows() {
             return this.tableData.length;
         },
@@ -276,13 +276,26 @@ export default {
             this.totalRowsAnalisis = filteredItems.length;
             this.currentPageAnalisis = 1;
         },
+
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+ 
         traertipoExamen() {
             this.axios
                 .get(`/api/obtenertipoexamen`)
                 .then(response => {
-                    console.log(response);
                     this.tableData = response.data;
                     this.tipoexamen = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
 
@@ -290,9 +303,11 @@ export default {
             this.axios
                 .get(`/api/obtenerexamen`)
                 .then(response => {
-                    console.log(response);
                     this.tableDataExamen = response.data;
                     this.optionsExamen = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
 
@@ -300,15 +315,16 @@ export default {
             this.axios
                 .get(`/api/obteneranalisis`)
                 .then(response => {
-                    console.log(response);
                     this.tableDataAnalisis = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
 
-
         modalNuevoTipo() {
             this.modaltipo = true;
-            this.titlemodaltipo = "Crear Tipo Examene";
+            this.titlemodaltipo = "Nuevo Tipo Examen";
             this.submitted = false;
             this.typeform = "create";
             this.formtipo = {
@@ -320,12 +336,14 @@ export default {
 
         modalNuevoExamen() {
             this.modalexamen = true;
-            this.titlemodalexamen = "Crear Examene";
+            this.titlemodalexamen = "Nuevo Examen";
             this.submitted = false;
             this.typeform = "create";
             this.formexamen = {
                 nombre: "",
-                precio:"",
+                precio_lab:0,
+                precio_pac: 0,
+                precio_par: 0,
                 kids: false,
                 codigo:"",
                 id_examen:"",
@@ -336,7 +354,7 @@ export default {
 
         modalNuevoAnalisis() {
             this.modalanalisis = true;
-            this.titlemodalanalisis = "Crear Analisis";
+            this.titlemodalanalisis = "Nuevo Análisis";
             this.submitted = false;
             this.typeform = "create";
             this.formanalisis = {
@@ -359,6 +377,9 @@ export default {
                         } else {
                             this.nombretipoexist = false;
                         }
+                    }, error => {
+                        this.validarSessionActive(error);
+                        return error;
                     });
             }
         },
@@ -373,6 +394,9 @@ export default {
                         } else {
                             this.nombreexamenexist = false;
                         }
+                    }, error => {
+                        this.validarSessionActive(error);
+                        return error;
                     });
             }
         },
@@ -387,31 +411,41 @@ export default {
                         } else {
                             this.nombreanalisisexist = false;
                         }
+                    }, error => {
+                        this.validarSessionActive(error);
+                        return error;
                     });
             }
         },
 
         formtipoSubmit() {
+
             this.submitted = true;
             // stop here if form is invalid
             this.$v.formtipo.$touch();
+            
 
             if (!this.$v.formtipo.$invalid && !this.nombretipoexist) {
                 this.axios
                     .post(`/api/creartipoexamen`, this.formtipo)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
                         if (res.data) {
                             if (this.formtipo.id_tipo_examens == "") {
-                                title = "Crear tipo Examen";
-                                message = "tipo Examen creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Nuevo Tipo Examen",
+                                    text: "Ha sido ingreso exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                title = "Editar tipo Examen";
-                                message = "tipo Examen editado con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Tipo Examen Actualizado",
+                                    text: "Ha sido actualizado exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             }
                             this.modaltipo = false;
                             this.nombretipoexist = false;
@@ -419,12 +453,11 @@ export default {
                             this.submitted = false;
                             this.$v.formtipo.$reset();
                             this.traertipoExamen();
-                            this.successmsg(title, message, type);
                         }
                     })
                     .catch(error => {
                         console.log("error", error);
-
+                        this.validarNombreAnalisis(error);
                         $.each(error.response.data.errors, function(
                             key,
                             value
@@ -457,6 +490,24 @@ export default {
         },
 
         formexamenSubmit() {
+            if(this.formexamen.precio_lab.length > 0 || this.formexamen.precio_pac.length > 0)
+            {   
+                var total = parseInt(this.formexamen.precio_lab)+parseInt(this.formexamen.precio_pac);
+
+                if(total != parseInt(this.formexamen.precio_par))
+                {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Precio Fonasa",
+                        text: "Precio copago y precio laboratorio son distinto al precio particular ingresado.",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    return;
+                }
+                
+            }
+            
             this.submitted = true;
             // stop here if form is invalid
             this.$v.formexamen.$touch();
@@ -467,18 +518,23 @@ export default {
                 this.axios
                     .post(`/api/crearexamen`, this.formexamen)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
                         if (res.data) {
                             if (this.formexamen.id_examen == "") {
-                                title = "Crear Examen";
-                                message = "Examen creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Nuevo Examen",
+                                    text: "Ha sido ingreso exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                title = "Editar Examen";
-                                message = " Examen editado con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: "success",
+                                    title: "Examen Actualizado",
+                                    text: "Ha sido actualizado exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             }
                             this.modalexamen = false;
                             this.nombreexamenexist = false;
@@ -487,12 +543,11 @@ export default {
                             this.submitted = false;
                             this.$v.formexamen.$reset();
                             this.traerExamen();
-                            this.successmsg(title, message, type);
                         }
                     })
                     .catch(error => {
                         console.log("error", error);
-
+                        this.validarNombreAnalisis(error);
                         $.each(error.response.data.errors, function(
                             key,
                             value
@@ -526,7 +581,7 @@ export default {
 
         editar(data) {
             console.log(data);
-            this.titlemodaltipo = "Editar Tipo Examen";
+            this.titlemodaltipo = "Actualizar Tipo Examen";
             this.formtipo.nombre = data.nombre;
             this.formtipo.id_tipo_examens = data.id_tipo_examens;
             this.modaltipo = true;
@@ -590,17 +645,22 @@ export default {
                     }
 
                     this.traertipoExamen();
-                  });
+                  }, error => {
+                    this.validarSessionActive(error);
+                    return error;
+                });
               }
             });
           },
 
           editarexamen(data) {
             console.log(data);
-            this.titlemodalexamen = "Editar Examen";
+            this.titlemodalexamen = "Actualizar Examen";
             this.formexamen.nombre = data.nombre;
             this.formexamen.id_examen = data.id_examen;
-            this.formexamen.precio = data.precio,
+            this.formexamen.precio_par = data.precio_par,
+            this.formexamen.precio_lab = data.precio_lab,
+            this.formexamen.precio_pac = data.precio_pac,
             this.formexamen.codigo = data.codigo;
             this.formexamen.tipoexamen = data.tipoexamen;
 
@@ -672,14 +732,17 @@ export default {
                     }
 
                     this.traerExamen();
-                  });
+                  }, error => {
+                    this.validarSessionActive(error);
+                    return error;
+                });
               }
             });
           },
 
           editaranalisis(data) {
             console.log(data);
-            this.titlemodalanalisis = "Editar Analisis";
+            this.titlemodalanalisis = "Actualizar Analisis";
             this.formvalores = [];
             this.tienevalores = false;
             let valores = data.valoresreferenciales;
@@ -762,7 +825,10 @@ export default {
                     }
 
                     // this.traerExamen();
-                  });
+                  }, error => {
+                    this.validarSessionActive(error);
+                    return error;
+                });
               }
             });
           },
@@ -830,18 +896,23 @@ export default {
                 this.axios
                     .post(`/api/crearanalisis`, this.formanalisis)
                     .then(res => {
-                        let title = "";
-                        let message = "";
-                        let type = "";
                         if (res.data) {
                             if (this.formanalisis.id_analisis_examens == "") {
-                                title = "Crear Analisis de Examen";
-                                message = "Analisis de Examen creada con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Nuevo Analisis',
+                                    text: "Ha sido ingresado exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                title = "Editar Analisis de Examen";
-                                message = " Analisis de Examen editado con exito";
-                                type = "success";
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Analisis Actulizado',
+                                    text: "Ha sido actualizado exitosamente",
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             }
                             this.modalanalisis = false;
                             this.nombreanalisisexist = false;
@@ -850,12 +921,11 @@ export default {
                             this.$v.formanalisis.$reset();
                             this.formvalores = [];
                             this.traerAnalisis();
-                            this.successmsg(title, message, type);
                         }
                     })
                     .catch(error => {
                         console.log("error", error);
-
+                        this.validarNombreAnalisis(error);
                         $.each(error.response.data.errors, function(
                             key,
                             value
@@ -886,10 +956,6 @@ export default {
                     });
             }
         },
-
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
 
     }
 }

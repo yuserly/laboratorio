@@ -18,6 +18,8 @@ use App\Http\Controllers\ScannerQrController;
 use App\Http\Controllers\TipoExamenController;
 use App\Http\Controllers\UsuariosController;
 use App\Http\Controllers\VentasController;
+use App\Http\Controllers\ConsultaController;
+use App\Http\Controllers\DerivacionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -56,7 +58,19 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('crearrecetas',[RecetasController::class,'store']);
     Route::get('validarrutpaciente/{rut}',[PacientesController::class,'validarrut']);
     Route::get('recetas/{rut}',[RecetasController::class,'show']);
-    Route::get('envioreceta/{rut}',[RecetasController::class,'enviarreceta']);
+    Route::get('enviarimpresion/{codigo}', [RecetasController::class, 'enviarImpresionSecretaria']);
+    // Route::get('envioreceta/{rut}',[RecetasController::class,'enviarreceta']); SUSPENDIDO TEMPORALMENTE
+
+    // Consultas
+
+    Route::post('crearconsultas',[ConsultaController::class,'store']);
+    Route::get('consultas/{rut}',[ConsultaController::class,'show']);
+
+    // Derivaciones
+
+    Route::post('crearderivacion',[DerivacionController::class,'store']);
+    Route::get('derivaciones/{rut}',[DerivacionController::class,'show']);
+    Route::get('envioderivacion/{rut}',[DerivacionController::class,'enviarderivacion']);
 
     // Tipo Examen
 
@@ -87,7 +101,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('obtenordenpendiente',[OrdenExamenesController::class,'showpendiente']);
     Route::get('obtenordenpendientepago',[OrdenExamenesController::class,'showpendientepago']);
 
-    // traer ordenes del paciente
+    //Traer ordenes del paciente
 
     Route::get('traerordenpaciente/{rut}',[OrdenExamenesController::class,'traerordenpaciente']);
 
@@ -95,7 +109,8 @@ Route::middleware('auth:sanctum')->group(function(){
 
     // pagar orden
 
-    Route::get('marcarpagada/{idorden}',[OrdenExamenesController::class,'marcarpagada']);
+    Route::post('marcarpagada',[OrdenExamenesController::class,'marcarpagada']);
+    Route::post('marcarpagadaactualizar', [OrdenExamenesController::class, 'marcapagadaActualizar']);
 
     // guardar resultados examenes
 
@@ -108,12 +123,30 @@ Route::middleware('auth:sanctum')->group(function(){
     // marcar orden como toma realizada
 
     Route::get('marcartomarealizada/{idorden}',[OrdenExamenesController::class,'marcartomarealizada']);
+    Route::get('getMustrasRealizadas', [OrdenExamenesController::class, 'getMustrasRealizadas']);
+    Route::get('historialMuestraRut/{rut}', [OrdenExamenesController::class, 'historialMuestraRut']);
+
+    //Traer analisis sin aceptar
+
+    Route::get('obteneranalisissinaceptar', [OrdenExamenesController::class, 'obteneranalisissinaceptar']);
+    Route::get('aceptarAnalisis/{id}', [OrdenExamenesController::class, 'aceptarAnalisis']);
+    Route::get('volverAnalizar/{id}', [OrdenExamenesController::class, 'volverAnalizar']);
+    Route::get('historialAnalisisEmitidas/{rut}', [OrdenExamenesController::class, 'historialAnalisisEmitidas']);
+    //Historial de analisis
+    Route::get('getAnalisisRealizados', [OrdenExamenesController::class, 'getAnalisisRealizados']);
+
 
     // examenes listo para imprimir o enviar
 
-    Route::get('examen/{rut}',[OrdenExamenesController::class,'mostrarexameneslistos']);
+    Route::get('historialordenrut/{rut}',[OrdenExamenesController::class,'historialordenrut']);
 
     Route::get('envioexamen/{codigo}',[OrdenExamenesController::class,'enviarexamen']);
+
+    //Ventas
+    Route::get('getVentasSecretaria', [VentasController::class, 'getVentaSecretaria']);
+
+    //Venta Administrador
+    Route::get('searchVentaFecha/{mes}', [VentasController::class, 'searchVentaFecha']);
 
 
     // logout

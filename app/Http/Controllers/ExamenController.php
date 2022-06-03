@@ -18,7 +18,9 @@ class ExamenController extends Controller
         $examen = Examen::updateOrCreate(['id_examen' => $request->id_examen],[
                                             'codigo' => $request->codigo,
                                             'nombre' => $request->nombre,
-                                            'precio' => $request->precio,
+                                            'precio_lab' => $request->precio_lab,
+                                            'precio_pac' => $request->precio_pac,
+                                            'precio_par' => $request->precio_par,
                                             'kids' => $kids,
                                             'tipo_examens_id' => $request->tipoexamen
                                           ]);
@@ -48,3 +50,4 @@ class ExamenController extends Controller
         return $examen->delete();
     }
 }
+ 

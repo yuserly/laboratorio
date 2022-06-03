@@ -17,7 +17,9 @@ class CreateExamensTable extends Migration
             $table->id('id_examen');
             $table->string('codigo');
             $table->string('nombre');
-            $table->integer('precio');
+            $table->integer('precio_lab')->default(0);
+            $table->integer('precio_pac')->default(0);
+            $table->integer('precio_par')->default(0);
             $table->integer('kids')->nullable()->default(0);
             $table->unsignedBigInteger('tipo_examens_id')->nullable(); 
             $table->foreign('tipo_examens_id')->references('id_tipo_examens')->on('tipo_examens'); 

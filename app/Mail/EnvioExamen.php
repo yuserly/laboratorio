@@ -43,6 +43,6 @@ class EnvioExamen extends Mailable
 
         return $this->view('mail.sendexamen', compact('send_title', 'send_nombres', 'send_apellidos'))
         ->subject($send_title)
-        ->attachData($this->pdf->output(), 'examen.pdf');
+        ->attachData($this->pdf->output(), 'Resultado '.$send_nombres.' '.$send_apellidos.'.pdf');
     }
 }

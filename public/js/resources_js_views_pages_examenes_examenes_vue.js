@@ -2286,27 +2286,33 @@ var menuItems = [{
   isTitle: true
 }, {
   id: 3,
-  label: "Gestión de Usuarios",
-  icon: "uil-pricetag-alt",
+  label: "Gestión Usuarios",
+  icon: "uil-users-alt",
   link: "/usuarios",
   permiso: "Gestion Usuarios"
 }, {
   id: 4,
-  label: "Gestión de Examenes",
-  icon: "uil-building",
+  label: "Gestión Examenes",
+  icon: "uil-cell",
   permiso: "Gestion Examenes",
   subItems: [{
-    id: 4.1,
-    label: "Examenes",
-    link: "/examenes",
+    id: 4.5,
+    label: "Inscribir Examenes",
+    link: "/crear-examenes",
     parentId: 4,
-    permiso: "Gestion Examenes"
+    permiso: "Crear Examenes"
   }, {
     id: 4.2,
-    label: "Orden de Examenes",
+    label: "Nueva Orden",
     link: "/crear-orden",
     parentId: 4,
     permiso: "Crear Orden Examenes"
+  }, {
+    id: 4.1,
+    label: "Historial Ordenes",
+    link: "/historial-ordenes",
+    parentId: 4,
+    permiso: "Gestion Examenes"
   }, {
     id: 4.3,
     label: "Realizar Examenes",
@@ -2320,35 +2326,65 @@ var menuItems = [{
     parentId: 4,
     permiso: "Gestion Realizar Examenes"
   }, {
-    id: 4.5,
-    label: "Crear Examenes",
-    link: "/crear-examenes",
-    parentId: 4,
-    permiso: "Crear Examenes"
-  }, {
     id: 4.6,
-    label: "Orden Examen Pend. Pago",
+    label: "Pendiente de Pago",
     link: "/orden-pendiente-pago",
     parentId: 4,
     permiso: "Pago Orden Examenes"
   }]
 }, {
   id: 5,
-  label: "Gestión de Recetas",
+  label: "Gestión Recetas",
   icon: "uil-building",
   permiso: "Gestionar Receta",
   subItems: [{
     id: 5.1,
-    label: "Crear Receta",
+    label: "Nueva Receta",
     link: "/crear-recetas",
     parentId: 5,
     permiso: "Crear Receta"
   }, {
     id: 5.2,
-    label: "Recetas",
+    label: "Historial",
     link: "/recetas",
     parentId: 5,
     permiso: "Gestionar Receta"
+  }]
+}, {
+  id: 6,
+  label: "Gestión Consultas",
+  icon: "uil-building",
+  permiso: "Gestionar Consulta",
+  subItems: [{
+    id: 6.1,
+    label: "Nueva Consulta",
+    link: "/crear-consultas",
+    parentId: 6,
+    permiso: "Crear Consulta"
+  }, {
+    id: 6.2,
+    label: "Historial",
+    link: "/consultas",
+    parentId: 6,
+    permiso: "Gestionar Consulta"
+  }]
+}, {
+  id: 7,
+  label: "Gestión Derivacion",
+  icon: "uil-building",
+  permiso: "Gestionar Derivacion",
+  subItems: [{
+    id: 7.1,
+    label: "Nueva Derivación",
+    link: "/crear-derivacion",
+    parentId: 7,
+    permiso: "Crear Derivacion"
+  }, {
+    id: 7.2,
+    label: "Historial",
+    link: "/derivacion",
+    parentId: 7,
+    permiso: "Gestionar Derivacion"
   }]
 }];
 
@@ -2458,6 +2494,16 @@ __webpack_require__.r(__webpack_exports__);
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
+    validarSessionActive: function validarSessionActive(error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem('name');
+        localStorage.removeItem('token');
+        localStorage.removeItem('permisos');
+        this.$router.push({
+          name: 'login'
+        });
+      }
+    },
     checkRut: function checkRut() {
       var valor = this.form.rut.replace(".", ""); // Quita Punto
 
@@ -2548,10 +2594,14 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     envioexamen: function envioexamen(data) {
+      var _this2 = this;
+
       this.axios.get("/api/envioexamen/".concat(data.codigo)).then(function (res) {
         console.log(res);
       })["catch"](function (error) {
         console.log("error", error);
+
+        _this2.validarSessionActive(error);
       });
     }
   }
@@ -27116,22 +27166,18 @@ var render = function() {
             [
               _c("span", { staticClass: "logo-sm" }, [
                 _c("img", {
-                  attrs: { src: "/images/isotipo.png", alt: "", height: "57" }
+                  attrs: { src: "/images/isotipo.png", alt: "", height: "50" }
                 })
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "logo-lg" }, [
                 _c("img", {
-                  attrs: { src: "/images/isotipo.png", alt: "", height: "57" }
+                  attrs: { src: "/images/isotipo.png", alt: "", height: "50" }
                 }),
                 _vm._v(" "),
                 _c("img", {
-                  attrs: {
-                    src: "/images/logo.png",
-                    alt: "",
-                    height: "50",
-                    width: "50%"
-                  }
+                  staticStyle: { "margin-left": "15px" },
+                  attrs: { src: "/images/logo.png", alt: "", width: "50%" }
                 })
               ])
             ]
@@ -27143,22 +27189,18 @@ var render = function() {
             [
               _c("span", { staticClass: "logo-sm" }, [
                 _c("img", {
-                  attrs: { src: "/images/isotipo.png", alt: "", height: "57" }
+                  attrs: { src: "/images/isotipo.png", alt: "", height: "50" }
                 })
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "logo-lg" }, [
                 _c("img", {
-                  attrs: { src: "/images/isotipo.png", alt: "", height: "57" }
+                  attrs: { src: "/images/isotipo.png", alt: "", height: "50" }
                 }),
                 _vm._v(" "),
                 _c("img", {
-                  attrs: {
-                    src: "/images/logo.png",
-                    alt: "",
-                    height: "50",
-                    width: "50%"
-                  }
+                  staticStyle: { "margin-left": "15px" },
+                  attrs: { src: "/images/logo.png", alt: "", width: "50%" }
                 })
               ])
             ]
@@ -27771,102 +27813,97 @@ var render = function() {
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-lg-12" }, [
         _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c("h4", { staticClass: "card-title" }, [
-              _vm._v("Listado Examenes")
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-lg-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c("div", { staticClass: "row mt-4" }, [
-              _c("div", { staticClass: "col-12" }, [
-                _c(
-                  "form",
-                  {
-                    staticClass: "needs-validation",
-                    on: {
-                      submit: function($event) {
-                        $event.preventDefault()
-                        return _vm.formSubmit.apply(null, arguments)
-                      }
-                    }
-                  },
-                  [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-lg-3" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "rut" } }, [
-                            _vm._v("RUT DEL PACIENTE")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.form.rut,
-                                expression: "form.rut"
-                              }
-                            ],
-                            staticClass: "form-control inputRUT",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted && _vm.$v.form.rut.$error
-                            },
-                            attrs: { id: "rut", type: "text" },
-                            domProps: { value: _vm.form.rut },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(_vm.form, "rut", $event.target.value)
-                                },
-                                function($event) {
-                                  return _vm.checkRut(this)
-                                }
-                              ]
-                            }
-                          }),
-                          _vm._v(" "),
-                          _vm.submitted && _vm.$v.form.rut.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.form.rut.required
-                                  ? _c("span", [
-                                      _vm._v(
-                                        "El Rut es\n                                                    requerido."
-                                      )
-                                    ])
-                                  : _vm._e()
-                              ])
-                            : _vm._e()
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-6 mt-4" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-success waves-effect waves-light float-star btnSubmit",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _vm._v(
-                              "\n                                            Buscar\n                                        "
-                            )
-                          ]
-                        )
-                      ])
-                    ])
-                  ]
-                )
+          _c("div", { staticClass: "card-body row" }, [
+            _c("div", { staticClass: "col-7" }, [
+              _c("h4", { staticClass: "card-title" }, [
+                _vm._v("Listado Examenes")
               ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-5" }, [
+              _c(
+                "form",
+                {
+                  staticClass: "needs-validation",
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.formSubmit.apply(null, arguments)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-12 col-lg-8" }, [
+                      _c("div", { staticClass: "mb-3" }, [
+                        _c("label", { attrs: { for: "rut" } }, [
+                          _vm._v("RUT DEL PACIENTE")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.rut,
+                              expression: "form.rut"
+                            }
+                          ],
+                          staticClass: "form-control form-control-sm inputRUT",
+                          class: {
+                            "is-invalid":
+                              _vm.submitted && _vm.$v.form.rut.$error
+                          },
+                          attrs: { id: "rut", type: "text" },
+                          domProps: { value: _vm.form.rut },
+                          on: {
+                            input: [
+                              function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(_vm.form, "rut", $event.target.value)
+                              },
+                              function($event) {
+                                return _vm.checkRut(this)
+                              }
+                            ]
+                          }
+                        }),
+                        _vm._v(" "),
+                        _vm.submitted && _vm.$v.form.rut.$error
+                          ? _c("div", { staticClass: "invalid-feedback" }, [
+                              !_vm.$v.form.rut.required
+                                ? _c("span", [
+                                    _vm._v(
+                                      "El Rut es\n                                                    requerido."
+                                    )
+                                  ])
+                                : _vm._e()
+                            ])
+                          : _vm._e()
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-12 col-lg-4 mt-4" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            "mt-1 btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-star btnSubmit",
+                          attrs: { type: "submit" }
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-search" }),
+                          _vm._v(
+                            "\n                                            Buscar Examen\n                                        "
+                          )
+                        ]
+                      )
+                    ])
+                  ])
+                ]
+              )
             ])
           ])
         ])
@@ -28103,11 +28140,7 @@ var render = function() {
               ])
             ])
           ])
-        : _c("div", { staticClass: "col-12 text-center" }, [
-            _c("h4", { staticClass: "text-danger" }, [
-              _vm._v("NO HAY EXAMENES DISPONIBLE")
-            ])
-          ])
+        : _vm._e()
     ])
   ])
 }

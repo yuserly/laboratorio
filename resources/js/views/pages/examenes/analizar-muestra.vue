@@ -81,10 +81,10 @@
                                                 data-toggle="modal"
                                                 data-target=".bs-example-verorden"
                                                 v-b-tooltip.hover
-                                                title="ver orden"
+                                                title="Ingresar Resultados"
                                             >
                                                 <i
-                                                    class="uil-eye font-size-18"
+                                                    class="uil-dna font-size-18"
                                                 ></i>
                                             </a>
                                         </li>
@@ -118,7 +118,7 @@
 
             <b-modal
                 id="verorden"
-                size="md"
+                size="xl"
                 :title="titlemodal"
                 title-class="font-18"
                 hide-footer
@@ -128,13 +128,13 @@
                     <div class="col-12 ">
                         <div class="row">
                             <div
-                                class="col-12"
+                                class="col-6"
+                                style="border-style: ridge; padding: 5px;"
                                 v-for="(item, i) in form.datos"
                                 :key="item.id"
                             >
-                                <h6>Examen {{ item.examen }}</h6>
+                                <h6><i> Resultado Examen: </i> <b> {{ item.examen }} </b></h6>
                                 <hr />
-                                <h6>Analizar los siguientes items:</h6>
                                 <form
                                     class="form-horizontal"
                                     role="form"
@@ -184,7 +184,7 @@
                     </div>
                     <div class="col-12 d-flex justify-content-center">
                         <button
-                            class="btn btn-primary "
+                            class="btn btn-primary mt-5"
                             type="button"
                             v-on:click="marcar()"
                         >

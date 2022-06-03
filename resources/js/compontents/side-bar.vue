@@ -208,21 +208,21 @@ export default {
     <div class="navbar-brand-box" style="padding-left: 4px;padding-right:4px;">
       <router-link to="/home" class="logo logo-dark">
         <span class="logo-sm">
-          <img src="/images/isotipo.png" alt height="57" />
+          <img src="/images/isotipo.png" alt height="50" />
         </span>
         <span class="logo-lg">
-            <img src="/images/isotipo.png" alt height="57" />
-          <img src="/images/logo.png" alt height="50" width="50%" />
+            <img src="/images/isotipo.png" alt height="50" />
+            <img src="/images/logo.png" alt width="50%" style="margin-left: 15px;"/>
         </span>
       </router-link>
 
       <router-link to="/home" class="logo logo-light">
         <span class="logo-sm">
-          <img src="/images/isotipo.png" alt height="57" />
+          <img src="/images/isotipo.png" alt height="50" />
         </span>
         <span class="logo-lg">
-            <img src="/images/isotipo.png" alt height="57" />
-         <img src="/images/logo.png" alt height="50" width="50%" />
+            <img src="/images/isotipo.png" alt height="50" />
+         <img src="/images/logo.png" alt width="50%" style="margin-left: 15px;" />
         </span>
       </router-link>
     </div>

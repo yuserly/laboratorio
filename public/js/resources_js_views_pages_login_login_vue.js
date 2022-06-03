@@ -112,7 +112,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n@font-face {\n    font-family: fuente1;\n\n    src: url(\"/fonts/Gotham-Bold.otf\");\n}\n@font-face {\n    font-family: fuente2;\n\n    src: url(\"/fonts/AmazonEmber_Rg.ttf\");\n}\ninput{\n    font-family: fuente2!important;\n    font-size: 17px!important;\n}\nlabel, p, h1, h2, h3, h4, h5, h6, a, button{\n    font-family:fuente1 !important;\n}\n.color-primario{\n    color:#18A096 !important;\n}\n.bg-primario{\n    background-color:#18A096 !important;\n    border-color: #18A096 !important;\n    outline:none !important;\n}\n.bg-primario:hover{\n    background-color:#18A096 !important;\n    border-color: #18A096 !important;\n    outline:none !important;\n}\n.bg-primario:focus{\n  outline: none !important;\n  box-shadow: none !important;\n}\n.logoWeb {\n    position: absolute;\n    top: -80px;\n    right: 0;\n}\n.invalid-feedback{\n    color:red!important;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* body{\n    \n    background: url('https://a21.com.mx/sites/default/files/medicina%20de%20aviacio%CC%81n.jpg') no-repeat center center fixed;\n    -webkit-background-size: cover;\n    -moz-background-size: cover;\n    -o-background-size: cover;\n    background-size: cover;\n\n} */\n@font-face {\n    font-family: fuente1;\n\n    src: url(\"/fonts/Gotham-Bold.otf\");\n}\n@font-face {\n    font-family: fuente2;\n\n    src: url(\"/fonts/AmazonEmber_Rg.ttf\");\n}\ninput{\n    font-family: fuente2!important;\n    font-size: 17px!important;\n}\nlabel, p, h1, h2, h3, h4, h5, h6, a, button{\n    font-family:fuente1 !important;\n}\n.color-primario{\n    color:#18A096 !important;\n}\n.bg-primario{\n    background-color:#18A096 !important;\n    border-color: #18A096 !important;\n    outline:none !important;\n}\n.bg-primario:hover{\n    background-color:#18A096 !important;\n    border-color: #18A096 !important;\n    outline:none !important;\n}\n.bg-primario:focus{\n  outline: none !important;\n  box-shadow: none !important;\n}\n.logoWeb {\n    position: absolute;\n    top: -80px;\n    right: 0;\n}\n.invalid-feedback{\n    color:red!important;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -14863,7 +14863,7 @@ var render = function() {
                               attrs: {
                                 type: "text",
                                 id: "email",
-                                placeholder: "tuemail@laboratorio"
+                                placeholder: "nombre@correo.com"
                               },
                               domProps: { value: _vm.form.email },
                               on: {
@@ -14990,26 +14990,6 @@ var render = function() {
                           _vm._v(" "),
                           _vm._m(1),
                           _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "float-left" },
-                            [
-                              _c(
-                                "router-link",
-                                {
-                                  staticClass: "text-muted",
-                                  attrs: { to: "/validar-email" }
-                                },
-                                [
-                                  _vm._v(
-                                    "\n                                            Olvidó su\n                                            contraseña"
-                                  )
-                                ]
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
                           _c("hr")
                         ]
                       )
@@ -15024,8 +15004,9 @@ var render = function() {
                   _vm._v(
                     "\n                            © " +
                       _vm._s(new Date().getFullYear()) +
-                      " laboratorio\n                        "
-                  )
+                      " "
+                  ),
+                  _vm._m(2)
                 ])
               ])
             ])
@@ -15041,9 +15022,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "text-center mt-2" }, [
-      _c("h1", { staticClass: "color-primario" }, [_vm._v("Bienvenido !")]),
-      _vm._v(" "),
-      _c("p", { staticClass: "text-muted" }, [_vm._v("laboratorio")])
+      _c("h1", { staticClass: "color-primario" }, [_vm._v("Bienvenido !")])
     ])
   },
   function() {
@@ -15065,6 +15044,17 @@ var staticRenderFns = [
           )
         ]
       )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", [
+      _vm._v("Desarrollado por "),
+      _c("a", { attrs: { href: "https://cento.cl", target: "blank" } }, [
+        _c("b", [_vm._v(" CENTO - Servicios Informáticos. ")])
+      ])
     ])
   }
 ]
@@ -15980,14 +15970,14 @@ exports["default"] = _default;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var process = __webpack_require__(/*! process/browser */ "./node_modules/process/browser.js");
+/* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 
 
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 exports["default"] = void 0;
-var withParams = process.env.BUILD === 'web' ? __webpack_require__(/*! ./withParamsBrowser */ "./node_modules/vuelidate/lib/withParamsBrowser.js").withParams : __webpack_require__(/*! ./params */ "./node_modules/vuelidate/lib/params.js").withParams;
+var withParams = process.env.BUILD === 'web' ? (__webpack_require__(/*! ./withParamsBrowser */ "./node_modules/vuelidate/lib/withParamsBrowser.js").withParams) : (__webpack_require__(/*! ./params */ "./node_modules/vuelidate/lib/params.js").withParams);
 var _default = withParams;
 exports["default"] = _default;
 

@@ -111,7 +111,6 @@ export default {
             this.axios
                 .get(`/api/obtenordenrealizada`)
                 .then(response => {
-                    console.log(response);
                     this.tableData = response.data;
                 });
         },

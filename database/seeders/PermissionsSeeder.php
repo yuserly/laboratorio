@@ -49,24 +49,45 @@ class PermissionsSeeder extends Seeder
         Permission::create(['name' => 'Crear Ventas']); //27
         Permission::create(['name' => 'Pago Orden Examenes']); //28
 
+        Permission::create(['name' => 'Gestionar Consulta']); //29
+        Permission::create(['name' => 'Crear Consulta']); //30
+        Permission::create(['name' => 'Editar Consulta']); //31
+        Permission::create(['name' => 'Estado Consulta']); //32
+
+        Permission::create(['name' => 'Gestionar Derivacion']); //33
+        Permission::create(['name' => 'Crear Derivacion']); //34
+        Permission::create(['name' => 'Editar Derivacion']); //35
+        Permission::create(['name' => 'Estado Derivacion']); //36
+
+        Permission::create(['name' => 'Gestionar Ventas']); //37
+        Permission::create(['name' => 'Registro Venta Secretaria']); //38
+        Permission::create(['name' => 'Registro Venta Administrador']); //39
+
+        Permission::create(['name' => 'Gestion Examenes Historial']); //40
+        Permission::create(['name' => 'Gestion Analizar Examenes']); //41
+
+
+
+
+
 
 
         // CREADOR DE ROLES
 
         $role = Role::create(['name' => 'Administrador']);
-        $role->syncPermissions([1,2,3,4,9,10,11,12,13,14,15,16]);
+        $role->syncPermissions([1,2,3,4,5,9,10,11,12,13,14,15,16,33,40,37,39]);
 
         $role = Role::create(['name' => 'Profesional Box']);
-        $role->syncPermissions([5,6,7,8,13,17,18,19,20,21]);
+        $role->syncPermissions([5,6,7,8,13,17,18,19,20,21, 29, 30, 31, 32, 33, 34, 35, 36,40]);
 
         $role = Role::create(['name' => 'Profesional Laboratorio']);
-        $role->syncPermissions([13,20,21,22]);
+        $role->syncPermissions([13,41]);
 
         $role = Role::create(['name' => 'Profesional Ejecutor']);
-        $role->syncPermissions([13,20,21,23]);
+        $role->syncPermissions([13,22]);
 
         $role = Role::create(['name' => 'Secretaria']);
-        $role->syncPermissions([13,17,18,19,20,21,24,25,28]);
+        $role->syncPermissions([5,13,17,18,19,20,21,24,25,28,33, 37,38,40]);
 
     }
 }

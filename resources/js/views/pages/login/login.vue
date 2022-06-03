@@ -83,6 +83,16 @@ export default {
 </script>
 
 <style>
+/* body{
+    
+    background: url('https://a21.com.mx/sites/default/files/medicina%20de%20aviacio%CC%81n.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+} */
+
 @font-face {
     font-family: fuente1;
 
@@ -152,8 +162,6 @@ label, p, h1, h2, h3, h4, h5, h6, a, button{
 
                                 <div class="text-center mt-2">
                                     <h1 class="color-primario">Bienvenido !</h1>
-
-                                    <p class="text-muted">laboratorio</p>
                                 </div>
 
                                 <div class="p-2 mt-4">
@@ -168,7 +176,7 @@ label, p, h1, h2, h3, h4, h5, h6, a, button{
                                                 type="text"
                                                 class="form-control"
                                                 id="email"
-                                                placeholder="tuemail@laboratorio"
+                                                placeholder="nombre@correo.com"
                                                 v-model="form.email"
                                                 :class="{
                                                     'is-invalid':
@@ -275,7 +283,7 @@ label, p, h1, h2, h3, h4, h5, h6, a, button{
                                             </button>
                                         </div>
 
-                                        <div class="float-left">
+                                        <!-- <div class="float-left">
                                             <router-link
                                                 to="/validar-email"
                                                 class="text-muted"
@@ -283,7 +291,7 @@ label, p, h1, h2, h3, h4, h5, h6, a, button{
                                                 Olvidó su
                                                 contraseña</router-link
                                             >
-                                        </div>
+                                        </div> -->
 
                                         <hr />
                                     </form>
@@ -293,7 +301,7 @@ label, p, h1, h2, h3, h4, h5, h6, a, button{
 
                         <div class="mt-5 text-center">
                             <p>
-                                © {{ new Date().getFullYear() }} laboratorio
+                                © {{ new Date().getFullYear() }} <small>Desarrollado por <a href="https://cento.cl" target="blank"> <b> CENTO - Servicios Informáticos. </b></a></small>
                             </p>
                         </div>
                     </div>

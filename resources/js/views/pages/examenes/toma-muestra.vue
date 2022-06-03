@@ -124,9 +124,9 @@
                 v-if="modal"
             >
                     <div class="row">
-                        <div class="col-12 ">
+                        <div class="col-12">
                             <ul>
-                                <li v-for="item of examenes" :key="item.id_orden_examenes">{{item.nombre}}</li>
+                                <li style="list-style: none;" v-for="item of examenes" :key="item.id_orden_examenes"> <i class="fa fa-check-square"></i> {{item.nombre}}</li>
                             </ul>
                         </div>
                         <div class="col-12 d-flex justify-content-center">

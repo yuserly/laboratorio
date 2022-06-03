@@ -28,6 +28,7 @@ const routes = [
             requiresAuth: true
         }
     },
+
     {
         path: "/usuarios",
         name: "usuarios",
@@ -35,19 +36,6 @@ const routes = [
         component: () =>
             /* webpackChunkName: "home" */ import(
                 "./views/pages/usuarios/usuarios.vue"
-            ),
-        meta: {
-            requiresAuth: true
-        }
-    },
-
-    {
-        path: "/examenes",
-        name: "examenes",
-
-        component: () =>
-            /* webpackChunkName: "home" */ import(
-                "./views/pages/examenes/examenes.vue"
             ),
         meta: {
             requiresAuth: true
@@ -68,12 +56,12 @@ const routes = [
     },
 
     {
-        path: "/crear-recetas",
-        name: "crear-recetas",
+        path: "/historial-ordenes",
+        name: "historial-ordenes",
 
         component: () =>
             /* webpackChunkName: "home" */ import(
-                "./views/pages/recetas/crear_recetas.vue"
+                "./views/pages/examenes/historial-ordenes.vue"
             ),
         meta: {
             requiresAuth: true
@@ -107,12 +95,62 @@ const routes = [
     },
 
     {
+        path: "/historial-muestras",
+        name: "historial-muestras",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/examenes/historial-muestras.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
         path: "/analizar-muestra",
         name: "analizar-muestra",
 
         component: () =>
             /* webpackChunkName: "home" */ import(
                 "./views/pages/examenes/analizar-muestra.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/aceptar-analisis",
+        name: "aceptar-analisis",
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/examenes/aceptar-analisis.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/registro-venta-administracior",
+        name: "registro-venta-administracior",
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/ventas/registro-administracion.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/historial-analisis",
+        name: "historial-analisis",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/examenes/historial-analisis.vue"
             ),
         meta: {
             requiresAuth: true
@@ -133,6 +171,19 @@ const routes = [
     },
 
     {
+        path: "/crear-recetas",
+        name: "crear-recetas",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/recetas/crear_recetas.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
         path: "/recetas",
         name: "recetas",
 
@@ -144,6 +195,59 @@ const routes = [
             requiresAuth: true
         }
     },
+
+    {
+        path: "/crear-consultas",
+        name: "crear-consultas",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/consultas/crear_consultas.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/consultas",
+        name: "consultas",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/consultas/listar_consultas.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/crear-derivacion",
+        name: "crear-derivacion",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/derivacion/crear_derivacion.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
+    {
+        path: "/derivacion",
+        name: "derivacion",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/derivacion/listar_derivacion.vue"
+            ),
+        meta: {
+            requiresAuth: true
+        }
+    },
+
     {
         path: "/login",
         name: "login",
@@ -155,7 +259,20 @@ const routes = [
         meta: {
             requiresAuth: false
         }
-    }
+    },
+
+    {
+        path: "/registro-venta",
+        name: "registro-venta",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/ventas/registro-venta.vue"
+            ),
+        meta: {
+            requiresAuth: false
+        }
+    },
 ];
 
 const router = new VueRouter({
@@ -232,12 +349,12 @@ function hasAccess(name) {
         case "usuarios":
             return Permissions.methods.$can("Gestion Usuarios");
 
-        case "examenes":
-            return Permissions.methods.$can("Gestion Examenes");
-
         case "crear-examenes":
             return Permissions.methods.$can("Crear Examenes");
 
+        case "historial-ordenes":
+                return Permissions.methods.$can("Gestion Examenes");
+    
         case "crear-orden":
             return Permissions.methods.$can("Crear Orden Examenes");
 
@@ -245,7 +362,17 @@ function hasAccess(name) {
             return Permissions.methods.$can("Gestion Realizar Examenes");
 
         case "analizar-muestra":
+            return Permissions.methods.$can("Gestion Analizar Examenes");
+
+        case "historial-analisis":
+            return Permissions.methods.$can("Gestion Analizar Examenes");
+        
+        case "aceptar-analisis":
+            return Permissions.methods.$can("Gestion Analizar Examenes");
+
+        case "historial-muestras":
             return Permissions.methods.$can("Gestion Realizar Examenes");
+
         case "orden-pendiente-pago":
                     return Permissions.methods.$can("Pago Orden Examenes");
         case "crear-recetas":
@@ -253,6 +380,24 @@ function hasAccess(name) {
 
         case "recetas":
             return Permissions.methods.$can("Gestionar Receta");
+
+        case "crear-consultas":
+                return Permissions.methods.$can("Crear Consulta");
+    
+        case "consultas":
+                return Permissions.methods.$can("Gestionar Consulta");
+
+        case "crear-derivacion":
+                return Permissions.methods.$can("Crear Derivacion");
+    
+        case "derivacion":
+                return Permissions.methods.$can("Gestionar Derivacion");
+                
+        case "registro-venta":
+                return Permissions.methods.$can("Gestionar Ventas");
+
+        case "registro-venta-administracior":
+                return Permissions.methods.$can("Registro Venta Administrador");
 
         case "login":
             return true;

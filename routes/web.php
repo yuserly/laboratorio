@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\OrdenExamenesController;
 use App\Http\Controllers\RecetasController;
+use App\Http\Controllers\DerivacionController;
+use App\Http\Controllers\ConsultaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,10 +20,19 @@ use Illuminate\Support\Facades\Route;
 // lo usamos para imprimir la receta
 
 Route::get('receta/{codigo}',[RecetasController::class,'imprimirreceta']);
+Route::get('recetaSecretaria/{codigo}',[RecetasController::class,'imprimirrecetaSecretaria']);
 
 // Lo usamos para imprimir el examen
 
 Route::get('examen/{codigo}',[OrdenExamenesController::class,'imprimirexamen']);
+
+// lo usamos para imprimir la receta
+
+Route::get('derivacion/{codigo}',[DerivacionController::class,'imprimirderivacion']);
+
+Route::get('imprimirConsulta/{codigo}', [ConsultaController::class, 'imprimirConsulta']);
+
+Route::get('imprimirExamenAnalizado/{codigo}', [OrdenExamenesController::class, 'imprimirexamen']);
 
 
 

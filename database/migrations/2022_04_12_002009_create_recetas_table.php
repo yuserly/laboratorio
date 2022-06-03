@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateRecetasTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+
     public function up()
     {
         Schema::create('recetas', function (Blueprint $table) {
@@ -23,15 +19,11 @@ class CreateRecetasTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('paciente_id')->nullable();
             $table->foreign('paciente_id')->references('id_paciente')->on('pacientes');
+            $table->boolean('permite_impresion')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('recetas');

@@ -62,14 +62,22 @@ export default {
                     sortable: true
                 },
                 {
-                    key: "paciente.nombres",
-                    label: "Nombres",
-                    sortable: true
+                    key: "paciente",
+                    label: "Paciente",
+                    sortable: true,
+                    formatter: paciente => {
+                        return `${paciente.nombres} ${paciente.apellidos}`;
+                    }
                 },
                 {
-                    key: "paciente.apellidos",
-                    label: "Apellidos",
-                    sortable: true
+                    key: "paciente.edad",
+                    label: "Edad",
+                    sortable: true,
+                },
+                {
+                    key: "paciente.email",
+                    label: "Correo",
+                    sortable: true,
                 },
                 {
                     key: "fecha",
@@ -83,9 +91,7 @@ export default {
     },
 
     computed: {
-        /**
-         * Total no. of records
-         */
+
         rows() {
             return this.tableData.length;
         }
@@ -108,12 +114,25 @@ export default {
             this.currentPage = 1;
         },
 
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
         traerOrden() {
             this.axios
                 .get(`/api/obtenordenpendiente`)
                 .then(response => {
                     console.log(response);
                     this.tableData = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
         verorden(data) {
@@ -132,8 +151,6 @@ export default {
 
         marcar(){
 
-            console.log(this.orden)
-
             var estado = 2;
             var title = "Marcar Toma de muestra Realizada";
             var text = `¿Esta seguro de Marcar la orden ${this.orden.codigo} como realizada?`;
@@ -145,7 +162,7 @@ export default {
                 showCancelButton: true,
                 confirmButtonColor: "#34c38f",
                 cancelButtonColor: "#f46a6a",
-                confirmButtonText: "Si",
+                confirmButtonText: "Si, Realiazada.",
               }).then((result) => {
                 if (result.value) {
                   this.axios
@@ -187,12 +204,12 @@ export default {
                       this.modal = false;
                     });
                 }
-              });
+              }, error => {
+                this.validarSessionActive(error);
+                return error;
+            });
         },
 
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
     }
 
 }

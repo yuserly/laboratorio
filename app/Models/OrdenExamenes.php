@@ -15,8 +15,12 @@ class OrdenExamenes extends Model
         'codigo',
         'user_id',
         'paciente_id',
+        'user_id',
+        'user_ejecutor_id',
+        'user_laboratorio_id',
         'fecha',
-        'exec'
+        'exec',
+        'estado_id'
     ];
 
     public function paciente(){
@@ -32,5 +36,15 @@ class OrdenExamenes extends Model
     public function profesional(){
 
         return $this->belongsTo(User::class,'analizadax','id');
+    }
+
+    public function emisor(){
+
+        return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function ejecutor(){
+
+        return $this->belongsTo(User::class,'user_ejecutor_id','id');
     }
 }

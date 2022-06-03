@@ -140,20 +140,21 @@
             }
 
             body {
-                margin-top: 2cm;
-                margin-left: 2cm;
-                margin-right: 2cm;
-                margin-bottom: 2cm;
+                margin-top: 0.7cm;
+                margin-left: 0.7cm;
+                margin-right: 0.7cm;
+                margin-bottom: 0.7cm;
+                font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             }
             header {
                 position: fixed;
                 top: 0cm;
                 left: 0cm;
                 right: 0cm;
-                height: 2cm;
+                height: 0.5cm;
                 margin-left: 2cm;
                 margin-right: 2cm;
-                margin-top: 1cm;
+                margin-top: 0.2cm;
                 color: #18a096
             }
             footer {
@@ -161,10 +162,10 @@
                 bottom: 0cm;
                 left: 0cm;
                 right: 0cm;
-                height: 2cm;
+                height: 0.5cm;
 
-                margin-left: 2cm;
-                margin-right: 2cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
                 margin-bottom: 1.5cm;
                 color: #18a096;
 
@@ -180,12 +181,12 @@
             <table class="default" style="border:none !important; margin-top:5px; width:100%">
                 <tr>
                     <td style="width: 40%">
-                        <img src="../public/images/isotipo.png" style="margin-left:20px" height="100" width="100" />
+                        <img src="../public/images/isotipo.png" style="margin-left:0px" height="100" width="100" />
                     </td>
 
                     <td style="width: 50%">
-                        <img src="../public/images/logo.png" style="margin-left:70px; margin-top:10px"  width="50%" />
-                        <h5>CLINICA DE SALUD INTEGRAL & ESTETICA</h5>
+                        <img src="../public/images/logo.png" style="margin-left:60px; margin-top:10px"  width="50%" />
+                        <small><h6 style="margin-left:20px; margin-top:10px">CLINICA DE SALUD INTEGRAL & ESTETICA</h6></small>
                     </td>
 
 
@@ -207,28 +208,21 @@
 
             <main>
 
-            <img src="../public/images/isotipo.png" style="opacity: 0.1;
-            position: fixed; width:8cm; height:8cm; bottom: 10cm; left:7cm" height="40%" width="50%" />
-
-                <table class="default" style="border:none !important; margin-top:5px; width:100%">
-
-                    <br>
-
-                    <tr>
-                        <td style="width: 100%">
-                            <h5 style="margin-left:70%;"> FECHA {{$receta->fecha}} </h5>
-                        </td>
-                    </tr>
-                    <tr>
-
+                <img src="../public/images/isotipo.png" style="opacity: 0.2;
+                position: fixed; width:8cm; height:8cm; bottom: 5cm; left:3.5cm" height="40%" width="50%" />
+                <table class="default" style="border:none !important; margin-top:55px; width:100%">
+                    
+                    <tr>                        
                         <td>
-                            <h5>NOMBRE: {{$receta->paciente['nombres']}} {{$receta->paciente['apellidos']}}</h5>
-                            <h5>RUT: {{$receta->paciente['rut']}}</h5>
-                            <h5>EDAD: {{$receta->paciente['edad']}}</h5>
-                            <h5>DIAGNÓSTICO: {{$receta->diagnostico}}</h5>
+                            <hr style="color:#eee; margin: 20px 0px 0px 0xp;">    
+                            <h6 style="margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">NOMBRE: {{$receta->paciente['nombres']}} {{$receta->paciente['apellidos']}} <span style="position: absolute; right: 50px;"> FECHA EMISIÓN: {{$receta->created_at}} </span> </h6>
+                            <h6 style="margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">RUT: {{$receta->paciente['rut']}}</h6>
+                            <h6 style="margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">EDAD: {{$receta->paciente['edad']}} años</h6>
+                            <h6 style="margin: 10px 0px 10px 0xp; padding: 0px 0px 0px 0xp;"><b> DIAGNÓSTICO: {{$receta->diagnostico}} </b></h6>
                         </td>
-
-
+                        <td>   
+                            <h6></h6>
+                        </td>
                     </tr>
                     <hr style="color:#eee">
                     <br>
@@ -238,12 +232,8 @@
 
                            <strong>Rp.</strong>
 
-                           <br>
-
-                           <p>
-
-                            {!! $receta->receta !!}
-                           </p>
+                                <small>  {!! $receta->receta !!} </small>
+                                
                         </td>
                     </tr>
 

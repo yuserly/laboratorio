@@ -9,7 +9,7 @@ import $ from "jquery";
 export default {
     components: { Layout, PageHeader },
 
-    page: {
+    page: { 
         title: "Recetas",
         meta: [
             {
@@ -17,11 +17,12 @@ export default {
                 content: "Pagina de Recetas "
             }
         ]
-    },
+    }, 
 
     data() {
         return {
             urlbackend: this.$urlBackend,
+            urlImprimirReceta: "",
             form: {
                 rut: ""
             },
@@ -31,13 +32,13 @@ export default {
 
             tableData: [],
 
-            title: "Recetas",
+            title: "Consultas",
             items: [
                 {
                     text: "Tables"
                 },
                 {
-                    text: "Recetas",
+                    text: "Consultas",
                     active: true
                 }
             ],
@@ -115,6 +116,17 @@ export default {
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
         },
+        
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
         checkRut() {
             var valor = this.form.rut.replace(".", ""); // Quita Punto
             valor = valor.replace("-", ""); // Quita Guión
@@ -160,6 +172,7 @@ export default {
             $(".btnSubmit").prop("disabled", false);
         },
 
+
         formSubmit() {
             this.submitted = true;
             this.$v.form.$touch();
@@ -168,17 +181,44 @@ export default {
                 this.axios
                     .get(`/api/recetas/${this.form.rut}`)
                     .then(res => {
-                        console.log(res);
-
-                        if (res.data.receta.length > 0) {
-                            this.tableData = res.data.receta;
+                        console.log(res.data.valor);
+                        if(res.data.valor == 1)
+                        {   
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Recetas',
+                                text: "Recetas encontradas",
+                                timer: 1000,
+                                showConfirmButton: false
+                            });
+                            this.urlImprimirReceta = "receta";
+                            this.tableData = res.data.paciente.receta;
                             this.existereceta = true;
-
-                            console.log(this.tableData);
+                        }else if(res.data.valor == 2){
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Recetas',
+                                text: "Recetas encontradas",
+                                timer: 1000,
+                                showConfirmButton: false
+                            });
+                            this.urlImprimirReceta = "recetaSecretaria";
+                            this.tableData = res.data.paciente.receta_secretaria;
+                            this.existereceta = true;
+                        }else if(res.data.valor == 0){ 
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Recetas',
+                                text: "No se han encontrado recetas para este paciente",
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                            this.tableData = "";
+                            this.existereceta = false;
                         }
                     })
                     .catch(error => {
-                        console.log("error", error);
+                       this.validarSessionActive(error);
 
                         $.each(error.response.data.errors, function(
                             key,
@@ -215,10 +255,34 @@ export default {
             this.axios
                 .get(`/api/envioreceta/${data.codigo}`)
                 .then(res => {
-                    console.log(res);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Recetas',
+                        text: res.data.mensaje,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
                 })
                 .catch(error => {
-                    console.log("error", error);
+                    this.validarSessionActive(error);
+                });
+        },
+
+        ImpresionSecretaria(data)
+        {
+            this.axios
+                .get(`/api/enviarimpresion/${data.codigo}`)
+                .then(res => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Impresión Receta',
+                        text: res.data,
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(error => {
+                    this.validarSessionActive(error);
                 });
         }
     }

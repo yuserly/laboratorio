@@ -24,7 +24,7 @@
                                         class="d-inline-flex align-items-center"
                                     >
                                         Mostrar&nbsp;
-                                        <b-form-select
+                                        <b-form-select 
                                             v-model="perPage"
                                             size="sm"
                                             :options="pageOptions"
@@ -75,6 +75,7 @@
                                                 href="javascript:void(0);"
                                                 v-on:click="pagar(data.item)"
                                                 class="px-2 text-primary"
+                                                v-b-modal.crearpago
                                                 v-b-tooltip.hover
                                                 title="Pagar"
                                             >
@@ -109,5 +110,147 @@
                 </div>
             </div>
         </div>
+
+        <b-modal
+                id="crearpago"
+                size="lg"
+                title="PAGO EXAMEN"
+                title-class="font-18"
+                hide-footer
+                v-if="modal"
+            >
+                <form
+                    class="needs-validation"
+                    @submit.prevent="formPagoEmitir"
+                >   
+                
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="mb-3">
+                                <label for="efectivo">Codigo</label>
+                                <input
+                                    id="efectivo"
+                                    v-model="formpago.codigo"
+                                    type="text"
+                                    disabled
+                                    class="form-control"
+                                />
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="mb-3">
+                                <label>Previsión</label>
+                                <multiselect
+                                    v-model="formpago.prevision"
+                                    :options="options"
+                                    track-by="id_prevision"
+                                    label="nombre"
+                                    @input="selectPrevision()"
+                                ></multiselect>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" v-if="inputPrecio">
+                        <div class="col-12 col-lg-3">
+                            <div class="mb-3">
+                                <label for="efectivo">Efectivo</label>
+                                <input
+                                    id="efectivo"
+                                    v-model="formpago.efectivo"
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formsa.efectivo.$error
+                                    }"
+                                />
+
+                                <div
+                                    v-if="submitted && $v.formsa.efectivo.$error"
+                                    class="invalid-feedback"
+                                >
+                                    <span v-if="!$v.formsa.efectivo.required"
+                                        >Los efectivo son requerido.</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                          
+                        <div class="col-12 col-lg-3">
+                            <div class="mb-3">
+                                <label for="efectivo">Debito</label>
+                                <input
+                                    id="efectivo"
+                                    v-model="formpago.debito"
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formsa.efectivo.$error
+                                    }"
+                                />
+
+                                <div
+                                    v-if="submitted && $v.formsa.efectivo.$error"
+                                    class="invalid-feedback"
+                                >
+                                    <span v-if="!$v.formsa.efectivo.required"
+                                        >Los efectivo son requerido.</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-3">
+                            <div class="mb-3">
+                                <label for="efectivo">Credito</label>
+                                <input
+                                    id="efectivo"
+                                    v-model="formpago.credito"
+                                    type="number"
+                                    class="form-control form-control-sm"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formsa.efectivo.$error
+                                    }"
+                                />
+
+                                <div
+                                    v-if="submitted && $v.formsa.efectivo.$error"
+                                    class="invalid-feedback"
+                                >
+                                    <span v-if="!$v.formsa.efectivo.required"
+                                        >Los efectivo son requerido.</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-3">
+                            <div class="mb-3">
+                                <label for="efectivo">Total Pago</label>
+                                <input
+                                    id="efectivo"
+                                    v-model="formpago.totalpagoiva"
+                                    type="number"
+                                    disabled
+                                    class="form-control form-control-sm"
+                                />
+                            </div>
+                        </div>
+                      
+                    </div>
+                    <hr>
+                    <button
+                        class="btn btn-success btn-soft-success btn-sm float-end"
+                        type="submit"
+                    >
+                        <i class="far fa-save"></i> Aprobar Pago
+                    </button>
+                </form>
+        </b-modal>
+
     </Layout>
 </template>

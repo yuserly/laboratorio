@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 
 class UsuariosController extends Controller
 {
@@ -60,26 +62,46 @@ class UsuariosController extends Controller
 
     }
 
-    public function store(Request $request){
-
-
-        if($request->id){
-
-            $userl = User::where('id',$request->id)->first();
-
-            $password = $userl->password;
-
+    public function store(Request $request)
+    {   
+        if($request->imagenCheck == 1)
+        {   
+            $img        = Storage::disk('public')->putFile('/Firma', new file($request->imagen));
         }else{
+            
+            $img = null;
+        }
+        
+        if($request->rut)
+        {
+            if($request->id == null)
+            {
+                $rutDuplicado = count(User::where('rut', $request->rut)->get());
+                if($rutDuplicado > 0){
+                    return 0; //Si es 0 quiere decir que hay un RUT ya ingresado por otro usuario.
+                }
+            }
 
-            $code = Str::random(8);
-            $password = Hash::make($code);
+            $rutDuplicado = User::where('rut', $request->rut)->get();
+            foreach ($rutDuplicado as $key => $value) {
+                if($value->id != $request->id)
+                {
+                    return 1;
+                }
+            }
 
+            $rut = $request->rut;
+            
+        }else{
+            $rut = null;
         }
 
-        if($request->rut){
-            $rut = $request->rut;
+        if($request->id){
+            $userl = User::where('id',$request->id)->first();
+            $password = $userl->password;
         }else{
-            $rut = "";
+            $code = Str::random(8);
+            $password = Hash::make($code);
         }
 
         if($request->profesion){
@@ -88,19 +110,6 @@ class UsuariosController extends Controller
             $profesion = "";
         }
 
-        if($request->file("firma")){
-            $path = public_path().'/storage/firma/';
-
-
-                $file = $request->file('firma');
-                $fileName = trim(uniqid().$file->getClientOriginalName());
-                $file->move($path, $fileName);
-
-            $img = "firma/".$fileName;
-        }else{
-
-            $img = $request->antfirma;
-        }
 
             $user = User::updateOrCreate(['id' => $request->id],[
                                         'name' => $request->nombres ." ".$request->apellidos ,
@@ -110,7 +119,7 @@ class UsuariosController extends Controller
                                         'email' => $request->email,
                                         'rut' => $rut,
                                         'profesion'=> $profesion,
-                                        'firma' => $img,
+                                        'url_firma' => ($img != null) ? $img : null,
                                         ]);
 
 
@@ -118,8 +127,11 @@ class UsuariosController extends Controller
 
             $estado = 1;
 
-            // Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
-
+            if($request->id == null)
+            {
+                Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
+            }
+            
             return $user;
 
     }

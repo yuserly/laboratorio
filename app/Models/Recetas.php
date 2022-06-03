@@ -15,7 +15,8 @@ class Recetas extends Model
         'receta',
         'fecha',
         'user_id',
-        'paciente_id'
+        'paciente_id',
+        'permite_impresion'
     ];
 
 

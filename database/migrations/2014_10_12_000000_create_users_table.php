@@ -20,9 +20,9 @@ class CreateUsersTable extends Migration
             $table->string('nombres');
             $table->string('apellidos');
             $table->string('email')->unique();
-            $table->string('rut')->unique()->nullable();
+            $table->string('rut')->nullable();
             $table->string('profesion')->nullable();
-            $table->string('firma')->nullable();
+            $table->string('url_firma')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->softDeletes();
@@ -30,11 +30,6 @@ class CreateUsersTable extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('users');

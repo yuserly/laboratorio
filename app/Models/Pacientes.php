@@ -9,6 +9,8 @@ class Pacientes extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'id_paciente';
+
     protected $fillable = [
         'rut',
         'nombres',
@@ -22,5 +24,20 @@ class Pacientes extends Model
     public function receta(){
 
         return $this->hasMany(Recetas::class,'paciente_id','id_paciente')->orderBy('created_at','DESC');
+    }
+
+    public function recetaSecretaria(){
+
+        return $this->hasMany(Recetas::class,'paciente_id','id_paciente')->where('permite_impresion', '=', 1)->orderBy('created_at','DESC');
+    }
+
+    public function consulta(){
+
+        return $this->hasMany(Consulta::class,'paciente_id','id_paciente')->orderBy('created_at','DESC');
+    }
+
+    public function derivacion(){
+
+        return $this->hasMany(Derivacion::class,'paciente_id','id_paciente')->orderBy('created_at','DESC');
     }
 }

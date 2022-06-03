@@ -6,13 +6,14 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Usuarios</h4>
-
-                        <div class="row mt-5">
-                            <div class="col-12">
+                        <div class="row">
+                            <div class="col-6">
+                                <h4 class="card-title">Gestión Usuarios</h4>
+                            </div>
+                            <div class="col-6">
                                 <button
                                     type="button"
-                                    class="btn btn-success waves-effect waves-light float-end"
+                                    class="btn btn-primary btn-soft-primary waves-effect waves-light float-end btn-sm"
                                     v-b-modal.crearusuario
                                     @click="modalNuevo"
                                 >
@@ -20,7 +21,7 @@
                                     Crear Usuario
                                 </button>
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             </div>
@@ -36,7 +37,7 @@
                             <b-tab active>
                                 <template v-slot:title>
                                     <span class="d-inline-block d-sm-none">
-                                        <i class="fas fa-home"></i>
+                                        <i class="fas fa-users"></i>
                                     </span>
                                     <span class="d-none d-sm-inline-block"
                                         >Administradores</span
@@ -232,7 +233,7 @@
                             <b-tab>
                                 <template v-slot:title>
                                     <span class="d-inline-block d-sm-none">
-                                        <i class="far fa-user"></i>
+                                        <i class="fas fa-users"></i>
                                     </span>
                                     <span class="d-none d-sm-inline-block"
                                         >Profesionales</span
@@ -440,7 +441,7 @@
                             <b-tab>
                                 <template v-slot:title>
                                     <span class="d-inline-block d-sm-none">
-                                        <i class="far fa-envelope"></i>
+                                        <i class="fas fa-users"></i>
                                     </span>
                                     <span class="d-none d-sm-inline-block"
                                         >Secretarias</span
@@ -666,20 +667,19 @@
                     <div class="col-12">
                         <div class="col-12 col-lg-6">
                             <div class="mb-3">
-                                <label>Rol</label>
+                                <label>Selecione Tipo Usuario</label>
                                 <multiselect
                                     v-model="rol"
                                     :options="roles"
                                     track-by="id"
                                     label="name"
+                                    @input="SelectUsuario()"
                                 ></multiselect>
 
-                                <!-- <span v-if="submitted && !form.prevension_id"
-                            >Prevision es requerido.</span
-                          > -->
                             </div>
                         </div>
                     </div>
+                    
                 </div>
 
                 <form
@@ -744,7 +744,7 @@
                         </div>
                         <div class="col-12 col-lg-6">
                             <div class="mb-3">
-                                <label for="email">Email</label>
+                                <label for="email">Correo Electronico</label>
                                 <input
                                     id="email"
                                     v-model="formsa.email"
@@ -771,20 +771,20 @@
                             </div>
                         </div>
                     </div>
-
+                    <hr>
                     <button
                         v-if="btnCreate === true"
-                        class="btn btn-primary float-end "
+                        class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
                     >
-                        <i class="far fa-save"></i> Crear
+                        <i class="far fa-save"></i> Crear Usuario
                     </button>
                     <button
                         v-else
-                        class="btn btn-primary float-end btnSubmit"
+                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
                     >
-                        <i class="fas fa-sync"></i> Actualizar
+                        <i class="fas fa-sync"></i> Actualizar Usuario
                     </button>
                 </form>
 
@@ -852,7 +852,7 @@
                         </div>
                         <div class="col-12 col-lg-6">
                             <div class="mb-3">
-                                <label for="email">Email</label>
+                                <label for="email">Correo Electronico</label>
                                 <input
                                     id="email"
                                     v-model="formp.email"
@@ -880,7 +880,7 @@
                         </div>
                         <div class="col-12 col-lg-6">
                             <div class="mb-3">
-                                <label for="rut">Rut</label>
+                                <label for="rut">RUT</label>
                                 <input
                                     id="rut"
                                     v-model="formp.rut"
@@ -898,7 +898,7 @@
                                     class="invalid-feedback"
                                 >
                                     <span v-if="!$v.formp.rut.required"
-                                        >Rut es requerido.</span
+                                        >RUT es requerido.</span
                                     >
                                 </div>
                             </div>
@@ -932,46 +932,30 @@
                         </div>
                         <div class="col-12 col-lg-6">
                             <div class="mb-3">
-                                <label for="firma">Firma</label>
-                                <input
-                                    id="firma"
-                                    type="file"
-                                    @change="onFileChange($event)"
-                                    class="form-control"
-                                    :class="{
-                                        'is-invalid':
-                                            submitted && $v.formp.firma.$error
-                                    }"
-                                    accept="image/*"
-                                />
-
-                                <div
-                                    v-if="submitted && $v.formp.firma.$error"
-                                    class="invalid-feedback"
-                                >
-                                    <span v-if="!$v.formp.firma.required"
-                                        >Profesión es requerido.</span
-                                    >
-                                </div>
-
-
+                                <label>Buscar Firma (PNG)</label>
+                                <input v-if="rol.name == 'Profesional Laboratorio'" class="form-control inputImg" type="file" ref="file" @change="uploadImage($event)" accept="image/*">
                             </div>
+                        </div>
+                        <div class="col-12">
+                            <cropper v-if="FileCropper" ref="cropper" class="cropper" :src="imgCr" :stencil-props="{aspectRatio: 10/6	}"/>
                         </div>
                     </div>
 
+                    <hr>
+
                     <button
                         v-if="btnCreate === true"
-                        class="btn btn-primary float-end btnSubmit"
+                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
                     >
-                        <i class="far fa-save"></i> Crear
+                        <i class="far fa-save"></i> Crear Usuario
                     </button>
                     <button
                         v-else
-                        class="btn btn-primary float-end btnSubmit"
+                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
                     >
-                        <i class="fas fa-sync"></i> Actualizar
+                        <i class="fas fa-sync"></i> Actualizar Usuario
                     </button>
                 </form>
             </b-modal>

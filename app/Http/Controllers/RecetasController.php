@@ -8,11 +8,12 @@ use App\Models\Recetas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RecetasController extends Controller
 {
-    public function store(Request $request){
-
+    public function store(Request $request)
+    {   
         // capturamos el usuario logueado
         $user = Auth::user();
 
@@ -38,43 +39,123 @@ class RecetasController extends Controller
             'receta' => $request->preinscripcion,
             'fecha' => date('Y-m-d'),
             'user_id' => $user->id,
-            'paciente_id' => $paciente->id_paciente
+            'paciente_id' => $paciente->id_paciente,
+            'permite_impresion' => ($request->enviarSecretaria != null) ? 1 : 0,
 
         ]);
 
         return $receta;
 
-
     }
 
     public function show($rut){
 
-        $paciente = Pacientes::where('rut', $rut)->with('receta','receta.profesional', 'receta.paciente')->first();
+        $user = Auth::user();
 
-        return $paciente;
+        if($user->hasRole('Profesional Box')){
+
+            $paciente = Pacientes::where('rut', $rut)->first();
+            if(empty($paciente))
+            {
+                return 0;
+            }else{
+                $recetas = Recetas::where(['paciente_id' => $paciente->id_paciente], ['user_id' => $user->id])->get();
+                if(count($recetas) > 0)
+                {   
+                    $paciente = Pacientes::where('rut', $rut)->with('receta','receta.profesional', 'receta.paciente')->first();
+                    if(count($paciente->receta) > 0)
+                    {
+                        return ['valor' => 1, 'paciente' => $paciente];
+                    }else{
+                        return ['valor' => 0];
+                    }
+                }else{
+                    return ['valor' => 0];
+                }   
+            }
+
+        }else if($user->hasRole('Secretaria')){
+
+            $paciente = Pacientes::where('rut', $rut)->first();
+            if(empty($paciente))
+            {
+                return 0;
+            }else{
+                $recetas = Recetas::where('paciente_id', $paciente->id_paciente)->get();
+                if(count($recetas) > 0)
+                {   
+                    $paciente = Pacientes::where('rut', $rut)->with('recetaSecretaria','recetaSecretaria.profesional', 'recetaSecretaria.paciente')->first();
+                    if(count($paciente->recetaSecretaria) > 0)
+                    {
+                        return ['valor' => 2, 'paciente' => $paciente];
+                    }else{
+                        return ['valor' => 0];
+                    }
+                    
+                }else{
+                    return ['valor' => 0];
+                }   
+            }
+        }else if($user->hasRole('Administrador')){
+
+            $paciente = Pacientes::where('rut', $rut)->first();
+            if(empty($paciente))
+            {
+                return 0;
+            }else{
+                $recetas = Recetas::where('paciente_id', $paciente->id_paciente)->get();
+                if(count($recetas) > 0)
+                {   
+                    $paciente = Pacientes::where('rut', $rut)->with('receta','receta.profesional', 'receta.paciente')->first();
+                    if(count($paciente->receta) > 0)
+                    {
+                        return ['valor' => 1, 'paciente' => $paciente];
+                    }else{
+                        return ['valor' => 0];
+                    }
+                }else{
+                    return ['valor' => 0];
+                }   
+            }
+        }          
     }
 
-    public function imprimirreceta($codigo){
+    public function imprimirreceta($codigo)
+    {
 
         $receta = Recetas::where('codigo', $codigo)->with('paciente')->first();
 
-        $pdf = \PDF::loadView('pdfreceta', compact('receta'));
+        $pdf = \PDF::loadView('pdfreceta', compact('receta'))->setPaper('a5', 'portrait');
+            
+            return $pdf->stream('archivo.pdf');
 
-        return $pdf->stream('archivo.pdf');
 
     }
 
-    public function enviarreceta($codigo){
+    public function imprimirrecetaSecretaria($codigo)
+    {
 
         $receta = Recetas::where('codigo', $codigo)->with('paciente')->first();
 
-        $pdf = \PDF::loadView('pdfreceta', compact('receta'));
+        if($receta->permite_impresion == 0)
+        {
+            return "Nada que hacer";
+        }else{
+            Recetas::where('codigo', $codigo)->update(['permite_impresion' => 0]);
 
-
-        Mail::to($receta->paciente['email'])->send(new EnvioReceta($receta->paciente['nombres'], $receta->paciente['apellidos'], $pdf));
-
-
+                    $pdf = \PDF::loadView('pdfreceta', compact('receta'))->setPaper('a5', 'portrait');
+                    $pdf->render();
+                    
+                    
+            return  $pdf->stream('archivo.pdf');
+        }
     }
 
+    public function enviarImpresionSecretaria($codigo)
+    {
+        Recetas::where('codigo', $codigo)->update(['permite_impresion' => 1]);
+
+        return "Receta enviada a secretaria.";
+    }
 
 }

@@ -82,6 +82,48 @@ File: Main Css File
 @import "custom/pages/timeline";
 @import "custom/pages/extras-pages";
 
+.navbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    height: 70px;
+    background-color: #118a81;
+    padding: 0 calc(1.25rem / 2) 0 0;
+}
+
+.header-item {
+    height: 70px;
+    box-shadow: none !important;
+    color: #ffffff;
+    border: 0;
+    border-radius: 0px;
+}
+
+.navbar-brand-box {
+    padding: 0 1.5rem;
+    width: 250px;
+    position: fixed;
+    z-index: 1;
+    background-color: #ebebeb;
+}
+
+.simplebar-content-wrapper {
+    direction: inherit;
+    box-sizing: border-box !important;
+    position: relative;
+    display: block;
+    background-color: #ebebeb;
+    height: 100%;
+    width: auto;
+    visibility: visible;
+    overflow: auto;
+    max-width: 100%;
+    max-height: 100%;
+    scrollbar-width: none;
+    padding: 0px !important;
+}
+
 // rtl
 // @import "custom/rtl/structure-rtl";
 // @import "custom/rtl/float-rtl";

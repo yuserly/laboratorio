@@ -14,7 +14,7 @@ export default {
     page: {
         title: "Recetas ",
         meta: [
-            {
+            { 
                 name: "description",
                 content: "Pagina de Recetas "
             }
@@ -34,7 +34,8 @@ export default {
                 telefono:"",
                 fecha:"",
                 diagnostico:"",
-                preinscripcion:""
+                preinscripcion:"",
+                enviarSecretaria: "",
             },
             submitted: false,
 
@@ -82,6 +83,17 @@ export default {
 
 
     methods: {
+
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
         checkRut() {
             var valor = this.form.rut.replace(".", ""); // Quita Punto
             valor = valor.replace("-", ""); // Quita Guión
@@ -141,6 +153,9 @@ export default {
                         this.form.email = response.data.email;
                         this.form.telefono = response.data.telefono;
                     }
+                }, error => {
+                     this.validarSessionActive(error);
+                    return error;
                 });
         },
 
@@ -153,19 +168,30 @@ export default {
                 this.axios
                     .post(`/api/crearrecetas`, this.form)
                     .then(res => {
-
-                        console.log(res)
                         if (res.data) {
-
-                            this.successmsg('Receta', 'creada con éxito', 'success');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Nueva Receta',
+                                text: "Ha sido emitida exitosamente",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
 
                             this.submitted = false;
+                            this.form.nombres = "";
+                            this.form.apellidos = "";
+                            this.form.edad = "";
+                            this.form.fecha_nacimiento = "";
+                            this.form.email = "";
+                            this.form.telefono = "";
+                            this.form.diagnostico= "";
                             this.form.preinscripcion = '';
+                            this.form.enviarSecretaria = "";
 
                         }
                     })
                     .catch(error => {
-                        console.log("error", error);
+                        this.validarSessionActive(error);
 
                         $.each(error.response.data.errors, function(
                             key,
@@ -197,9 +223,6 @@ export default {
                     });
             }
         },
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
 
     },
 
