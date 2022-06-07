@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('validarrut/{rut}',[UsuariosController::class,'validarrut']);
     Route::post('crearusuario',[UsuariosController::class,'store']);
     Route::delete('eliminarusuario/{user}', [UsuariosController::class, 'destroy']);
-
+    Route::post('changepassword',[UsuariosController::class,'changepassword']);
     // Recetas
 
     Route::post('crearrecetas',[RecetasController::class,'store']);

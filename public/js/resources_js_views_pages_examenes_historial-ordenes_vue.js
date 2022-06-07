@@ -1609,6 +1609,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var simplebar_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! simplebar-vue */ "./node_modules/simplebar-vue/dist/simplebar-vue.esm.js");
+/* harmony import */ var vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vuelidate/lib/validators */ "./node_modules/vuelidate/lib/validators/index.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_1__);
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1617,6 +1621,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      modalContrasena: false,
+      formPassword: {
+        contrasena: "",
+        repetir: ""
+      },
+      repetirValidar: false,
+      btnContrasena: false,
       submitted: false,
       languages: [{
         flag: __webpack_require__(/*! ../assets/images/flags/us.jpg */ "./resources/js/assets/images/flags/us.jpg"),
@@ -1644,6 +1655,16 @@ __webpack_require__.r(__webpack_exports__);
       value: null,
       nombre: ""
     };
+  },
+  validations: {
+    formPassword: {
+      contrasena: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__.required
+      },
+      repetir: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_2__.required
+      }
+    }
   },
   mounted: function mounted() {
     if (localStorage.getItem("token")) {
@@ -1707,6 +1728,55 @@ __webpack_require__.r(__webpack_exports__);
 
           _this.$router.push("/login");
         }
+      })["catch"](function (error) {
+        console.log("error", error);
+      });
+    },
+    contrasena: function contrasena() {
+      this.modalContrasena = true;
+    },
+    verificarContrasena: function verificarContrasena() {
+      if (this.formPassword.repetir.length == 0 && this.formPassword.contrasena.length == 0) {
+        this.btnContrasena = false;
+      } else if (this.formPassword.repetir == this.formPassword.contrasena) {
+        this.repetirValidar = false;
+        this.btnContrasena = true;
+      } else {
+        this.repetirValidar = true;
+        this.btnContrasena = false;
+      }
+    },
+    formSubmitPassword: function formSubmitPassword() {
+      var _this2 = this;
+
+      this.axios.post("/api/changepassword", this.formPassword).then(function (res) {
+        console.log(res.data);
+
+        if (res.data == 1) {
+          sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+            icon: "success",
+            title: "Cambio de Contraseña",
+            text: 'ok',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        } else {
+          sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
+            icon: "error",
+            title: "Cambio de Contraseña",
+            text: 'ok',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+
+        _this2.modalContrasena = false;
+        _this2.formPassword = {
+          contrasena: "",
+          repetir: ""
+        };
+        _this2.repetirValidar = false;
+        _this2.btnContrasena = false;
       })["catch"](function (error) {
         console.log("error", error);
       });
@@ -27508,155 +27578,340 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("header", { attrs: { id: "page-topbar" } }, [
-    _c("div", { staticClass: "navbar-header" }, [
-      _c("div", { staticClass: "d-flex" }, [
+  return _c(
+    "header",
+    { attrs: { id: "page-topbar" } },
+    [
+      _c("div", { staticClass: "navbar-header" }, [
+        _c("div", { staticClass: "d-flex" }, [
+          _c(
+            "div",
+            { staticClass: "navbar-brand-box" },
+            [
+              _c(
+                "router-link",
+                { staticClass: "logo logo-dark", attrs: { to: "/" } },
+                [
+                  _c("span", { staticClass: "logo-sm" }, [
+                    _c("img", {
+                      attrs: {
+                        src: "/images/landing/logo.png",
+                        alt: "Logo",
+                        height: "22"
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "logo-lg" }, [
+                    _c("img", {
+                      attrs: {
+                        src: "/images/landing/logoWeb2.jpeg",
+                        alt: "Logo",
+                        height: "20"
+                      }
+                    })
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "router-link",
+                { staticClass: "logo logo-light", attrs: { to: "/" } },
+                [
+                  _c("span", { staticClass: "logo-sm" }, [
+                    _c("img", {
+                      attrs: {
+                        src: "/images/landing/logo.png",
+                        alt: "Logo",
+                        height: "22"
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "logo-lg" }, [
+                    _c("img", {
+                      attrs: {
+                        src: "/images/landing/logoWeb2.jpeg",
+                        alt: "Logo",
+                        height: "20"
+                      }
+                    })
+                  ])
+                ]
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                "btn btn-sm px-3 font-size-16 header-item vertical-menu-btn",
+              attrs: { type: "button", id: "vertical-menu-btn" },
+              on: { click: _vm.toggleMenu }
+            },
+            [_c("i", { staticClass: "fa fa-fw fa-bars" })]
+          )
+        ]),
+        _vm._v(" "),
         _c(
           "div",
-          { staticClass: "navbar-brand-box" },
+          { staticClass: "d-flex" },
           [
             _c(
-              "router-link",
-              { staticClass: "logo logo-dark", attrs: { to: "/" } },
-              [
-                _c("span", { staticClass: "logo-sm" }, [
-                  _c("img", {
-                    attrs: {
-                      src: "/images/landing/logo.png",
-                      alt: "Logo",
-                      height: "22"
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "logo-lg" }, [
-                  _c("img", {
-                    attrs: {
-                      src: "/images/landing/logoWeb2.jpeg",
-                      alt: "Logo",
-                      height: "20"
-                    }
-                  })
+              "b-dropdown",
+              {
+                staticClass: "d-inline-block",
+                attrs: {
+                  "toggle-class": "header-item",
+                  right: "",
+                  variant: "white",
+                  "menu-class": "dropdown-menu-end"
+                },
+                scopedSlots: _vm._u([
+                  {
+                    key: "button-content",
+                    fn: function() {
+                      return [
+                        _c(
+                          "span",
+                          {
+                            staticClass:
+                              "d-xl-inline-block ms-1 fw-medium font-size-15"
+                          },
+                          [_vm._v(_vm._s(_vm._f("uppercase")(_vm.nombre)))]
+                        ),
+                        _vm._v(" "),
+                        _c("i", {
+                          staticClass:
+                            "uil-angle-down  d-xl-inline-block font-size-15"
+                        })
+                      ]
+                    },
+                    proxy: true
+                  }
                 ])
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "router-link",
-              { staticClass: "logo logo-light", attrs: { to: "/" } },
+              },
               [
-                _c("span", { staticClass: "logo-sm" }, [
-                  _c("img", {
-                    attrs: {
-                      src: "/images/landing/logo.png",
-                      alt: "Logo",
-                      height: "22"
-                    }
-                  })
-                ]),
                 _vm._v(" "),
-                _c("span", { staticClass: "logo-lg" }, [
-                  _c("img", {
+                _c(
+                  "a",
+                  {
+                    directives: [
+                      {
+                        name: "b-modal",
+                        rawName: "v-b-modal.cambiarcontrasena",
+                        modifiers: { cambiarcontrasena: true }
+                      }
+                    ],
+                    staticClass: "dropdown-item",
+                    staticStyle: { cursor: "pointer" },
                     attrs: {
-                      src: "/images/landing/logoWeb2.jpeg",
-                      alt: "Logo",
-                      height: "20"
+                      "data-toggle": "modal",
+                      "data-target": ".bs-example-cambiarcontrasena"
+                    },
+                    on: {
+                      click: function($event) {
+                        return _vm.contrasena()
+                      }
                     }
-                  })
-                ])
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "uil uil-user-circle font-size-18 align-middle text-muted me-1"
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "align-middle" }, [
+                      _vm._v("Cambiar Contraseña")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "dropdown-item",
+                    on: {
+                      click: function($event) {
+                        return _vm.logout()
+                      }
+                    }
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "align-middle" }, [
+                      _vm._v("Salir")
+                    ])
+                  ]
+                )
               ]
             )
           ],
           1
-        ),
-        _vm._v(" "),
-        _c(
-          "button",
-          {
-            staticClass:
-              "btn btn-sm px-3 font-size-16 header-item vertical-menu-btn",
-            attrs: { type: "button", id: "vertical-menu-btn" },
-            on: { click: _vm.toggleMenu }
-          },
-          [_c("i", { staticClass: "fa fa-fw fa-bars" })]
         )
       ]),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "d-flex" },
-        [
-          _c(
-            "b-dropdown",
+      _vm.modalContrasena
+        ? _c(
+            "b-modal",
             {
-              staticClass: "d-inline-block",
               attrs: {
-                "toggle-class": "header-item",
-                right: "",
-                variant: "white",
-                "menu-class": "dropdown-menu-end"
-              },
-              scopedSlots: _vm._u([
-                {
-                  key: "button-content",
-                  fn: function() {
-                    return [
-                      _c(
-                        "span",
-                        {
-                          staticClass:
-                            "d-xl-inline-block ms-1 fw-medium font-size-15"
-                        },
-                        [_vm._v(_vm._s(_vm._f("uppercase")(_vm.nombre)))]
-                      ),
-                      _vm._v(" "),
-                      _c("i", {
-                        staticClass:
-                          "uil-angle-down  d-xl-inline-block font-size-15"
-                      })
-                    ]
-                  },
-                  proxy: true
-                }
-              ])
+                id: "cambiarcontrasena",
+                size: "lg",
+                title: "Cambiar Contraseña",
+                "title-class": "font-18",
+                "hide-footer": ""
+              }
             },
             [
-              _vm._v(" "),
-              _c("a", { staticClass: "dropdown-item", attrs: { href: "#" } }, [
-                _c("i", {
-                  staticClass:
-                    "uil uil-user-circle font-size-18 align-middle text-muted me-1"
-                }),
-                _vm._v(" "),
-                _c("span", { staticClass: "align-middle" }, [_vm._v("Perfil")])
-              ]),
-              _vm._v(" "),
               _c(
-                "button",
+                "form",
                 {
-                  staticClass: "dropdown-item",
+                  staticClass: "needs-validation",
                   on: {
-                    click: function($event) {
-                      return _vm.logout()
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.formSubmitPassword.apply(null, arguments)
                     }
                   }
                 },
                 [
-                  _c("i", {
-                    staticClass:
-                      "uil uil-sign-out-alt font-size-18 align-middle me-1 text-muted"
-                  }),
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-12 col-lg-6" }, [
+                      _c("div", { staticClass: "mb-3" }, [
+                        _c("label", { attrs: { for: "nombres" } }, [
+                          _vm._v("Nueva Contraseña")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.formPassword.contrasena,
+                              expression: "formPassword.contrasena"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid":
+                              _vm.submitted &&
+                              _vm.$v.formPassword.contrasena.$error
+                          },
+                          attrs: { id: "nombres", type: "password" },
+                          domProps: { value: _vm.formPassword.contrasena },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.formPassword,
+                                "contrasena",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _vm.submitted && _vm.$v.formPassword.contrasena.$error
+                          ? _c("div", { staticClass: "invalid-feedback" }, [
+                              !_vm.$v.formPassword.contrasena.required
+                                ? _c("span", [
+                                    _vm._v("Debes ingresar contraseña.")
+                                  ])
+                                : _vm._e()
+                            ])
+                          : _vm._e()
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-12 col-lg-6" }, [
+                      _c("div", { staticClass: "mb-3" }, [
+                        _c("label", { attrs: { for: "apellidos" } }, [
+                          _vm._v("Repetir Contraseña")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.formPassword.repetir,
+                              expression: "formPassword.repetir"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid":
+                              _vm.submitted &&
+                              _vm.$v.formPassword.repetir.$error
+                          },
+                          attrs: { id: "apellidos", type: "password" },
+                          domProps: { value: _vm.formPassword.repetir },
+                          on: {
+                            keyup: function($event) {
+                              return _vm.verificarContrasena()
+                            },
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.formPassword,
+                                "repetir",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _vm.submitted && _vm.$v.formPassword.repetir.$error
+                          ? _c("div", { staticClass: "invalid-feedback" }, [
+                              !_vm.$v.formPassword.repetir.required
+                                ? _c("span", [
+                                    _vm._v("Debes repetir contraseña.")
+                                  ])
+                                : _vm._e()
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.repetirValidar
+                          ? _c("span", { staticClass: "text-danger" }, [
+                              _vm._v("Contraseña no coinciden.")
+                            ])
+                          : _vm._e()
+                      ])
+                    ])
+                  ]),
                   _vm._v(" "),
-                  _c("span", { staticClass: "align-middle" }, [_vm._v("Salir")])
+                  _vm.btnContrasena
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-success float-end",
+                          attrs: { type: "submit" }
+                        },
+                        [
+                          _c("i", { staticClass: "far fa-save" }),
+                          _vm._v(" Actualizar Contraseña\n            ")
+                        ]
+                      )
+                    : _vm._e()
                 ]
               )
             ]
           )
-        ],
-        1
-      )
-    ])
-  ])
+        : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

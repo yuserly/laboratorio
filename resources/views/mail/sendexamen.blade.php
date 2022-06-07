@@ -25,7 +25,7 @@
             <td><b>Estimado(a)</b> {{$send_nombres}} {{$send_apellidos}}<br>
               <p>Ha recibo un nuevo correo mediante LABORATORIO NOVAKIMEN WEB.</p>
               <hr>
-                <p>Para visualizar el PDF, su contraseña de seguridad son los 4 ultimos numeros de su RUT, sin el guión y numeri verificador.</p>
+                <p>Para visualizar el PDF, su contraseña de seguridad son los 4 ultimos numeros de su RUT, sin el guión y numero verificador.</p>
                 <p><small>Ej: 1234567-8 / "4567"</small></p>
               <hr>
               <p>Muchas Gracias.</p>

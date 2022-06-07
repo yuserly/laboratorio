@@ -16,4 +16,10 @@ class TipoExamen extends Model
     protected $fillable = [
         'nombre'
     ];
+
+
+    public function examen(){
+
+        return $this->hasMany(Examen::class,'tipo_examens_id','id_tipo_examens');
+    }
 }

@@ -11,24 +11,11 @@ export default {
 </script>
 
 <style scoped>
-@font-face {
-    font-family: fuente1;
-
-    src: url("/fonts/Gotham-Bold.otf");
-}
-
-@font-face {
-    font-family: fuente2;
-
-    src: url("/fonts/AmazonEmber_Rg.ttf");
-}
-
-
 
 nav.nav_top_pc {
     background-color: #080404!important;
 		max-height: 100px!important;
-		-webkit-box-shadow: 0px 4px 8px 1px #000000!important; 
+		-webkit-box-shadow: 0px 4px 8px 1px #000000!important;
 		box-shadow: 0px 4px 8px 1px #000000!important;
 }
 nav.nav_top_pc ul li a {
@@ -46,12 +33,12 @@ nav.nav_top_pc ul li a {
 nav.nav_top_movil {
     background-color: #080404;
 		max-height: 100px!important;
-		-webkit-box-shadow: 0px 4px 8px 1px #000000!important; 
+		-webkit-box-shadow: 0px 4px 8px 1px #000000!important;
 		box-shadow: 0px 4px 8px 1px #000000!important;
 }
 
 nav.nav_top_movil ul li a {
-    color: #fff !important!important;
+    color: #fff !important ;
 
     font-size: 20px;
 }
@@ -69,7 +56,7 @@ nav.nav_top_movil ul li a {
     }
     .btn-siguiente:hover{
     	color: #0eeaaf ;
-       
+
     }
 
 

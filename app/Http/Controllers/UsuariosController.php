@@ -11,6 +11,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\Auth;
+
 
 class UsuariosController extends Controller
 {
@@ -63,15 +65,15 @@ class UsuariosController extends Controller
     }
 
     public function store(Request $request)
-    {   
+    {
         if($request->imagenCheck == 1)
-        {   
+        {
             $img        = Storage::disk('public')->putFile('/Firma', new file($request->imagen));
         }else{
-            
+
             $img = null;
         }
-        
+
         if($request->rut)
         {
             if($request->id == null)
@@ -91,7 +93,7 @@ class UsuariosController extends Controller
             }
 
             $rut = $request->rut;
-            
+
         }else{
             $rut = null;
         }
@@ -131,7 +133,7 @@ class UsuariosController extends Controller
             {
                 Mail::to($request->email)->send(new SendMailUser($request->nombres, $request->apellidos, $request->email, $code, $estado));
             }
-            
+
             return $user;
 
     }
@@ -139,5 +141,18 @@ class UsuariosController extends Controller
     public function destroy(User $user)
     {
         return $user->delete();
+    }
+
+    public function changepassword(Request $request){
+
+        $user = Auth::user();
+
+        $act = User::where('id', $user->id)
+        ->update(['password' => Hash::make($request->contrasena)]);
+        if($act){
+            return 1;
+        }else{
+            return 0;
+        }
     }
 }
