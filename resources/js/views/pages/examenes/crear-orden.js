@@ -12,7 +12,7 @@ export default {
     page: {
         title: "Orden Examenes",
         meta: [
-            { 
+            {
                 name: "description",
                 content: "Pagina de Orden Examenes "
             }
@@ -32,7 +32,8 @@ export default {
                 telefono:"",
                 fecha:"",
                 examen:"",
-                id_orden_examenes:"" 
+                id_orden_examenes:"",
+                enviar:true
             },
             options:[],
             submitted: false,
@@ -246,7 +247,7 @@ export default {
                     this.options= response.data;
                 }, error => {
                     this.validarSessionActive(error);
-                    return error; 
+                    return error;
                 });
         },
 
@@ -307,6 +308,7 @@ export default {
             this.submitted = true;
             this.$v.form.$touch();
 
+
             if (!this.$v.form.$invalid) {
 
                 this.disable = true;
@@ -335,7 +337,7 @@ export default {
                                     showConfirmButton: false
                                 });
                             }
-                        }  
+                        }
 
                         this.btnCreate = true;
                         this.submitted = false;
@@ -350,7 +352,8 @@ export default {
                             telefono:"",
                             fecha:"",
                             examen:"",
-                            id_orden_examenes:""
+                            id_orden_examenes:"",
+                            enviar:true
                         },
                         this.traerOrden();
                     })
@@ -428,7 +431,7 @@ export default {
         },
 
         editar(data) {
-            
+
             this.btnCreate = false;
             this.form.id_orden_examenes = data.id_orden_examenes;
             this.form.rut = data.paciente.rut;
@@ -439,6 +442,7 @@ export default {
             this.form.email = data.paciente.email;
             this.form.telefono = data.paciente.telefono;
             this.form.fecha = data.fecha;
+            this.form.enviar = true;
             let examenes = [];
 
             data.examenorden.forEach(element => {

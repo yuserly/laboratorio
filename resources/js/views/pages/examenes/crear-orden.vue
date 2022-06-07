@@ -9,7 +9,7 @@
                         <h4 class="card-title">Nueva Orden de Examen</h4>
                     </div>
                 </div>
-            </div> 
+            </div>
 
             <div class="col-lg-12">
                 <div class="card">
@@ -17,11 +17,11 @@
                         <form
                             class="needs-validation"
                             @submit.prevent="formSubmit"
-                        > 
+                        >
                             <div class="row">
                                 <div class="col-12 col-lg-3">
                                     <div class="mb-3">
-                                        <label for="rut">RUT</label> 
+                                        <label for="rut">RUT</label>
                                         <input
                                             id="rut"
                                             v-model="form.rut"
@@ -248,9 +248,31 @@
                                         ></multiselect>
                                     </div>
                                 </div>
-                                <div class="col-12 ">
+
+                                <div class="col-6">
+                                    <div class=" mb-3 form-check">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="autoSizingCheck2"
+                                            v-model="form.enviar"
+
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="autoSizingCheck2"
+                                        >
+                                            Enviar al correo del paciente
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+
                                     <div class="mb-3 float-end">
-                                        <label for="fecha">Fecha de Emisión</label>
+                                        <label for="fecha"
+                                            >Fecha de Emisión</label
+                                        >
                                         <input
                                             id="fecha"
                                             v-model="form.fecha"
@@ -304,18 +326,30 @@
                     <div class="card-body">
                         <div class="row mt-4">
                             <div class="col-12 mb-2">
-                                <h4 class="card-title ">Ordenes del Paciente {{paciente}}</h4>
+                                <h4 class="card-title ">
+                                    Ordenes del Paciente {{ paciente }}
+                                </h4>
                             </div>
-                            <div class="col-12 shadow-sm mb-3" v-for="item of ordenesexamenpaciente" :key="item.id_orden_examenes">
-                                <h6>Examenes Orden  {{item.codigo}} </h6>
+                            <div
+                                class="col-12 shadow-sm mb-3"
+                                v-for="item of ordenesexamenpaciente"
+                                :key="item.id_orden_examenes"
+                            >
+                                <h6>Examenes Orden {{ item.codigo }}</h6>
                                 <ul>
-                                    <li @click="addexamenes(item1.examen)" style="cursor:pointer"  v-for="item1 of item.examenorden" :key="item1.id_examenes" >{{item1.examen.nombre}}</li>
+                                    <li
+                                        @click="addexamenes(item1.examen)"
+                                        style="cursor:pointer"
+                                        v-for="item1 of item.examenorden"
+                                        :key="item1.id_examenes"
+                                    >
+                                        {{ item1.examen.nombre }}
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col-12">
                 <div class="card">
@@ -441,14 +475,18 @@
                 hide-footer
                 v-if="modal"
             >
-                    <div class="row">
-                        <div class="col-12 ">
-                            <ul>
-                                <li v-for="item of examenes" :key="item.id_orden_examenes">{{item.nombre}}</li>
-                            </ul>
-                        </div>
+                <div class="row">
+                    <div class="col-12 ">
+                        <ul>
+                            <li
+                                v-for="item of examenes"
+                                :key="item.id_orden_examenes"
+                            >
+                                {{ item.nombre }}
+                            </li>
+                        </ul>
                     </div>
-
+                </div>
             </b-modal>
 
             <!-- modal ver orden -->

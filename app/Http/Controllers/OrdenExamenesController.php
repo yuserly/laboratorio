@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\EnvioExamen;
+use App\Mail\EnvioOrdenExamen;
 use App\Models\AnalisisExamen;
 use App\Models\ExamenesPorOrden;
 use App\Models\OrdenExamenes;
@@ -78,7 +79,7 @@ class OrdenExamenesController extends Controller
             $exec = 0;
         }else if($user->hasRole('Secretaria')){
 
-            $exec = 1; 
+            $exec = 1;
         }
 
         // creamos o actualizamos la información del paciente
@@ -159,8 +160,38 @@ class OrdenExamenesController extends Controller
                 'totalorden' => $neto,
                 'prevision' => null,
             ]);
+        }else{
+
+            // enviamos el email con la orden de examen
+
+            if($request->enviar){
+
+                $examen =  OrdenExamenes::where('codigo', $orden->codigo)->with('examenorden.examen.tipoexamen','paciente','emisor')->first();
+
+                $pdf = \PDF::loadView('pdfordenexamen', compact('examen'));
+
+                $pdf->setEncryption(substr(substr($examen->paciente['rut'], 0, -2),-4), "novakimenpdf");
+
+                Mail::to($examen->paciente['email'])->send(new EnvioOrdenExamen($examen->paciente['nombres'], $examen->paciente['apellidos'], $pdf));
+
+            }
+
         }
         return $orden;
+    }
+
+    public function verpdf(){
+
+        $examen =  OrdenExamenes::where('codigo', '6299a681ad969')->with('examenorden.examen.tipoexamen','paciente','emisor')->first();
+
+        $pdf = \PDF::loadView('pdfordenexamen', compact('examen'));
+
+        $pdf->setEncryption(substr(substr($examen->paciente['rut'], 0, -2),-4), "novakimenpdf");
+
+        Mail::to($examen->paciente['email'])->send(new EnvioOrdenExamen($examen->paciente['nombres'], $examen->paciente['apellidos'], $pdf));
+
+        return $pdf->stream('archivo.pdf');
+
     }
 
     public function guardarresultado(Request $request){
@@ -180,12 +211,12 @@ class OrdenExamenesController extends Controller
     }
 
     public function marcaranalizada(Request $request)
-    {   
+    {
         $datos = $request->datos;
         $idorden = $datos[0]["id_orden_examenes"];
         // capturamos el usuario logueado
         $user = Auth::user();
-        
+
         $examen =  OrdenExamenes::where('id_orden_examenes', $idorden)->with('examenorden.examen','paciente','profesional','examenorden.resultados.analisis.valoresreferenciales')->first();
 
         $pdf = \PDF::loadView('pdfexamen', compact('examen'));
@@ -205,13 +236,13 @@ class OrdenExamenesController extends Controller
         $user = Auth::user();
 
         return OrdenExamenes::where('id_orden_examenes', $idorden)->update([
-            'estado_id' => 2, 'user_ejecutor_id' => $user->id   
+            'estado_id' => 2, 'user_ejecutor_id' => $user->id
         ]);
     }
 
     public function marcarpagada(Request $request)
-    {   
-        
+    {
+
         Ventas::where('orden_examenes_id', $request->id_orden_examenes)->update([
             'estado' => 1,
             'pago_debito' => $request->debito,
@@ -233,7 +264,7 @@ class OrdenExamenesController extends Controller
     }
 
     public function marcapagadaActualizar(Request $request)
-    {   
+    {
         Ventas::where('id_venta', $request->id_venta)->update([
             'pago_debito' => $request->debito,
             'pago_efectivo' => $request->efectivo,
@@ -249,7 +280,7 @@ class OrdenExamenesController extends Controller
     }
 
     public function historialordenrut($rut)
-    {   
+    {
         $user = Auth::user();
 
         $paciente = Pacientes::where('rut',$rut)->first();
@@ -270,7 +301,7 @@ class OrdenExamenesController extends Controller
             return ['valo' => 0];
         }
 
-        
+
 
     }
 
@@ -290,7 +321,7 @@ class OrdenExamenesController extends Controller
     }
 
     public function getMustrasRealizadas(Request $request)
-    {   
+    {
         $user = Auth::user();
         $examenes = OrdenExamenes::where(['user_ejecutor_id' => $user->id, 'estado_id' => 2])->with('paciente', 'ejecutor', 'examenorden.examen')->get();
         return $examenes;
@@ -311,7 +342,7 @@ class OrdenExamenesController extends Controller
                return ['valor' => 1, 'examenes' => $examenes];
            }else{
                 return ['valor' => 0];
-           }            
+           }
         }else{
             return ['valor' => 0];
         }
@@ -323,7 +354,7 @@ class OrdenExamenesController extends Controller
     }
 
     public function aceptarAnalisis($id)
-    {   
+    {
         $user = Auth::user();
         OrdenExamenes::updateOrCreate(['id_orden_examenes' => $id],['user_laboratorio_id' => $user->id]);
         return;
@@ -356,7 +387,7 @@ class OrdenExamenesController extends Controller
                return ['valor' => 1, 'examenes' => $examenes];
            }else{
                 return ['valor' => 0];
-           }            
+           }
         }else{
             return ['valor' => 0];
         }

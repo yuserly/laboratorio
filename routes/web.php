@@ -32,7 +32,7 @@ Route::get('derivacion/{codigo}',[DerivacionController::class,'imprimirderivacio
 
 Route::get('imprimirConsulta/{codigo}', [ConsultaController::class, 'imprimirConsulta']);
 
-Route::get('imprimirExamenAnalizado/{codigo}', [OrdenExamenesController::class, 'imprimirexamen']);
+Route::get('verpdf', [OrdenExamenesController::class, 'verpdf']);
 
 
 
