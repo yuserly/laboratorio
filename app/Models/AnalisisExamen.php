@@ -15,6 +15,7 @@ class AnalisisExamen extends Model
 
     protected $fillable = [
         'nombre',
+        'unidad',
         'examen_id'
     ];
 

@@ -4,17 +4,17 @@
     <Layout>
 
         <loader  v-if="preloader == true"
-            object="#622181" 
-            color1="#18a096" 
-            color2="#93117e" 
-            size="5" 
-            speed="2" 
-            bg="#343a40" 
-            objectbg="#999793" 
-            opacity="80" 
+            object="#622181"
+            color1="#18a096"
+            color2="#93117e"
+            size="5"
+            speed="2"
+            bg="#343a40"
+            objectbg="#999793"
+            opacity="80"
             name="circular">
         </loader>
-        
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -195,9 +195,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 d-flex justify-content-center">
+                    <div class="col-12">
                         <button
-                            class="btn btn-primary mt-5"
+                            class="btn btn-warning mt-5 float-start"
+                            type="button"
+                            @click="modal = false"
+                        >
+                            <i class="far fa-save"></i> Guardar
+                        </button>
+
+                        <button
+                            class="btn btn-primary mt-5 ml-5 float-end"
                             type="button"
                             v-on:click="marcar()"
                         >

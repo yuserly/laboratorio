@@ -28520,30 +28520,43 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "col-12 d-flex justify-content-center" },
-                      [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-primary mt-5",
-                            attrs: { type: "button" },
-                            on: {
-                              click: function($event) {
-                                return _vm.marcar()
-                              }
+                    _c("div", { staticClass: "col-12" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-warning mt-5 float-start",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.modal = false
                             }
-                          },
-                          [
-                            _c("i", { staticClass: "fas fa-check" }),
-                            _vm._v(
-                              " Marcar como muestra\n                        tomada\n                    "
-                            )
-                          ]
-                        )
-                      ]
-                    )
+                          }
+                        },
+                        [
+                          _c("i", { staticClass: "far fa-save" }),
+                          _vm._v(" Guardar\n                    ")
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-primary mt-5 ml-5 float-end",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.marcar()
+                            }
+                          }
+                        },
+                        [
+                          _c("i", { staticClass: "fas fa-check" }),
+                          _vm._v(
+                            " Marcar como muestra\n                        tomada\n                    "
+                          )
+                        ]
+                      )
+                    ])
                   ])
                 ]
               )

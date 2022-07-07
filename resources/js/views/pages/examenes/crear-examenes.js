@@ -30,7 +30,7 @@ export default {
             // tipo de examen
             formtipo: {
                 nombre: "",
-                id_tipo_examens:"" 
+                id_tipo_examens:""
             },
             submitted: false,
             typeform: "create",
@@ -151,6 +151,7 @@ export default {
 
             formanalisis: {
                 nombre: "",
+                unidad:"",
                 id_analisis_examens:"",
                 examen_id:""
             },
@@ -235,6 +236,9 @@ export default {
             nombre: {
                 required
             },
+            unidad: {
+                required
+            },
             examen_id:{
                 required
             }
@@ -242,7 +246,7 @@ export default {
     },
 
     computed: {
-      
+
         rows() {
             return this.tableData.length;
         },
@@ -294,8 +298,8 @@ export default {
                 localStorage.removeItem('permisos');
                 this.$router.push({ name: 'login' })
             }
-        }, 
-        traertipoExamen() {   
+        },
+        traertipoExamen() {
             this.axios
                 .get(`/api/obtenertipoexamen`)
                 .then(response => {
@@ -308,10 +312,12 @@ export default {
         },
 
         traerExamen() {
-            
+
             this.axios
                 .get(`/api/obtenerexamen`)
                 .then(response => {
+
+                    console.log(response)
                     this.btnAccionExamen = true;
                     this.tableDataExamen = response.data;
                     this.optionsExamen = response.data;
@@ -369,6 +375,7 @@ export default {
             this.typeform = "create";
             this.formanalisis = {
                 nombre: "",
+                unidad:"",
                 examen_id:"",
                 id_analisis_examens:""
             };
@@ -433,7 +440,7 @@ export default {
             this.submitted = true;
             // stop here if form is invalid
             this.$v.formtipo.$touch();
-            
+
 
             if (!this.$v.formtipo.$invalid && !this.nombretipoexist) {
                 this.btnAccionTipo = false;
@@ -503,8 +510,8 @@ export default {
 
         formexamenSubmit() {
             if(this.formexamen.precio_lab.length <= 0 || this.formexamen.precio_pac.length <= 0)
-            {   
-                
+            {
+
                 Swal.fire({
                     icon: "warning",
                     title: "Precio Incompleto",
@@ -513,9 +520,9 @@ export default {
                     showConfirmButton: false
                 });
                 return;
-    
+
             }
-            
+
             this.submitted = true;
             // stop here if form is invalid
             this.$v.formexamen.$touch();
@@ -525,7 +532,7 @@ export default {
                 this.btnAccionExamen = false;
                 this.axios
                     .post(`/api/crearexamen`, this.formexamen)
-                    .then(res => { 
+                    .then(res => {
                         this.btnAccionExamen = true;
                         if(res.data.estado == 1)
                         {
@@ -538,7 +545,7 @@ export default {
                             });
                             return false;
                         }
-            
+
                         if (res.data) {
                             if (this.formexamen.id_examen == "") {
                                 Swal.fire({
@@ -615,7 +622,7 @@ export default {
                 e.preventDefault();
             }
         },
-        
+
         checaValor(item) {
             // Obtener valor actual
             let valor = parseInt(item.value);
@@ -692,7 +699,7 @@ export default {
           },
 
           editarexamen(data) {
-          
+
             this.titlemodalexamen = "Actualizar Examen";
             this.formexamen.nombre = data.nombre;
             this.formexamen.id_examen = data.id_examen;
@@ -802,6 +809,8 @@ export default {
             this.formanalisis.id_analisis_examens = data.id_analisis_examens;
             this.formanalisis.examen_id = data.examen;
             this.formanalisis.nombre = data.nombre;
+            this.formanalisis.unidad = data.unidad;
+
             this.modalanalisis = true;
             this.btnCreate = false;
         },

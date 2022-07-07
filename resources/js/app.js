@@ -26,7 +26,7 @@ Vue.use(vco);
 Vue.use(Vuelidate);
 Vue.use(VueSweetalert2);
 Vue.component("apexchart", VueApexCharts);
-Vue.prototype.$urlBackend = "https://admin.lodevuelvo.cl/";
+Vue.prototype.$urlBackend = "http://127.0.0.1:8000";
 Vue.use(VueAxios, axios);
 
 // perfil();

@@ -4,17 +4,17 @@
     <Layout>
 
         <loader  v-if="preloader == true"
-            object="#622181" 
-            color1="#18a096" 
-            color2="#93117e" 
-            size="5" 
-            speed="2" 
-            bg="#343a40" 
-            objectbg="#999793" 
-            opacity="80" 
+            object="#622181"
+            color1="#18a096"
+            color2="#93117e"
+            size="5"
+            speed="2"
+            bg="#343a40"
+            objectbg="#999793"
+            opacity="80"
             name="circular">
         </loader>
-        
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -42,7 +42,7 @@
                                         >Tipo de Examen</span
                                     >
                                 </template>
- 
+
                                 <div class="row">
                                     <div class="col-12 mt-5">
                                         <div class="d-grid gap-2">
@@ -436,9 +436,9 @@
                                             >
                                             <i class="fas fa-plus-circle"></i>
                                                 Analisis de Examen
-                                            </button>  
-                                        </div> 
-                                        
+                                            </button>
+                                        </div>
+
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="card">
@@ -684,7 +684,7 @@
                             <i class="fas fa-sync"></i> Espere...
                         </button>
                     </div>
-                    
+
                 </form>
             </b-modal>
 
@@ -786,7 +786,7 @@
                                 >
                             </div>
                         </div>
-                        
+
                         <div class="col-12 col-lg-4">
                             <div class="mb-3">
                                 <label for="precio_lab">Precio Laboratorio</label>
@@ -840,7 +840,7 @@
                                     >
                                 </div>
 
-                                
+
                             </div>
                         </div>
 
@@ -919,7 +919,7 @@
                             <i class="fas fa-sync"></i> Espere...
                         </button>
                     </div>
-                    
+
                 </form>
             </b-modal>
 
@@ -988,6 +988,36 @@
                                     v-if="nombreanalisisexist"
                                     >Analisis de Examen ya existe.</span
                                 >
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 ">
+                            <div class="mb-3">
+                                <label for="unidad">Unidad</label>
+                                <input
+                                    id="unidad"
+                                    v-model="formanalisis.unidad"
+                                    type="text"
+                                    class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formanalisis.unidad.$error
+                                    }"
+                                />
+
+                                <div
+                                    v-if="
+                                        submitted &&
+                                            $v.formanalisis.unidad.$error
+                                    "
+                                    class="invalid-feedback"
+                                >
+                                    <span
+                                        v-if="!$v.formanalisis.unidad.required"
+                                        >La unidad es requerida.</span
+                                    >
+                                </div>
+
                             </div>
                         </div>
 
@@ -1127,11 +1157,11 @@
                         </div>
                     </div>
 
-                    
+
                 </form>
             </b-modal>
 
             <!-- modal analisis -->
-        </div> 
+        </div>
     </Layout>
 </template>
