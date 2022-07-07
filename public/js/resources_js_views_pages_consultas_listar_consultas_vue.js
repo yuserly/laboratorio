@@ -28516,7 +28516,18 @@ var render = function() {
                 ])
               ])
             ])
-          : _vm._e()
+          : _c(
+              "div",
+              {
+                staticClass: "col-12 d-flex justify-content-center",
+                staticStyle: { "margin-bottom": "10px" }
+              },
+              [
+                _c("img", {
+                  attrs: { src: "images/no-found.png", width: "100%", alt: "" }
+                })
+              ]
+            )
       ]),
       _vm._v(" "),
       _vm.modalDetalle

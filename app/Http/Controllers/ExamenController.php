@@ -47,7 +47,7 @@ class ExamenController extends Controller
         }
 
     }
-
+    
     public function show(){
 
         return Examen::where('existe_analisis', 1)->with('tipoexamen')->get();

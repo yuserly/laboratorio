@@ -28569,7 +28569,11 @@ var render = function() {
                 staticClass: "col-12 d-flex justify-content-center",
                 staticStyle: { "margin-bottom": "10px" }
               },
-              [_c("img", { attrs: { src: "images/no-found.png", alt: "" } })]
+              [
+                _c("img", {
+                  attrs: { src: "images/no-found.png", width: "100%", alt: "" }
+                })
+              ]
             )
       ])
     ],
