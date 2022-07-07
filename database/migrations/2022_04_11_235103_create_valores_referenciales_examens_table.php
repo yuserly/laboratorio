@@ -16,8 +16,8 @@ class CreateValoresReferencialesExamensTable extends Migration
         Schema::create('valores_referenciales_examens', function (Blueprint $table) {
             $table->id('id_valores_referenciales_examens');
             $table->string('tipo'); //edad u otra cosa
-            $table->integer('valor_minimo');
-            $table->integer('valor_maximo');
+            $table->float('valor_minimo', 8, 2);
+            $table->float('valor_maximo', 8, 2);
             $table->unsignedBigInteger('analisis_examens_id')->nullable();
             $table->foreign('analisis_examens_id')->references('id_analisis_examens')->on('analisis_examens');
             $table->unsignedBigInteger('examen_id')->nullable();

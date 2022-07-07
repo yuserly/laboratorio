@@ -16,6 +16,7 @@ class CreateAnalisisExamensTable extends Migration
         Schema::create('analisis_examens', function (Blueprint $table) {
             $table->id('id_analisis_examens');
             $table->string('nombre');
+            $table->string('unidad');
             $table->unsignedBigInteger('examen_id')->nullable();
             $table->foreign('examen_id')->references('id_examen')->on('examens');
             $table->timestamps();

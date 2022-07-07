@@ -2624,6 +2624,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     }, "action"]), _defineProperty(_ref, "formanalisis", {
       nombre: "",
+      unidad: "",
       id_analisis_examens: "",
       examen_id: ""
     }), _defineProperty(_ref, "optionsExamen", []), _defineProperty(_ref, "formvalores", []), _defineProperty(_ref, "tienevalores", false), _defineProperty(_ref, "titlemodalanalisis", "Nuevo Análisis"), _defineProperty(_ref, "modalanalisis", false), _defineProperty(_ref, "nombreanalisisexist", false), _defineProperty(_ref, "summitedH", false), _defineProperty(_ref, "tableDataAnalisis", []), _defineProperty(_ref, "titleAnalisis", "Tipo de Analisis"), _defineProperty(_ref, "itemsAnalisis", [{
@@ -2671,6 +2672,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     formanalisis: {
       nombre: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
+      },
+      unidad: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
       },
       examen_id: {
@@ -2741,6 +2745,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       this.axios.get("/api/obtenerexamen").then(function (response) {
+        console.log(response);
         _this2.btnAccionExamen = true;
         _this2.tableDataExamen = response.data;
         _this2.optionsExamen = response.data;
@@ -2796,6 +2801,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.typeform = "create";
       this.formanalisis = {
         nombre: "",
+        unidad: "",
         examen_id: "",
         id_analisis_examens: ""
       };
@@ -3198,6 +3204,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.formanalisis.id_analisis_examens = data.id_analisis_examens;
       this.formanalisis.examen_id = data.examen;
       this.formanalisis.nombre = data.nombre;
+      this.formanalisis.unidad = data.unidad;
       this.modalanalisis = true;
       this.btnCreate = false;
     },
@@ -30637,6 +30644,55 @@ var render = function() {
                             _vm.nombreanalisisexist
                               ? _c("span", { staticClass: "text-danger" }, [
                                   _vm._v("Analisis de Examen ya existe.")
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-md-6 " }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "unidad" } }, [
+                              _vm._v("Unidad")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formanalisis.unidad,
+                                  expression: "formanalisis.unidad"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formanalisis.unidad.$error
+                              },
+                              attrs: { id: "unidad", type: "text" },
+                              domProps: { value: _vm.formanalisis.unidad },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formanalisis,
+                                    "unidad",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formanalisis.unidad.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formanalisis.unidad.required
+                                    ? _c("span", [
+                                        _vm._v("La unidad es requerida.")
+                                      ])
+                                    : _vm._e()
                                 ])
                               : _vm._e()
                           ])

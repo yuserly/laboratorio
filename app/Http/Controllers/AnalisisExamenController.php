@@ -13,6 +13,7 @@ class AnalisisExamenController extends Controller
 
         $analisis = AnalisisExamen::updateOrCreate(['id_analisis_examens' => $request->id_analisis_examens],[
                                             'nombre' => $request->nombre,
+                                            'unidad' => $request->unidad,
                                             'examen_id' => $request->examen_id
                                           ]);
 
@@ -56,13 +57,13 @@ class AnalisisExamenController extends Controller
     }
 
     public function destroy(AnalisisExamen $analisisexamen)
-    {   
+    {
         $cantidad = AnalisisExamen::where('examen_id', $analisisexamen->examen_id)->where('deleted_at', null)->get();
         if(count($cantidad) == 1)
         {
             Examen::updateOrCreate(['id_examen' => $analisisexamen->examen_id],['existe_analisis' => 0]);
         }
-        
+
         return $analisisexamen->delete();
     }
 }

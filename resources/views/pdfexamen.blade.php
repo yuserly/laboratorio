@@ -64,8 +64,8 @@
                     </td>
                 </tr>
 
-                <tr>    
-                    <td>  
+                <tr>
+                    <td>
                         <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">NOMBRE: {{$examen->paciente['nombres']}} {{$examen->paciente['apellidos']}} <span style="position: absolute; right: 50px;"> FECHA EMISIÓN: {{$examen->created_at}} </span> </h6>
                         <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">RUT: {{$examen->paciente['rut']}}</h6>
                         <h6 style="color:#000; margin: 10px 0px 0px 0xp; padding: 0px 0px 0px 0xp;">EDAD: {{$examen->paciente['edad']}} años</h6>
@@ -142,9 +142,12 @@
                                         <table style=" margin-top:5px; width:100%">
                                             <thead>
                                                 <tr>
-                                                    <th style="width: 50%">Examen</th>
-                                                    <th style="width: 20%">Resultado</th>
-                                                    <th style="width: 30%">Valores Referenciales</th>
+                                                    <th style="width: 40%">Examen</th>
+                                                    <th style="width: 10%">Resultado</th>
+                                                    <th style="width: 5%">Und.</th>
+                                                    <th style="width: 30%">V. Referencial</th>
+                                                    <th style="width: 15%">Observación</th>
+
                                                 </tr>
                                             </thead>
                                             <tbody style="text-align: center">
@@ -153,10 +156,13 @@
                                                 <tr>
                                                     <td>{{$item1->analisis->nombre}}</td>
                                                     <td>{{$item1->valor}}</td>
+                                                    <td>{{$item1->analisis->unidad}}</td>
+
 
                                                     @php
                                                         $mayor = ">";
                                                         $menor = "<";
+                                                        $normal = 1;
                                                     @endphp
 
 
@@ -166,12 +172,34 @@
 
                                                                 @foreach ($item1->analisis->valoresreferenciales as $item2)
                                                                 <li>{{$item2->valor_minimo}} {{$menor}} {{$item2->tipo}} {{$mayor}} {{$item2->valor_maximo}}</li>
+
+                                                                {{-- comparar resultado con valores referenciales --}}
+
+                                                                @if($item1->valor < $item2->valor_minimo || $item1->valor > $item2->valor_maximo )
+
+                                                                    @php
+                                                                        $normal = 0;
+                                                                    @endphp
+
+                                                                @endif
+
+
                                                                 @endforeach
                                                             </ul>
                                                         </td>
+
+                                                        @if ($normal == 1)
+
+                                                            <td>Normal</td>
+                                                        @else
+                                                            <td>Alterado</td>
+                                                        @endif
                                                     @else
                                                             <td>-</td>
+                                                            <td>-</td>
                                                     @endif
+
+
                                                 </tr>
 
                                                 @endforeach
@@ -193,9 +221,9 @@
                     @if($cantidad != 0)
                         <div style="page-break-after:always;"></div>
                     @endif
-                
+
             @endforeach
-    
+
         </main>
 
 

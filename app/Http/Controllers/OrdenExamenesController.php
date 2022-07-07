@@ -162,7 +162,7 @@ class OrdenExamenesController extends Controller
 
             // enviamos el email con la orden de examen
 
-            if($request->enviar){ 
+            if($request->enviar){
 
                 $examen =  OrdenExamenes::where('codigo', $orden->codigo)->with('examenorden.examen.tipoexamen','paciente','emisor')->first();
 
@@ -289,7 +289,7 @@ class OrdenExamenesController extends Controller
     public function historialordenrut($rut)
     {
         $user = Auth::user();
-    
+
         $paciente = Pacientes::where('rut',$rut)->first();
 
         if($paciente)
@@ -370,7 +370,7 @@ class OrdenExamenesController extends Controller
     public function getAnalisisRealizados()
     {
         $user = Auth::user();
-        return OrdenExamenes::where('estado_id', 3)->where('user_laboratorio_id', $user->id)->with('paciente', 'ejecutor', 'examenorden.examen')->take(30)->get();
+        return OrdenExamenes::where('estado_id', 3)->where('user_laboratorio_id', $user->id)->with('paciente', 'ejecutor', 'examenorden.examen')->take(30)->orderBy('updated_at','DESC')->get();
     }
 
     public function volverAnalizar($id)
