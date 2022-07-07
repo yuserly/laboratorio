@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+        
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -772,20 +785,39 @@
                         </div>
                     </div>
                     <hr>
-                    <button
-                        v-if="btnCreate === true"
+                    <div v-if="btnCreate === true">
+                        <button v-if="btnCargando == true"
                         class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
-                    >
-                        <i class="far fa-save"></i> Crear Usuario
-                    </button>
-                    <button
-                        v-else
+                        >
+                            <i class="far fa-save"></i> Crear Usuario
+                        </button>
+
+                        <button v-else
+                        class="btn btn-warning btn-soft-warning btn-sm float-end "
+                        type="button"
+                        disabled
+                        >
+                            <i class="far fa-save"></i> Espere...
+                        </button>
+                    </div>
+                    <div v-else>
+                        <button v-if="btnCargando == true"
                         class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
                         type="submit"
-                    >
-                        <i class="fas fa-sync"></i> Actualizar Usuario
-                    </button>
+                        >
+                            <i class="fas fa-sync"></i> Actualizar Usuario
+                        </button>
+
+                        <button v-else
+                        class="btn btn-warning btn-soft-warning btn-sm float-end"
+                        type="button"
+                        disabled
+                        >
+                            <i class="fas fa-sync"></i> Espere...
+                        </button>
+                    </div>
+                    
                 </form>
 
                 <form
@@ -923,17 +955,17 @@
                                         submitted && $v.formp.profesion.$error
                                     "
                                     class="invalid-feedback"
-                                >
+                                > 
                                     <span v-if="!$v.formp.profesion.required"
                                         >Profesión es requerido.</span
                                     >
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-6" v-if="rol.name == 'Profesional Laboratorio' || rol.name == 'Profesional Box'">
                             <div class="mb-3">
                                 <label>Buscar Firma (PNG)</label>
-                                <input v-if="rol.name == 'Profesional Laboratorio'" class="form-control inputImg" type="file" ref="file" @change="uploadImage($event)" accept="image/*">
+                                <input class="form-control inputImg" type="file" ref="file" @change="uploadImage($event)" accept="image/*">
                             </div>
                         </div>
                         <div class="col-12">

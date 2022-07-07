@@ -162,16 +162,16 @@ export default {
                     if(res.data == 1){
                         Swal.fire({
                         icon: "success",
-                        title: "Cambio de Contraseña",
-                        text: 'ok',
+                        title: "Contraseña",
+                        text: 'Contraseña actualiada exitosamente',
                         timer: 1500,
                         showConfirmButton: false
                         });
                     }else{
                         Swal.fire({
                         icon: "error",
-                        title: "Cambio de Contraseña",
-                        text: 'ok',
+                        title: "Contraseña",
+                        text: 'Contraseña actualiada exitosamente',
                         timer: 1500,
                         showConfirmButton: false
                     });

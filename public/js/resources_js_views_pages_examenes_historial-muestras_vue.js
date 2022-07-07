@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2534,6 +2534,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       urlbackend: this.$urlBackend,
+      preloader: true,
       examenes: "",
       form: {
         rut: ""
@@ -2597,6 +2598,7 @@ __webpack_require__.r(__webpack_exports__);
     this.axios.defaults.headers.common["Authorization"] = "Bearer ".concat(localStorage.getItem("token"));
     this.totalRows = this.items.length;
     this.getInicial();
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -28144,6 +28146,22 @@ var render = function() {
   return _c(
     "Layout",
     [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-lg-12" }, [
           _c("div", { staticClass: "card" }, [

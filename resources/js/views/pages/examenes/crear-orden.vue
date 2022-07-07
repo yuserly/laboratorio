@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -244,13 +257,13 @@
                                             :options="options"
                                             track-by="id_examen"
                                             :multiple="true"
-                                            label="nombre"
+                                            label="valor"
                                         ></multiselect>
                                     </div>
                                 </div>
 
                                 <div class="col-6">
-                                    <div class=" mb-3 form-check">
+                                    <div class=" mb-3 form-check" v-if="rol != 'Secretaria'">
                                         <input
                                             class="form-check-input"
                                             type="checkbox"
@@ -299,7 +312,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            
                             <button
                                 v-if="btnCreate === true"
                                 class="btn btn-primary btn-soft-primary btn-sm float-end "
@@ -310,7 +323,7 @@
                             </button>
                             <button
                                 v-else
-                                class="btn btn-primary float-end btnSubmit"
+                                class="btn btn-primary btn-soft-primary btn-sm float-end btnSubmit"
                                 :disabled="disable"
                                 type="submit"
                             >
@@ -437,6 +450,19 @@
                                                 <i
                                                     class="uil-eye font-size-18"
                                                 ></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item" v-if="rol != 'Secretaria'">
+                                            <a
+                                                :href="'/verOrdenExamen/'+data.item.codigo"
+                                                target="_blank" rel="noopener noreferrer"
+                                                class="px-2 text-warning"
+                                                v-b-tooltip.hover
+                                                title="Ver PDF"
+                                            >
+
+                                            <i class="uil-parcel font-size-18"></i>
+
                                             </a>
                                         </li>
                                     </ul>

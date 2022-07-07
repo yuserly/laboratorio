@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2542,6 +2542,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     return _ref = {
       urlbackend: this.$urlBackend,
+      preloader: true,
+      btnAccionTipo: true,
+      btnAccionExamen: true,
+      btnAccionAnalisis: true,
       // tipo de examen
       formtipo: {
         nombre: "",
@@ -2578,12 +2582,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // examen
       formexamen: {
         nombre: "",
-        precio_lab: 0,
-        precio_pac: 0,
-        precio_par: 0,
+        precio_lab: "",
+        precio_pac: "",
+        precio_par: "",
         kids: false,
         codigo: "",
-        id_examen: "",
+        id_examen: 0,
         tipoexamen: ""
       },
       tipoexamen: [],
@@ -2652,6 +2656,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       precio_par: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
       },
+      precio_lab: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
+      },
+      precio_pac: {
+        required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
+      },
       codigo: {
         required: vuelidate_lib_validators__WEBPACK_IMPORTED_MODULE_5__.required
       },
@@ -2687,6 +2697,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.traertipoExamen();
     this.traerExamen();
     this.traerAnalisis();
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -2730,6 +2741,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       this.axios.get("/api/obtenerexamen").then(function (response) {
+        _this2.btnAccionExamen = true;
         _this2.tableDataExamen = response.data;
         _this2.optionsExamen = response.data;
       }, function (error) {
@@ -2767,9 +2779,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.typeform = "create";
       this.formexamen = {
         nombre: "",
-        precio_lab: 0,
-        precio_pac: 0,
-        precio_par: 0,
+        precio_lab: "",
+        precio_pac: "",
+        precio_par: "",
         kids: false,
         codigo: "",
         id_examen: "",
@@ -2850,7 +2862,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$v.formtipo.$touch();
 
       if (!this.$v.formtipo.$invalid && !this.nombretipoexist) {
+        this.btnAccionTipo = false;
         this.axios.post("/api/creartipoexamen", this.formtipo).then(function (res) {
+          _this7.btnAccionTipo = true;
+
           if (res.data) {
             if (_this7.formtipo.id_tipo_examens == "") {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -2907,19 +2922,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     formexamenSubmit: function formexamenSubmit() {
       var _this8 = this;
 
-      if (this.formexamen.precio_lab.length > 0 || this.formexamen.precio_pac.length > 0) {
-        var total = parseInt(this.formexamen.precio_lab) + parseInt(this.formexamen.precio_pac);
-
-        if (total != parseInt(this.formexamen.precio_par)) {
-          sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-            icon: "warning",
-            title: "Precio Fonasa",
-            text: "Precio copago y precio laboratorio son distinto al precio particular ingresado.",
-            timer: 1500,
-            showConfirmButton: false
-          });
-          return;
-        }
+      if (this.formexamen.precio_lab.length <= 0 || this.formexamen.precio_pac.length <= 0) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+          icon: "warning",
+          title: "Precio Incompleto",
+          text: "Hay precios que aun no se han ingresado.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+        return;
       }
 
       this.submitted = true; // stop here if form is invalid
@@ -2927,13 +2938,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$v.formexamen.$touch();
 
       if (!this.$v.formexamen.$invalid && !this.nombreexamenexist && !this.codigoexiste) {
-        this.formexamen.tipoexamen = this.formexamen.tipoexamen.id_tipo_examens;
+        this.btnAccionExamen = false;
         this.axios.post("/api/crearexamen", this.formexamen).then(function (res) {
+          _this8.btnAccionExamen = true;
+
+          if (res.data.estado == 1) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+              icon: "warning",
+              title: "Nuevo Examen",
+              text: "El codigo de examen ya sido ingresado.",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            return false;
+          }
+
           if (res.data) {
             if (_this8.formexamen.id_examen == "") {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
                 icon: "success",
-                title: "Nuevo Examen",
+                title: "Codigo Examen",
                 text: "Ha sido ingreso exitosamente",
                 timer: 1500,
                 showConfirmButton: false
@@ -2984,12 +3008,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     editar: function editar(data) {
-      console.log(data);
       this.titlemodaltipo = "Actualizar Tipo Examen";
       this.formtipo.nombre = data.nombre;
       this.formtipo.id_tipo_examens = data.id_tipo_examens;
       this.modaltipo = true;
       this.btnCreate = false;
+    },
+    filterKey: function filterKey(e) {
+      // Si el código es menor que 48 (0) o mayor que 57 (9)
+      if (e.keyCode < 48 || e.keyCode > 57) {
+        // No se agrega
+        e.preventDefault();
+      }
+    },
+    checaValor: function checaValor(item) {
+      // Obtener valor actual
+      var valor = parseInt(item.value); // Si no es número o es menor de 1
+
+      if (isNaN(valor) || valor < 1) {
+        // Asignar 1
+        item.value = 1;
+      }
     },
     eliminar: function eliminar(data) {
       var _this9 = this;
@@ -3057,7 +3096,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     editarexamen: function editarexamen(data) {
-      console.log(data);
       this.titlemodalexamen = "Actualizar Examen";
       this.formexamen.nombre = data.nombre;
       this.formexamen.id_examen = data.id_examen;
@@ -3187,7 +3225,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }).then(function (result) {
         if (result.value) {
           _this11.axios["delete"]("/api/eliminaranalisis/".concat(data.id_analisis_examens)).then(function (res) {
-            console.log(res);
+            _this11.traerAnalisis();
 
             if (res.data) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -3276,7 +3314,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (!this.$v.formanalisis.$invalid && !this.nombreanalisisexist) {
         this.formanalisis.valores = this.formvalores;
         this.formanalisis.examen_id = this.formanalisis.examen_id.id_examen;
+        this.btnAccionAnalisis = false;
         this.axios.post("/api/crearanalisis", this.formanalisis).then(function (res) {
+          _this12.btnAccionAnalisis = true;
+
           if (res.data) {
             if (_this12.formanalisis.id_analisis_examens == "") {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -28722,2026 +28763,2204 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("Layout", [
-    _c(
-      "div",
-      { staticClass: "row" },
-      [
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [
-                _vm._v("Gestión Examenes")
+  return _c(
+    "Layout",
+    [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row" },
+        [
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("h4", { staticClass: "card-title" }, [
+                  _vm._v("Gestión Examenes")
+                ])
               ])
             ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c(
-              "div",
-              { staticClass: "card-body" },
-              [
-                _c(
-                  "b-tabs",
-                  {
-                    attrs: {
-                      justified: "",
-                      "nav-class": "nav-tabs-custom",
-                      "content-class": "p-3 text-muted"
-                    }
-                  },
-                  [
-                    _c(
-                      "b-tab",
-                      {
-                        attrs: { active: "" },
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-home" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Tipo de Examen")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 mt-5" }, [
-                            _c("div", { staticClass: "d-grid gap-2" }, [
-                              _c(
-                                "button",
-                                {
-                                  directives: [
-                                    {
-                                      name: "b-modal",
-                                      rawName: "v-b-modal.creartipo",
-                                      modifiers: { creartipo: true }
-                                    }
-                                  ],
-                                  staticClass:
-                                    "btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end",
-                                  attrs: { type: "button" },
-                                  on: { click: _vm.modalNuevoTipo }
-                                },
-                                [
-                                  _c("i", {
-                                    staticClass: "fas fa-plus-circle"
-                                  }),
-                                  _vm._v(
-                                    "\n                                            Nuevo Tipo de Examen\n                                        "
-                                  )
-                                ]
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options: _vm.pageOptions
-                                                },
-                                                model: {
-                                                  value: _vm.perPage,
-                                                  callback: function($$v) {
-                                                    _vm.perPage = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPage\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filter,
-                                                  callback: function($$v) {
-                                                    _vm.filter = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filter\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableData,
-                                        fields: _vm.fields,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPage,
-                                        "current-page": _vm.currentPage,
-                                        "sort-by": _vm.sortBy,
-                                        "sort-desc": _vm.sortDesc,
-                                        filter: _vm.filter,
-                                        "filter-included-fields": _vm.filterOn
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortBy = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortBy = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDesc = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDesc = $event
-                                        },
-                                        filtered: _vm.onFiltered
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.creartipo",
-                                                                  modifiers: {
-                                                                    creartipo: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-creartipo",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _vm._e()
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows": _vm.rows,
-                                                "per-page": _vm.perPage
-                                              },
-                                              model: {
-                                                value: _vm.currentPage,
-                                                callback: function($$v) {
-                                                  _vm.currentPage = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPage\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-tab",
-                      {
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-home" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Examenes")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 mt-5" }, [
-                            _c("div", { staticClass: "d-grid gap-2" }, [
-                              _c(
-                                "button",
-                                {
-                                  directives: [
-                                    {
-                                      name: "b-modal",
-                                      rawName: "v-b-modal.crearexamen",
-                                      modifiers: { crearexamen: true }
-                                    }
-                                  ],
-                                  staticClass:
-                                    "btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end",
-                                  attrs: { type: "button" },
-                                  on: { click: _vm.modalNuevoExamen }
-                                },
-                                [
-                                  _c("i", {
-                                    staticClass: "fas fa-plus-circle"
-                                  }),
-                                  _vm._v(
-                                    "\n                                            Nuevo Examen\n                                        "
-                                  )
-                                ]
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options: _vm.pageOptionsExamen
-                                                },
-                                                model: {
-                                                  value: _vm.perPageExamen,
-                                                  callback: function($$v) {
-                                                    _vm.perPageExamen = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPageExamen\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filterExamen,
-                                                  callback: function($$v) {
-                                                    _vm.filterExamen = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filterExamen\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableDataExamen,
-                                        fields: _vm.fieldsExamen,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPageExamen,
-                                        "current-page": _vm.currentPageExamen,
-                                        "sort-by": _vm.sortByExamen,
-                                        "sort-desc": _vm.sortDescExamen,
-                                        filter: _vm.filterExamen,
-                                        "filter-included-fields":
-                                          _vm.filterOnExamen
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortByExamen = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortByExamen = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDescExamen = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDescExamen = $event
-                                        },
-                                        filtered: _vm.onFilteredExamen
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.crearexamen",
-                                                                  modifiers: {
-                                                                    crearexamen: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-crearexamen",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editarexamen(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminarexamen(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _vm._e()
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows": _vm.rowsExamen,
-                                                "per-page": _vm.perPageExamen
-                                              },
-                                              model: {
-                                                value: _vm.currentPageExamen,
-                                                callback: function($$v) {
-                                                  _vm.currentPageExamen = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPageExamen\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-tab",
-                      {
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-home" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Analisis Examen")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 mt-5" }, [
-                            _c("div", { staticClass: "d-grid gap-2" }, [
-                              _c(
-                                "button",
-                                {
-                                  directives: [
-                                    {
-                                      name: "b-modal",
-                                      rawName: "v-b-modal.crearanalisis",
-                                      modifiers: { crearanalisis: true }
-                                    }
-                                  ],
-                                  staticClass:
-                                    "btn btn-primary btn-block btn-soft-primary btn-sm waves-effect waves-light float-end",
-                                  attrs: { type: "button" },
-                                  on: { click: _vm.modalNuevoAnalisis }
-                                },
-                                [
-                                  _c("i", {
-                                    staticClass: "fas fa-plus-circle"
-                                  }),
-                                  _vm._v(
-                                    "\n                                            Analisis de Examen\n                                        "
-                                  )
-                                ]
-                              )
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options:
-                                                    _vm.pageOptionsAnalisis
-                                                },
-                                                model: {
-                                                  value: _vm.perPageAnalisis,
-                                                  callback: function($$v) {
-                                                    _vm.perPageAnalisis = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPageAnalisis\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filterAnalisis,
-                                                  callback: function($$v) {
-                                                    _vm.filterAnalisis = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filterAnalisis\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableDataAnalisis,
-                                        fields: _vm.fieldsAnalisis,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPageAnalisis,
-                                        "current-page": _vm.currentPageAnalisis,
-                                        "sort-by": _vm.sortByAnalisis,
-                                        "sort-desc": _vm.sortDescAnalisis,
-                                        filter: _vm.filterAnalisis,
-                                        "filter-included-fields":
-                                          _vm.filterOnAnalisis
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortByAnalisis = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortByAnalisis = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDescAnalisis = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDescAnalisis = $event
-                                        },
-                                        filtered: _vm.onFilteredAnalisis
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.crearanalisis",
-                                                                  modifiers: {
-                                                                    crearanalisis: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-crearanalisis",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editaranalisis(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminaranalisis(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _vm._e()
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows": _vm.rowsAnalisis,
-                                                "per-page": _vm.perPageAnalisis
-                                              },
-                                              model: {
-                                                value: _vm.currentPageAnalisis,
-                                                callback: function($$v) {
-                                                  _vm.currentPageAnalisis = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPageAnalisis\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _vm.modaltipo
-          ? _c(
-              "b-modal",
-              {
-                attrs: {
-                  id: "creartipo",
-                  size: "md",
-                  title: _vm.titlemodaltipo,
-                  "title-class": "font-18",
-                  "hide-footer": ""
-                }
-              },
-              [
-                _c(
-                  "form",
-                  {
-                    staticClass: "needs-validation",
-                    on: {
-                      submit: function($event) {
-                        $event.preventDefault()
-                        return _vm.formtipoSubmit.apply(null, arguments)
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c(
+                "div",
+                { staticClass: "card-body" },
+                [
+                  _c(
+                    "b-tabs",
+                    {
+                      attrs: {
+                        justified: "",
+                        "nav-class": "nav-tabs-custom",
+                        "content-class": "p-3 text-muted"
                       }
-                    }
-                  },
-                  [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 " }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "nombre" } }, [
-                            _vm._v("Nombre")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formtipo.nombre,
-                                expression: "formtipo.nombre"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted && _vm.$v.formtipo.nombre.$error
-                            },
-                            attrs: { id: "nombre", type: "text" },
-                            domProps: { value: _vm.formtipo.nombre },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formtipo,
-                                    "nombre",
-                                    $event.target.value
+                    },
+                    [
+                      _c(
+                        "b-tab",
+                        {
+                          attrs: { active: "" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-home" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Tipo de Examen")]
                                   )
-                                },
-                                function($event) {
-                                  return _vm.validarNombreTipo($event)
-                                }
-                              ]
-                            }
-                          }),
-                          _vm._v(" "),
-                          _vm.submitted && _vm.$v.formtipo.nombre.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.formtipo.nombre.required
-                                  ? _c("span", [
-                                      _vm._v("El nombre es requerido.")
-                                    ])
-                                  : _vm._e()
-                              ])
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm.nombretipoexist
-                            ? _c("span", { staticClass: "text-danger" }, [
-                                _vm._v("Tipo de Examen ya existe.")
-                              ])
-                            : _vm._e()
-                        ])
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _vm.btnCreate === true
-                      ? _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-success btn-soft-success btn-sm float-end ",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "far fa-save" }),
-                            _vm._v(" Ingresar\n                ")
-                          ]
-                        )
-                      : _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "fas fa-sync" }),
-                            _vm._v(" Actualizar\n                ")
-                          ]
-                        )
-                  ]
-                )
-              ]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.modalexamen
-          ? _c(
-              "b-modal",
-              {
-                attrs: {
-                  id: "crearexamen",
-                  size: "lg",
-                  title: _vm.titlemodalexamen,
-                  "title-class": "font-18",
-                  "hide-footer": ""
-                }
-              },
-              [
-                _c(
-                  "form",
-                  {
-                    staticClass: "needs-validation",
-                    on: {
-                      submit: function($event) {
-                        $event.preventDefault()
-                        return _vm.formexamenSubmit.apply(null, arguments)
-                      }
-                    }
-                  },
-                  [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 col-lg-6" }, [
-                        _c(
-                          "div",
-                          { staticClass: "mb-3" },
-                          [
-                            _c("label", [_vm._v("Tipo de Examen")]),
-                            _vm._v(" "),
-                            _c("multiselect", {
-                              attrs: {
-                                options: _vm.tipoexamen,
-                                "track-by": "id_tipo_examens",
-                                label: "nombre"
+                                ]
                               },
-                              model: {
-                                value: _vm.formexamen.tipoexamen,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.formexamen, "tipoexamen", $$v)
-                                },
-                                expression: "formexamen.tipoexamen"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-6" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "codigo" } }, [
-                            _vm._v("Codigo")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formexamen.codigo,
-                                expression: "formexamen.codigo"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted && _vm.$v.formexamen.codigo.$error
-                            },
-                            attrs: { id: "codigo", type: "text" },
-                            domProps: { value: _vm.formexamen.codigo },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.formexamen,
-                                  "codigo",
-                                  $event.target.value
-                                )
-                              }
+                              proxy: true
                             }
-                          }),
+                          ])
+                        },
+                        [
                           _vm._v(" "),
-                          _vm.submitted && _vm.$v.formexamen.codigo.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.formexamen.codigo.required
-                                  ? _c("span", [
-                                      _vm._v("El codigo es requerido.")
-                                    ])
-                                  : _vm._e()
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-12 mt-5" }, [
+                              _c("div", { staticClass: "d-grid gap-2" }, [
+                                _c(
+                                  "button",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "b-modal",
+                                        rawName: "v-b-modal.creartipo",
+                                        modifiers: { creartipo: true }
+                                      }
+                                    ],
+                                    staticClass:
+                                      "btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end",
+                                    attrs: { type: "button" },
+                                    on: { click: _vm.modalNuevoTipo }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-plus-circle"
+                                    }),
+                                    _vm._v(
+                                      "\n                                            Nuevo Tipo de Examen\n                                        "
+                                    )
+                                  ]
+                                )
                               ])
-                            : _vm._e()
-                        ])
-                      ]),
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options: _vm.pageOptions
+                                                  },
+                                                  model: {
+                                                    value: _vm.perPage,
+                                                    callback: function($$v) {
+                                                      _vm.perPage = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPage\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value: _vm.filter,
+                                                    callback: function($$v) {
+                                                      _vm.filter = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filter\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableData,
+                                          fields: _vm.fields,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPage,
+                                          "current-page": _vm.currentPage,
+                                          "sort-by": _vm.sortBy,
+                                          "sort-desc": _vm.sortDesc,
+                                          filter: _vm.filter,
+                                          "filter-included-fields": _vm.filterOn
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortBy = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortBy = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDesc = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDesc = $event
+                                          },
+                                          filtered: _vm.onFiltered
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.creartipo",
+                                                                    modifiers: {
+                                                                      creartipo: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-creartipo",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _vm._e()
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows": _vm.rows,
+                                                  "per-page": _vm.perPage
+                                                },
+                                                model: {
+                                                  value: _vm.currentPage,
+                                                  callback: function($$v) {
+                                                    _vm.currentPage = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPage\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ]
+                      ),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-12" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "nombre" } }, [
-                            _vm._v("Nombre")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formexamen.nombre,
-                                expression: "formexamen.nombre"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted && _vm.$v.formexamen.nombre.$error
-                            },
-                            attrs: { id: "nombre", type: "text" },
-                            domProps: { value: _vm.formexamen.nombre },
-                            on: {
-                              input: [
-                                function($event) {
-                                  if ($event.target.composing) {
-                                    return
-                                  }
-                                  _vm.$set(
-                                    _vm.formexamen,
-                                    "nombre",
-                                    $event.target.value
+                      _c(
+                        "b-tab",
+                        {
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-home" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Examenes")]
                                   )
-                                },
-                                function($event) {
-                                  return _vm.validarNombreExamen($event)
-                                }
-                              ]
+                                ]
+                              },
+                              proxy: true
                             }
-                          }),
+                          ])
+                        },
+                        [
                           _vm._v(" "),
-                          _vm.submitted && _vm.$v.formexamen.nombre.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.formexamen.nombre.required
-                                  ? _c("span", [
-                                      _vm._v("El nombre es requerido.")
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-12 mt-5" }, [
+                              _c("div", { staticClass: "d-grid gap-2" }, [
+                                _c(
+                                  "button",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "b-modal",
+                                        rawName: "v-b-modal.crearexamen",
+                                        modifiers: { crearexamen: true }
+                                      }
+                                    ],
+                                    staticClass:
+                                      "btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-end",
+                                    attrs: { type: "button" },
+                                    on: { click: _vm.modalNuevoExamen }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-plus-circle"
+                                    }),
+                                    _vm._v(
+                                      "\n                                            Nuevo Examen\n                                        "
+                                    )
+                                  ]
+                                )
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options:
+                                                      _vm.pageOptionsExamen
+                                                  },
+                                                  model: {
+                                                    value: _vm.perPageExamen,
+                                                    callback: function($$v) {
+                                                      _vm.perPageExamen = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPageExamen\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value: _vm.filterExamen,
+                                                    callback: function($$v) {
+                                                      _vm.filterExamen = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filterExamen\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableDataExamen,
+                                          fields: _vm.fieldsExamen,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPageExamen,
+                                          "current-page": _vm.currentPageExamen,
+                                          "sort-by": _vm.sortByExamen,
+                                          "sort-desc": _vm.sortDescExamen,
+                                          filter: _vm.filterExamen,
+                                          "filter-included-fields":
+                                            _vm.filterOnExamen
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortByExamen = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortByExamen = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDescExamen = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDescExamen = $event
+                                          },
+                                          filtered: _vm.onFilteredExamen
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.crearexamen",
+                                                                    modifiers: {
+                                                                      crearexamen: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-crearexamen",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editarexamen(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminarexamen(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _vm._e()
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows": _vm.rowsExamen,
+                                                  "per-page": _vm.perPageExamen
+                                                },
+                                                model: {
+                                                  value: _vm.currentPageExamen,
+                                                  callback: function($$v) {
+                                                    _vm.currentPageExamen = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPageExamen\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
                                     ])
-                                  : _vm._e()
+                                  ])
+                                ])
                               ])
-                            : _vm._e(),
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-tab",
+                        {
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-home" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Analisis Examen")]
+                                  )
+                                ]
+                              },
+                              proxy: true
+                            }
+                          ])
+                        },
+                        [
                           _vm._v(" "),
-                          _vm.nombreexamenexist
-                            ? _c("span", { staticClass: "text-danger" }, [
-                                _vm._v(
-                                  "\n                                Examen ya existe."
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-12 mt-5" }, [
+                              _c("div", { staticClass: "d-grid gap-2" }, [
+                                _c(
+                                  "button",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "b-modal",
+                                        rawName: "v-b-modal.crearanalisis",
+                                        modifiers: { crearanalisis: true }
+                                      }
+                                    ],
+                                    staticClass:
+                                      "btn btn-primary btn-block btn-soft-primary btn-sm waves-effect waves-light float-end",
+                                    attrs: { type: "button" },
+                                    on: { click: _vm.modalNuevoAnalisis }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fas fa-plus-circle"
+                                    }),
+                                    _vm._v(
+                                      "\n                                            Analisis de Examen\n                                        "
+                                    )
+                                  ]
                                 )
                               ])
-                            : _vm._e()
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-4" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "precio_lab" } }, [
-                            _vm._v("Precio Laboratorio")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formexamen.precio_lab,
-                                expression: "formexamen.precio_lab"
-                              }
-                            ],
-                            staticClass: "form-control form-control-sm",
-                            attrs: { id: "precio_lab", type: "number" },
-                            domProps: { value: _vm.formexamen.precio_lab },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.formexamen,
-                                  "precio_lab",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-4" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "precio_pac" } }, [
-                            _vm._v("Precio Copago")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formexamen.precio_pac,
-                                expression: "formexamen.precio_pac"
-                              }
-                            ],
-                            staticClass: "form-control form-control-sm",
-                            attrs: { id: "precio_pac", type: "number" },
-                            domProps: { value: _vm.formexamen.precio_pac },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.formexamen,
-                                  "precio_pac",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-4" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "precio_par" } }, [
-                            _vm._v("Precio Particular")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formexamen.precio_par,
-                                expression: "formexamen.precio_par"
-                              }
-                            ],
-                            staticClass: "form-control form-control-sm",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted &&
-                                _vm.$v.formexamen.precio_par.$error
-                            },
-                            attrs: { id: "precio_par", type: "number" },
-                            domProps: { value: _vm.formexamen.precio_par },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.formexamen,
-                                  "precio_par",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          }),
-                          _vm._v(" "),
-                          _vm.submitted && _vm.$v.formexamen.precio_par.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.formexamen.precio_par.required
-                                  ? _c("span", [
-                                      _vm._v("El precio es requerido.")
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options:
+                                                      _vm.pageOptionsAnalisis
+                                                  },
+                                                  model: {
+                                                    value: _vm.perPageAnalisis,
+                                                    callback: function($$v) {
+                                                      _vm.perPageAnalisis = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPageAnalisis\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value: _vm.filterAnalisis,
+                                                    callback: function($$v) {
+                                                      _vm.filterAnalisis = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filterAnalisis\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableDataAnalisis,
+                                          fields: _vm.fieldsAnalisis,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPageAnalisis,
+                                          "current-page":
+                                            _vm.currentPageAnalisis,
+                                          "sort-by": _vm.sortByAnalisis,
+                                          "sort-desc": _vm.sortDescAnalisis,
+                                          filter: _vm.filterAnalisis,
+                                          "filter-included-fields":
+                                            _vm.filterOnAnalisis
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortByAnalisis = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortByAnalisis = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDescAnalisis = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDescAnalisis = $event
+                                          },
+                                          filtered: _vm.onFilteredAnalisis
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.crearanalisis",
+                                                                    modifiers: {
+                                                                      crearanalisis: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-crearanalisis",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editaranalisis(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminaranalisis(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _vm._e()
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows":
+                                                    _vm.rowsAnalisis,
+                                                  "per-page":
+                                                    _vm.perPageAnalisis
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.currentPageAnalisis,
+                                                  callback: function($$v) {
+                                                    _vm.currentPageAnalisis = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPageAnalisis\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
                                     ])
-                                  : _vm._e()
+                                  ])
+                                ])
                               ])
-                            : _vm._e()
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-6" }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("div", { staticClass: "form-check" }, [
+                            ])
+                          ])
+                        ]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _vm.modaltipo
+            ? _c(
+                "b-modal",
+                {
+                  attrs: {
+                    id: "creartipo",
+                    size: "md",
+                    title: _vm.titlemodaltipo,
+                    "title-class": "font-18",
+                    "hide-footer": ""
+                  }
+                },
+                [
+                  _c(
+                    "form",
+                    {
+                      staticClass: "needs-validation",
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.formtipoSubmit.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "row" }, [
+                        _c("div", { staticClass: "col-12 " }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "nombre" } }, [
+                              _vm._v("Nombre")
+                            ]),
+                            _vm._v(" "),
                             _c("input", {
                               directives: [
                                 {
                                   name: "model",
                                   rawName: "v-model",
-                                  value: _vm.formexamen.kids,
-                                  expression: "formexamen.kids"
+                                  value: _vm.formtipo.nombre,
+                                  expression: "formtipo.nombre"
                                 }
                               ],
-                              staticClass: "form-check-input",
-                              attrs: {
-                                type: "checkbox",
-                                value: "",
-                                id: "flexCheckDefault"
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted && _vm.$v.formtipo.nombre.$error
                               },
-                              domProps: {
-                                checked: Array.isArray(_vm.formexamen.kids)
-                                  ? _vm._i(_vm.formexamen.kids, "") > -1
-                                  : _vm.formexamen.kids
-                              },
+                              attrs: { id: "nombre", type: "text" },
+                              domProps: { value: _vm.formtipo.nombre },
                               on: {
-                                change: function($event) {
-                                  var $$a = _vm.formexamen.kids,
-                                    $$el = $event.target,
-                                    $$c = $$el.checked ? true : false
-                                  if (Array.isArray($$a)) {
-                                    var $$v = "",
-                                      $$i = _vm._i($$a, $$v)
-                                    if ($$el.checked) {
-                                      $$i < 0 &&
-                                        _vm.$set(
-                                          _vm.formexamen,
-                                          "kids",
-                                          $$a.concat([$$v])
-                                        )
-                                    } else {
-                                      $$i > -1 &&
-                                        _vm.$set(
-                                          _vm.formexamen,
-                                          "kids",
-                                          $$a
-                                            .slice(0, $$i)
-                                            .concat($$a.slice($$i + 1))
-                                        )
+                                input: [
+                                  function($event) {
+                                    if ($event.target.composing) {
+                                      return
                                     }
-                                  } else {
-                                    _vm.$set(_vm.formexamen, "kids", $$c)
+                                    _vm.$set(
+                                      _vm.formtipo,
+                                      "nombre",
+                                      $event.target.value
+                                    )
+                                  },
+                                  function($event) {
+                                    return _vm.validarNombreTipo($event)
                                   }
-                                }
+                                ]
                               }
                             }),
                             _vm._v(" "),
+                            _vm.submitted && _vm.$v.formtipo.nombre.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formtipo.nombre.required
+                                    ? _c("span", [
+                                        _vm._v("El nombre es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.nombretipoexist
+                              ? _c("span", { staticClass: "text-danger" }, [
+                                  _vm._v("Tipo de Examen ya existe.")
+                                ])
+                              : _vm._e()
+                          ])
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _vm.btnAccionTipo == true
+                        ? _c("div", [
+                            _vm.btnCreate === true
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-success btn-soft-success btn-sm float-end ",
+                                    attrs: { type: "submit" }
+                                  },
+                                  [
+                                    _c("i", { staticClass: "far fa-save" }),
+                                    _vm._v(" Ingresar\n                    ")
+                                  ]
+                                )
+                              : _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                    attrs: { type: "submit" }
+                                  },
+                                  [
+                                    _c("i", { staticClass: "fas fa-sync" }),
+                                    _vm._v(" Actualizar\n                    ")
+                                  ]
+                                )
+                          ])
+                        : _c("div", [
                             _c(
-                              "label",
+                              "button",
                               {
-                                staticClass: "form-check-label",
-                                attrs: { for: "flexCheckDefault" }
+                                staticClass:
+                                  "btn btn-warning btn-soft-warning btn-sm float-end",
+                                attrs: { type: "button", disabled: "" }
                               },
                               [
-                                _vm._v(
-                                  "\n                                    ¿Aplicable en niños?\n                                "
-                                )
+                                _c("i", { staticClass: "fas fa-sync" }),
+                                _vm._v(" Espere...\n                    ")
                               ]
                             )
                           ])
-                        ])
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _vm.btnCreate === true
-                      ? _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-success btn-soft-success btn-sm float-end ",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "far fa-save" }),
-                            _vm._v(" Nuevo\n                ")
-                          ]
-                        )
-                      : _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "fas fa-sync" }),
-                            _vm._v(" Actualizar\n                ")
-                          ]
-                        )
-                  ]
-                )
-              ]
-            )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.modalanalisis
-          ? _c(
-              "b-modal",
-              {
-                attrs: {
-                  id: "crearanalisis",
-                  size: "md",
-                  title: _vm.titlemodalanalisis,
-                  "title-class": "font-18",
-                  "hide-footer": ""
-                }
-              },
-              [
-                _c(
-                  "form",
-                  {
-                    staticClass: "needs-validation",
-                    on: {
-                      submit: function($event) {
-                        $event.preventDefault()
-                        return _vm.formanalisisSubmit.apply(null, arguments)
+                    ]
+                  )
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.modalexamen
+            ? _c(
+                "b-modal",
+                {
+                  attrs: {
+                    id: "crearexamen",
+                    size: "lg",
+                    title: _vm.titlemodalexamen,
+                    "title-class": "font-18",
+                    "hide-footer": ""
+                  }
+                },
+                [
+                  _c(
+                    "form",
+                    {
+                      staticClass: "needs-validation",
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.formexamenSubmit.apply(null, arguments)
+                        }
                       }
-                    }
-                  },
-                  [
-                    _c("div", { staticClass: "row" }, [
-                      _c("div", { staticClass: "col-12 " }, [
-                        _c(
-                          "div",
-                          { staticClass: "mb-3" },
-                          [
-                            _c("label", [_vm._v("Examen")]),
-                            _vm._v(" "),
-                            _c("multiselect", {
-                              attrs: {
-                                options: _vm.optionsExamen,
-                                "track-by": "id",
-                                label: "nombre"
-                              },
-                              model: {
-                                value: _vm.formanalisis.examen_id,
-                                callback: function($$v) {
-                                  _vm.$set(_vm.formanalisis, "examen_id", $$v)
+                    },
+                    [
+                      _c("div", { staticClass: "row" }, [
+                        _c("div", { staticClass: "col-12 col-lg-6" }, [
+                          _c(
+                            "div",
+                            { staticClass: "mb-3" },
+                            [
+                              _c("label", [_vm._v("Tipo de Examen")]),
+                              _vm._v(" "),
+                              _c("multiselect", {
+                                class: {
+                                  "is-invalid":
+                                    _vm.submitted &&
+                                    _vm.$v.formexamen.tipoexamen.$error
                                 },
-                                expression: "formanalisis.examen_id"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-12 " }, [
-                        _c("div", { staticClass: "mb-3" }, [
-                          _c("label", { attrs: { for: "nombre" } }, [
-                            _vm._v("Nombre")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.formanalisis.nombre,
-                                expression: "formanalisis.nombre"
-                              }
+                                attrs: {
+                                  options: _vm.tipoexamen,
+                                  "track-by": "id_tipo_examens",
+                                  label: "nombre"
+                                },
+                                model: {
+                                  value: _vm.formexamen.tipoexamen,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.formexamen, "tipoexamen", $$v)
+                                  },
+                                  expression: "formexamen.tipoexamen"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _vm.submitted && !_vm.formexamen.tipoexamen
+                                ? _c(
+                                    "span",
+                                    { staticStyle: { color: "red" } },
+                                    [_vm._v("Examen es requerido.")]
+                                  )
+                                : _vm._e()
                             ],
-                            staticClass: "form-control",
-                            class: {
-                              "is-invalid":
-                                _vm.submitted &&
-                                _vm.$v.formanalisis.nombre.$error
-                            },
-                            attrs: { id: "nombre", type: "text" },
-                            domProps: { value: _vm.formanalisis.nombre },
-                            on: {
-                              input: [
-                                function($event) {
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-6" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "codigo" } }, [
+                              _vm._v("Codigo")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formexamen.codigo,
+                                  expression: "formexamen.codigo"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formexamen.codigo.$error
+                              },
+                              attrs: { id: "codigo", type: "text" },
+                              domProps: { value: _vm.formexamen.codigo },
+                              on: {
+                                input: function($event) {
                                   if ($event.target.composing) {
                                     return
                                   }
                                   _vm.$set(
-                                    _vm.formanalisis,
-                                    "nombre",
+                                    _vm.formexamen,
+                                    "codigo",
                                     $event.target.value
                                   )
-                                },
-                                function($event) {
-                                  return _vm.validarNombreAnalisis($event)
                                 }
-                              ]
-                            }
-                          }),
-                          _vm._v(" "),
-                          _vm.submitted && _vm.$v.formanalisis.nombre.$error
-                            ? _c("div", { staticClass: "invalid-feedback" }, [
-                                !_vm.$v.formanalisis.nombre.required
-                                  ? _c("span", [
-                                      _vm._v("El nombre es requerido.")
-                                    ])
-                                  : _vm._e()
-                              ])
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm.nombreanalisisexist
-                            ? _c("span", { staticClass: "text-danger" }, [
-                                _vm._v("Analisis de Examen ya existe.")
-                              ])
-                            : _vm._e()
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formexamen.codigo.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formexamen.codigo.required
+                                    ? _c("span", [
+                                        _vm._v("El codigo es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-12" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "nombre" } }, [
+                              _vm._v("Nombre")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formexamen.nombre,
+                                  expression: "formexamen.nombre"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formexamen.nombre.$error
+                              },
+                              attrs: { id: "nombre", type: "text" },
+                              domProps: { value: _vm.formexamen.nombre },
+                              on: {
+                                input: [
+                                  function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.formexamen,
+                                      "nombre",
+                                      $event.target.value
+                                    )
+                                  },
+                                  function($event) {
+                                    return _vm.validarNombreExamen($event)
+                                  }
+                                ]
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formexamen.nombre.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formexamen.nombre.required
+                                    ? _c("span", [
+                                        _vm._v("El nombre es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.nombreexamenexist
+                              ? _c("span", { staticClass: "text-danger" }, [
+                                  _vm._v(
+                                    "\n                                Examen ya existe."
+                                  )
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-4" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "precio_lab" } }, [
+                              _vm._v("Precio Laboratorio")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formexamen.precio_lab,
+                                  expression: "formexamen.precio_lab"
+                                }
+                              ],
+                              staticClass: "form-control form-control-sm",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formexamen.precio_lab.$error
+                              },
+                              attrs: {
+                                id: "precio_lab",
+                                type: "number",
+                                placeholder: "0"
+                              },
+                              domProps: { value: _vm.formexamen.precio_lab },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formexamen,
+                                    "precio_lab",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formexamen.precio_lab.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formexamen.precio_lab.required
+                                    ? _c("span", [
+                                        _vm._v("El precio es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-4" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "precio_pac" } }, [
+                              _vm._v("Precio Copago")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formexamen.precio_pac,
+                                  expression: "formexamen.precio_pac"
+                                }
+                              ],
+                              staticClass: "form-control form-control-sm",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formexamen.precio_pac.$error
+                              },
+                              attrs: {
+                                id: "precio_pac",
+                                type: "number",
+                                placeholder: "0"
+                              },
+                              domProps: { value: _vm.formexamen.precio_pac },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formexamen,
+                                    "precio_pac",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formexamen.precio_pac.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formexamen.precio_pac.required
+                                    ? _c("span", [
+                                        _vm._v("El precio es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-4" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "precio_par" } }, [
+                              _vm._v("Precio Particular")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formexamen.precio_par,
+                                  expression: "formexamen.precio_par"
+                                }
+                              ],
+                              staticClass: "form-control form-control-sm",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formexamen.precio_par.$error
+                              },
+                              attrs: {
+                                id: "precio_par",
+                                type: "number",
+                                placeholder: "0"
+                              },
+                              domProps: { value: _vm.formexamen.precio_par },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.formexamen,
+                                    "precio_par",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formexamen.precio_par.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formexamen.precio_par.required
+                                    ? _c("span", [
+                                        _vm._v("El precio es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 col-lg-6" }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("div", { staticClass: "form-check" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.formexamen.kids,
+                                    expression: "formexamen.kids"
+                                  }
+                                ],
+                                staticClass: "form-check-input",
+                                attrs: {
+                                  type: "checkbox",
+                                  value: "",
+                                  id: "flexCheckDefault"
+                                },
+                                domProps: {
+                                  checked: Array.isArray(_vm.formexamen.kids)
+                                    ? _vm._i(_vm.formexamen.kids, "") > -1
+                                    : _vm.formexamen.kids
+                                },
+                                on: {
+                                  change: function($event) {
+                                    var $$a = _vm.formexamen.kids,
+                                      $$el = $event.target,
+                                      $$c = $$el.checked ? true : false
+                                    if (Array.isArray($$a)) {
+                                      var $$v = "",
+                                        $$i = _vm._i($$a, $$v)
+                                      if ($$el.checked) {
+                                        $$i < 0 &&
+                                          _vm.$set(
+                                            _vm.formexamen,
+                                            "kids",
+                                            $$a.concat([$$v])
+                                          )
+                                      } else {
+                                        $$i > -1 &&
+                                          _vm.$set(
+                                            _vm.formexamen,
+                                            "kids",
+                                            $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1))
+                                          )
+                                      }
+                                    } else {
+                                      _vm.$set(_vm.formexamen, "kids", $$c)
+                                    }
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "label",
+                                {
+                                  staticClass: "form-check-label",
+                                  attrs: { for: "flexCheckDefault" }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                    ¿Aplicable en niños?\n                                "
+                                  )
+                                ]
+                              )
+                            ])
+                          ])
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("hr"),
-                      _vm._v(" "),
-                      _vm.tienevalores
-                        ? _c("div", { staticClass: "col-12 col-lg-12" }, [
-                            _c(
-                              "div",
-                              { staticClass: "mb-3" },
-                              _vm._l(_vm.formvalores, function(field, i) {
-                                return _c(
-                                  "div",
-                                  { key: field.id, staticClass: "row mb-3" },
+                      _vm.btnAccionExamen == true
+                        ? _c("div", [
+                            _vm.btnCreate === true
+                              ? _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-success btn-soft-success btn-sm float-end ",
+                                    attrs: { type: "submit" }
+                                  },
                                   [
-                                    _c("div", { staticClass: "col-12" }, [
-                                      _c("div", { staticClass: "row" }, [
-                                        _c("div", { staticClass: "col-3" }, [
-                                          _c(
-                                            "label",
-                                            { attrs: { for: "tipo" } },
-                                            [_c("small", [_vm._v(" Tipo ")])]
-                                          ),
-                                          _vm._v(" "),
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: _vm.formvalores[i].tipo,
-                                                expression:
-                                                  "\n                                                    formvalores[i].tipo\n                                                "
-                                              }
-                                            ],
-                                            staticClass:
-                                              "form-control form-control-sm",
-                                            attrs: { id: "tipo", type: "text" },
-                                            domProps: {
-                                              value: _vm.formvalores[i].tipo
-                                            },
-                                            on: {
-                                              input: function($event) {
-                                                if ($event.target.composing) {
-                                                  return
-                                                }
-                                                _vm.$set(
-                                                  _vm.formvalores[i],
-                                                  "tipo",
-                                                  $event.target.value
-                                                )
-                                              }
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          !_vm.formvalores[i].tipo &&
-                                          _vm.summitedH
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "text-danger" },
-                                                [_vm._v("Tipo requerido.")]
-                                              )
-                                            : _vm._e()
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("div", { staticClass: "col-3" }, [
-                                          _c(
-                                            "label",
-                                            { attrs: { for: "valor_minimo" } },
-                                            [
-                                              _c("small", [
-                                                _vm._v(" Valor minimo ")
-                                              ])
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value:
-                                                  _vm.formvalores[i]
-                                                    .valor_minimo,
-                                                expression:
-                                                  "\n                                                    formvalores[i]\n                                                        .valor_minimo\n                                                "
-                                              }
-                                            ],
-                                            staticClass:
-                                              "form-control form-control-sm",
-                                            attrs: {
-                                              id: "valor_minimo",
-                                              type: "text"
-                                            },
-                                            domProps: {
-                                              value:
-                                                _vm.formvalores[i].valor_minimo
-                                            },
-                                            on: {
-                                              input: function($event) {
-                                                if ($event.target.composing) {
-                                                  return
-                                                }
-                                                _vm.$set(
-                                                  _vm.formvalores[i],
-                                                  "valor_minimo",
-                                                  $event.target.value
-                                                )
-                                              }
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          !_vm.formvalores[i].valor_minimo &&
-                                          _vm.summitedH
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "text-danger" },
-                                                [_vm._v("Valor minimo.")]
-                                              )
-                                            : _vm._e()
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("div", { staticClass: "col-3" }, [
-                                          _c(
-                                            "label",
-                                            { attrs: { for: "valor_maximo" } },
-                                            [
-                                              _c("small", [
-                                                _vm._v(" Valor Maximo ")
-                                              ])
-                                            ]
-                                          ),
-                                          _vm._v(" "),
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value:
-                                                  _vm.formvalores[i]
-                                                    .valor_maximo,
-                                                expression:
-                                                  "\n                                                    formvalores[i]\n                                                        .valor_maximo\n                                                "
-                                              }
-                                            ],
-                                            staticClass:
-                                              "form-control form-control-sm",
-                                            attrs: {
-                                              id: "valor_maximo",
-                                              type: "text"
-                                            },
-                                            domProps: {
-                                              value:
-                                                _vm.formvalores[i].valor_maximo
-                                            },
-                                            on: {
-                                              input: function($event) {
-                                                if ($event.target.composing) {
-                                                  return
-                                                }
-                                                _vm.$set(
-                                                  _vm.formvalores[i],
-                                                  "valor_maximo",
-                                                  $event.target.value
-                                                )
-                                              }
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          !_vm.formvalores[i].valor_maximo &&
-                                          _vm.summitedH
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "text-danger" },
-                                                [
-                                                  _vm._v(
-                                                    "Valor Maximo\n                                                requerida."
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("div", { staticClass: "col-1" }, [
-                                          _c("label", { attrs: { for: "" } }, [
-                                            _c("small", [_vm._v(" Eliminar ")])
-                                          ]),
-                                          _vm._v(" "),
-                                          _c(
-                                            "div",
-                                            {
-                                              staticClass:
-                                                "col-lg-2 align-self-center d-grid"
-                                            },
-                                            [
-                                              _c(
-                                                "button",
-                                                {
-                                                  staticClass:
-                                                    "btn btn-danger btn-block btn-sm",
-                                                  attrs: { type: "button" },
-                                                  on: {
-                                                    click: function($event) {
-                                                      return _vm.deleteRow(i)
-                                                    }
-                                                  }
-                                                },
-                                                [
-                                                  _c("i", {
-                                                    staticClass: "fa fa-trash"
-                                                  })
-                                                ]
-                                              )
-                                            ]
-                                          )
-                                        ])
-                                      ])
-                                    ])
+                                    _c("i", { staticClass: "far fa-save" }),
+                                    _vm._v(" Nuevo\n                    ")
                                   ]
                                 )
-                              }),
-                              0
-                            )
+                              : _c(
+                                  "button",
+                                  {
+                                    staticClass:
+                                      "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                    attrs: { type: "submit" }
+                                  },
+                                  [
+                                    _c("i", { staticClass: "fas fa-sync" }),
+                                    _vm._v(" Actualizar\n                    ")
+                                  ]
+                                )
                           ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-6" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass:
-                              "btn btn-warning btn-soft-warning btn-sm mt-3 mt-lg-0 mb-3 float-end",
-                            staticStyle: { "margin-right": "10px" },
-                            attrs: { type: "button" },
-                            on: { click: _vm.AddformData }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-plus-circle" }),
-                            _vm._v(
-                              "\n                            Agregar Valores Referenciales\n                        "
-                            )
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-6" }, [
-                        _vm.btnCreate === true
-                          ? _c(
+                        : _c("div", [
+                            _c(
                               "button",
                               {
                                 staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end ",
-                                attrs: { type: "submit" }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-save" }),
-                                _vm._v(" Nuevo\n                        ")
-                              ]
-                            )
-                          : _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                                attrs: { type: "submit" }
+                                  "btn btn-warning btn-soft-warning btn-sm float-end",
+                                attrs: { type: "button", disabled: "" }
                               },
                               [
                                 _c("i", { staticClass: "fas fa-sync" }),
-                                _vm._v(" Actualizar\n                        ")
+                                _vm._v(" Espere...\n                    ")
                               ]
                             )
+                          ])
+                    ]
+                  )
+                ]
+              )
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.modalanalisis
+            ? _c(
+                "b-modal",
+                {
+                  attrs: {
+                    id: "crearanalisis",
+                    size: "md",
+                    title: _vm.titlemodalanalisis,
+                    "title-class": "font-18",
+                    "hide-footer": ""
+                  }
+                },
+                [
+                  _c(
+                    "form",
+                    {
+                      staticClass: "needs-validation",
+                      on: {
+                        submit: function($event) {
+                          $event.preventDefault()
+                          return _vm.formanalisisSubmit.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [
+                      _c("div", { staticClass: "row" }, [
+                        _c("div", { staticClass: "col-12 " }, [
+                          _c(
+                            "div",
+                            { staticClass: "mb-3" },
+                            [
+                              _c("label", [_vm._v("Examen")]),
+                              _vm._v(" "),
+                              _c("multiselect", {
+                                attrs: {
+                                  options: _vm.optionsExamen,
+                                  "track-by": "id_examen",
+                                  label: "nombre"
+                                },
+                                model: {
+                                  value: _vm.formanalisis.examen_id,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.formanalisis, "examen_id", $$v)
+                                  },
+                                  expression: "formanalisis.examen_id"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _vm.submitted && !_vm.formanalisis.examen_id
+                                ? _c(
+                                    "span",
+                                    { staticStyle: { color: "red" } },
+                                    [_vm._v("Examen es requerido.")]
+                                  )
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-12 " }, [
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c("label", { attrs: { for: "nombre" } }, [
+                              _vm._v("Nombre")
+                            ]),
+                            _vm._v(" "),
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.formanalisis.nombre,
+                                  expression: "formanalisis.nombre"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid":
+                                  _vm.submitted &&
+                                  _vm.$v.formanalisis.nombre.$error
+                              },
+                              attrs: { id: "nombre", type: "text" },
+                              domProps: { value: _vm.formanalisis.nombre },
+                              on: {
+                                input: [
+                                  function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.formanalisis,
+                                      "nombre",
+                                      $event.target.value
+                                    )
+                                  },
+                                  function($event) {
+                                    return _vm.validarNombreAnalisis($event)
+                                  }
+                                ]
+                              }
+                            }),
+                            _vm._v(" "),
+                            _vm.submitted && _vm.$v.formanalisis.nombre.$error
+                              ? _c("div", { staticClass: "invalid-feedback" }, [
+                                  !_vm.$v.formanalisis.nombre.required
+                                    ? _c("span", [
+                                        _vm._v("El nombre es requerido.")
+                                      ])
+                                    : _vm._e()
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _vm.nombreanalisisexist
+                              ? _c("span", { staticClass: "text-danger" }, [
+                                  _vm._v("Analisis de Examen ya existe.")
+                                ])
+                              : _vm._e()
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("hr"),
+                        _vm._v(" "),
+                        _vm.tienevalores
+                          ? _c("div", { staticClass: "col-12 col-lg-12" }, [
+                              _c(
+                                "div",
+                                { staticClass: "mb-3" },
+                                _vm._l(_vm.formvalores, function(field, i) {
+                                  return _c(
+                                    "div",
+                                    { key: field.id, staticClass: "row mb-3" },
+                                    [
+                                      _c("div", { staticClass: "col-12" }, [
+                                        _c("div", { staticClass: "row" }, [
+                                          _c("div", { staticClass: "col-3" }, [
+                                            _c(
+                                              "label",
+                                              { attrs: { for: "tipo" } },
+                                              [_c("small", [_vm._v(" Tipo ")])]
+                                            ),
+                                            _vm._v(" "),
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value:
+                                                    _vm.formvalores[i].tipo,
+                                                  expression:
+                                                    "\n                                                    formvalores[i].tipo\n                                                "
+                                                }
+                                              ],
+                                              staticClass:
+                                                "form-control form-control-sm",
+                                              attrs: {
+                                                id: "tipo",
+                                                type: "text"
+                                              },
+                                              domProps: {
+                                                value: _vm.formvalores[i].tipo
+                                              },
+                                              on: {
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    _vm.formvalores[i],
+                                                    "tipo",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            !_vm.formvalores[i].tipo &&
+                                            _vm.summitedH
+                                              ? _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "text-danger"
+                                                  },
+                                                  [_vm._v("Tipo requerido.")]
+                                                )
+                                              : _vm._e()
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("div", { staticClass: "col-3" }, [
+                                            _c(
+                                              "label",
+                                              {
+                                                attrs: { for: "valor_minimo" }
+                                              },
+                                              [
+                                                _c("small", [
+                                                  _vm._v(" Valor minimo ")
+                                                ])
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value:
+                                                    _vm.formvalores[i]
+                                                      .valor_minimo,
+                                                  expression:
+                                                    "\n                                                    formvalores[i]\n                                                        .valor_minimo\n                                                "
+                                                }
+                                              ],
+                                              staticClass:
+                                                "form-control form-control-sm",
+                                              attrs: {
+                                                id: "valor_minimo",
+                                                type: "text"
+                                              },
+                                              domProps: {
+                                                value:
+                                                  _vm.formvalores[i]
+                                                    .valor_minimo
+                                              },
+                                              on: {
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    _vm.formvalores[i],
+                                                    "valor_minimo",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            !_vm.formvalores[i].valor_minimo &&
+                                            _vm.summitedH
+                                              ? _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "text-danger"
+                                                  },
+                                                  [_vm._v("Valor minimo.")]
+                                                )
+                                              : _vm._e()
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("div", { staticClass: "col-3" }, [
+                                            _c(
+                                              "label",
+                                              {
+                                                attrs: { for: "valor_maximo" }
+                                              },
+                                              [
+                                                _c("small", [
+                                                  _vm._v(" Valor Maximo ")
+                                                ])
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value:
+                                                    _vm.formvalores[i]
+                                                      .valor_maximo,
+                                                  expression:
+                                                    "\n                                                    formvalores[i]\n                                                        .valor_maximo\n                                                "
+                                                }
+                                              ],
+                                              staticClass:
+                                                "form-control form-control-sm",
+                                              attrs: {
+                                                id: "valor_maximo",
+                                                type: "text"
+                                              },
+                                              domProps: {
+                                                value:
+                                                  _vm.formvalores[i]
+                                                    .valor_maximo
+                                              },
+                                              on: {
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    _vm.formvalores[i],
+                                                    "valor_maximo",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            !_vm.formvalores[i].valor_maximo &&
+                                            _vm.summitedH
+                                              ? _c(
+                                                  "span",
+                                                  {
+                                                    staticClass: "text-danger"
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      "Valor Maximo\n                                                requerida."
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]),
+                                          _vm._v(" "),
+                                          _c("div", { staticClass: "col-1" }, [
+                                            _c(
+                                              "label",
+                                              { attrs: { for: "" } },
+                                              [
+                                                _c("small", [
+                                                  _vm._v(" Eliminar ")
+                                                ])
+                                              ]
+                                            ),
+                                            _vm._v(" "),
+                                            _c(
+                                              "div",
+                                              {
+                                                staticClass:
+                                                  "col-lg-2 align-self-center d-grid"
+                                              },
+                                              [
+                                                _c(
+                                                  "button",
+                                                  {
+                                                    staticClass:
+                                                      "btn btn-danger btn-block btn-sm",
+                                                    attrs: { type: "button" },
+                                                    on: {
+                                                      click: function($event) {
+                                                        return _vm.deleteRow(i)
+                                                      }
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass: "fa fa-trash"
+                                                    })
+                                                  ]
+                                                )
+                                              ]
+                                            )
+                                          ])
+                                        ])
+                                      ])
+                                    ]
+                                  )
+                                }),
+                                0
+                              )
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-6" }, [
+                          _c(
+                            "button",
+                            {
+                              staticClass:
+                                "btn btn-warning btn-soft-warning btn-sm mt-3 mt-lg-0 mb-3 float-end",
+                              staticStyle: { "margin-right": "10px" },
+                              attrs: { type: "button" },
+                              on: { click: _vm.AddformData }
+                            },
+                            [
+                              _c("i", { staticClass: "fa fa-plus-circle" }),
+                              _vm._v(
+                                "\n                            Agregar Valores Referenciales\n                        "
+                              )
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _vm.btnAccionAnalisis == true
+                          ? _c("div", { staticClass: "col-6" }, [
+                              _vm.btnCreate === true
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-success btn-soft-success btn-sm float-end ",
+                                      attrs: { type: "submit" }
+                                    },
+                                    [
+                                      _c("i", { staticClass: "far fa-save" }),
+                                      _vm._v(" Nuevo\n                        ")
+                                    ]
+                                  )
+                                : _c(
+                                    "button",
+                                    {
+                                      staticClass:
+                                        "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                      attrs: { type: "submit" }
+                                    },
+                                    [
+                                      _c("i", { staticClass: "fas fa-sync" }),
+                                      _vm._v(
+                                        " Actualizar\n                        "
+                                      )
+                                    ]
+                                  )
+                            ])
+                          : _c("div", { staticClass: "col-6" }, [
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "btn btn-warning btn-soft-warning btn-sm float-end",
+                                  attrs: { type: "button", disabled: "" }
+                                },
+                                [
+                                  _c("i", { staticClass: "fas fa-sync" }),
+                                  _vm._v(" Espere...\n                        ")
+                                ]
+                              )
+                            ])
                       ])
-                    ])
-                  ]
-                )
-              ]
-            )
-          : _vm._e()
-      ],
-      1
-    )
-  ])
+                    ]
+                  )
+                ]
+              )
+            : _vm._e()
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

@@ -38,6 +38,11 @@ class OrdenExamenes extends Model
         return $this->belongsTo(User::class,'analizadax','id');
     }
 
+    public function profesionalOrden()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
     public function emisor(){
 
         return $this->belongsTo(User::class,'user_id','id');

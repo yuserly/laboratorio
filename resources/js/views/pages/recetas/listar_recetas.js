@@ -23,6 +23,8 @@ export default {
         return {
             urlbackend: this.$urlBackend,
             urlImprimirReceta: "",
+            preloader : true,
+            btnAccionBuscar: true,
             form: {
                 rut: ""
             },
@@ -108,6 +110,7 @@ export default {
             "Authorization"
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {
@@ -178,10 +181,12 @@ export default {
             this.$v.form.$touch();
 
             if (!this.$v.form.$invalid) {
+                this.btnAccionBuscar = false;
                 this.axios
                     .get(`/api/recetas/${this.form.rut}`)
                     .then(res => {
-                        console.log(res.data.valor);
+
+                        this.btnAccionBuscar = true;
                         if(res.data.valor == 1)
                         {   
                             Swal.fire({
@@ -252,9 +257,11 @@ export default {
         },
 
         envioreceta(data) {
+            this.preloader = true;
             this.axios
                 .get(`/api/envioreceta/${data.codigo}`)
                 .then(res => {
+                    this.preloader = false;
                     Swal.fire({
                         icon: 'success',
                         title: 'Recetas',

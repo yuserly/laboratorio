@@ -23,6 +23,7 @@ class CreateExamensTable extends Migration
             $table->integer('kids')->nullable()->default(0);
             $table->unsignedBigInteger('tipo_examens_id')->nullable(); 
             $table->foreign('tipo_examens_id')->references('id_tipo_examens')->on('tipo_examens'); 
+            $table->boolean('existe_analisis')->default(0); //Si es 1 se mostrara en la secretaria y en el box para poder usarlo en una orden, de lo contrario no aparecera, debe tener analisis de examenes.
             $table->timestamps();
             $table->softDeletes();
 

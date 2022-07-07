@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AnalisisExamen;
+use App\Models\Examen;
 use App\Models\ValoresReferencialesExamen;
 use Illuminate\Http\Request;
 
@@ -10,19 +11,14 @@ class AnalisisExamenController extends Controller
 {
     public function store(Request $request){
 
-
-
         $analisis = AnalisisExamen::updateOrCreate(['id_analisis_examens' => $request->id_analisis_examens],[
                                             'nombre' => $request->nombre,
                                             'examen_id' => $request->examen_id
                                           ]);
 
-
         ValoresReferencialesExamen::where('analisis_examens_id', $analisis->id_analisis_examens)->delete();
 
-
         if($request->valores){
-
 
             for ($i=0; $i < count($request->valores) ; $i++) {
 
@@ -37,7 +33,7 @@ class AnalisisExamenController extends Controller
 
         }
 
-
+        Examen::updateOrCreate(['id_examen' => $request->examen_id],['existe_analisis' => 1]);
 
         return $analisis;
     }
@@ -60,7 +56,13 @@ class AnalisisExamenController extends Controller
     }
 
     public function destroy(AnalisisExamen $analisisexamen)
-    {
+    {   
+        $cantidad = AnalisisExamen::where('examen_id', $analisisexamen->examen_id)->where('deleted_at', null)->get();
+        if(count($cantidad) == 1)
+        {
+            Examen::updateOrCreate(['id_examen' => $analisisexamen->examen_id],['existe_analisis' => 0]);
+        }
+        
         return $analisisexamen->delete();
     }
 }

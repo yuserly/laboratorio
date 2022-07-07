@@ -22,6 +22,9 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
+            btnSubmitOrden: true,
+            rol: "",
             form: {
                 nombres: "",
                 apellidos: "",
@@ -158,6 +161,7 @@ export default {
         this.traerOrden();
 
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {
@@ -243,7 +247,10 @@ export default {
             this.axios
                 .get(`/api/obtenerexamen`)
                 .then(response => {
-                    console.log(response);
+                    response.data.map((p) => {
+                        p['valor']       = '('+p.codigo+') - '+p.nombre;
+                        return p;
+                    });
                     this.options= response.data;
                 }, error => {
                     this.validarSessionActive(error);
@@ -256,7 +263,9 @@ export default {
                 .get(`/api/showxeditar`)
                 .then(response => {
                     console.log(response);
-                    this.tableData = response.data;
+                    this.rol = response.data.rol;
+                    
+                    this.tableData = response.data.examenes;
                 }, error => {
                     this.validarSessionActive(error);
                     return error;
@@ -268,16 +277,14 @@ export default {
                 .get(`/api/traerordenpaciente/${this.form.rut}`)
                 .then(response => {
                     if (response.data.length > 0) {
-                        console.log(response.data)
-
                         this.ordenesexamenpaciente = response.data;
                         this.paciente = `${this.form.nombres} ${this.form.apellidos}`;
                         this.ordenpaciente = true;
 
                     }else{
                         this.ordenpaciente = false;
-
                     }
+                    this.preloader = false;
                 }, error => {
                     this.validarSessionActive(error);
                     return error;
@@ -285,6 +292,7 @@ export default {
         },
 
         validarrut() {
+            this.preloader = true;
             this.axios
                 .get(`/api/validarrutpaciente/${this.form.rut}`)
                 .then(response => {
@@ -312,12 +320,12 @@ export default {
             if (!this.$v.form.$invalid) {
 
                 this.disable = true;
-
+                this.preloader = true;
                 this.axios
                     .post(`/api/crearordenexamen`, this.form)
                     .then(res => {
 
-                        console.log(res)
+                        this.preloader = false;
                         if (res.data) {
 
                             if (this.form.id_orden_examenes == "") {
@@ -431,8 +439,9 @@ export default {
         },
 
         editar(data) {
-
+           
             this.btnCreate = false;
+            
             this.form.id_orden_examenes = data.id_orden_examenes;
             this.form.rut = data.paciente.rut;
             this.form.nombres = data.paciente.nombres;
@@ -449,7 +458,15 @@ export default {
                 examenes.push(element.examen);
             });
 
+            examenes.map((p) => {
+                p['valor']       = '('+p.codigo+') - '+p.nombre;
+                return p;
+            });
+            
+            examenes = examenes; 
+
             this.form.examen = examenes;
+            
             this.toTop();
         },
 

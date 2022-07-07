@@ -22,6 +22,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader: true,
             form: {
                 rut: ""
             },
@@ -107,6 +108,7 @@ export default {
             "Authorization"
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {

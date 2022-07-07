@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -646,20 +659,32 @@
                         </div>
                     </div>
 
-                    <button
+                    <div v-if="btnAccionTipo == true">
+                        <button
                         v-if="btnCreate === true"
                         class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
-                    >
-                        <i class="far fa-save"></i> Ingresar
-                    </button>
-                    <button
-                        v-else
-                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
-                        type="submit"
-                    >
-                        <i class="fas fa-sync"></i> Actualizar
-                    </button>
+                        >
+                            <i class="far fa-save"></i> Ingresar
+                        </button>
+                        <button
+                            v-else
+                            class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
+                            type="submit"
+                        >
+                            <i class="fas fa-sync"></i> Actualizar
+                        </button>
+                    </div>
+                    <div v-else>
+                        <button
+                            class="btn btn-warning btn-soft-warning btn-sm float-end"
+                            type="button"
+                            disabled
+                        >
+                            <i class="fas fa-sync"></i> Espere...
+                        </button>
+                    </div>
+                    
                 </form>
             </b-modal>
 
@@ -688,11 +713,16 @@
                                     :options="tipoexamen"
                                     track-by="id_tipo_examens"
                                     label="nombre"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formexamen.tipoexamen.$error
+                                    }"
                                 ></multiselect>
 
-                                <!-- <span v-if="submitted && !form.prevension_id"
-                            >Prevision es requerido.</span
-                          > -->
+                                <span style="color: red;" v-if="submitted && !formexamen.tipoexamen"
+                            >Examen es requerido.</span
+                          >
                             </div>
                         </div>
                         <div class="col-12 col-lg-6">
@@ -764,8 +794,24 @@
                                     id="precio_lab"
                                     v-model="formexamen.precio_lab"
                                     type="number"
+                                    placeholder="0"
                                     class="form-control form-control-sm"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formexamen.precio_lab.$error
+                                    }"
                                 />
+                                <div
+                                    v-if="
+                                        submitted && $v.formexamen.precio_lab.$error
+                                    "
+                                    class="invalid-feedback"
+                                >
+                                    <span v-if="!$v.formexamen.precio_lab.required"
+                                        >El precio es requerido.</span
+                                    >
+                                </div>
                             </div>
                         </div>
                         <div class="col-12 col-lg-4">
@@ -775,8 +821,24 @@
                                     id="precio_pac"
                                     v-model="formexamen.precio_pac"
                                     type="number"
+                                    placeholder="0"
                                     class="form-control form-control-sm"
+                                    :class="{
+                                        'is-invalid':
+                                            submitted &&
+                                            $v.formexamen.precio_pac.$error
+                                    }"
                                 />
+                                <div
+                                    v-if="
+                                        submitted && $v.formexamen.precio_pac.$error
+                                    "
+                                    class="invalid-feedback"
+                                >
+                                    <span v-if="!$v.formexamen.precio_pac.required"
+                                        >El precio es requerido.</span
+                                    >
+                                </div>
 
                                 
                             </div>
@@ -789,6 +851,7 @@
                                     id="precio_par"
                                     v-model="formexamen.precio_par"
                                     type="number"
+                                    placeholder="0"
                                     class="form-control form-control-sm"
                                     :class="{
                                         'is-invalid':
@@ -831,20 +894,32 @@
                         </div>
                     </div>
 
-                    <button
+                    <div v-if="btnAccionExamen == true">
+                        <button
                         v-if="btnCreate === true"
                         class="btn btn-success btn-soft-success btn-sm float-end "
                         type="submit"
-                    >
-                        <i class="far fa-save"></i> Nuevo
-                    </button>
-                    <button
-                        v-else
-                        class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
-                        type="submit"
-                    >
-                        <i class="fas fa-sync"></i> Actualizar
-                    </button>
+                        >
+                            <i class="far fa-save"></i> Nuevo
+                        </button>
+                        <button
+                            v-else
+                            class="btn btn-success btn-soft-success btn-sm float-end btnSubmit"
+                            type="submit"
+                        >
+                            <i class="fas fa-sync"></i> Actualizar
+                        </button>
+                    </div>
+                    <div v-else>
+                        <button
+                            class="btn btn-warning btn-soft-warning btn-sm float-end"
+                            type="button"
+                            disabled
+                        >
+                            <i class="fas fa-sync"></i> Espere...
+                        </button>
+                    </div>
+                    
                 </form>
             </b-modal>
 
@@ -871,13 +946,13 @@
                                 <multiselect
                                     v-model="formanalisis.examen_id"
                                     :options="optionsExamen"
-                                    track-by="id"
+                                    track-by="id_examen"
                                     label="nombre"
                                 ></multiselect>
 
-                                <!-- <span v-if="submitted && !form.prevension_id"
-                            >Prevision es requerido.</span
-                          > -->
+                                <span style="color: red;" v-if="submitted && !formanalisis.examen_id"
+                                    >Examen es requerido.</span
+                                >
                             </div>
                         </div>
                         <div class="col-12 ">
@@ -1025,7 +1100,7 @@
                                 Agregar Valores Referenciales
                             </button>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6" v-if="btnAccionAnalisis == true">
                             <button
                                 v-if="btnCreate === true"
                                 class="btn btn-success btn-soft-success btn-sm float-end "
@@ -1039,6 +1114,15 @@
                                 type="submit"
                             >
                                 <i class="fas fa-sync"></i> Actualizar
+                            </button>
+                        </div>
+                        <div class="col-6" v-else>
+                            <button
+                                class="btn btn-warning btn-soft-warning btn-sm float-end"
+                                type="button"
+                                disabled
+                            >
+                                <i class="fas fa-sync"></i> Espere...
                             </button>
                         </div>
                     </div>

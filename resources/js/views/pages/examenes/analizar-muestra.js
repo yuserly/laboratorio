@@ -21,6 +21,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             modal:false,
             titlemodal:"",
             orden:"",
@@ -96,6 +97,7 @@ export default {
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.traerOrden();
         this.totalRows = this.items.length;
+        this.preloader = false;
 
     },
 
@@ -107,18 +109,31 @@ export default {
             this.currentPage = 1;
         },
 
+        validarSessionActive(error)
+        {
+            if (error.response.status === 401) {
+                localStorage.removeItem('name');
+                localStorage.removeItem('token');
+                localStorage.removeItem('permisos');
+                this.$router.push({ name: 'login' })
+            }
+        },
+
         traerOrden() {
             this.axios
                 .get(`/api/obtenordenrealizada`)
                 .then(response => {
                     this.tableData = response.data;
+                }, error => {
+                    this.validarSessionActive(error);
+                    return error;
                 });
         },
+
         verorden(data) {
-            console.log(data)
             this.form = {
                 datos:[]
-            };
+            }; 
 
             data.examenorden.forEach(element => {
 
@@ -157,14 +172,13 @@ export default {
 
                     })
                     .catch(error => {
-                        console.log("error", error);
+                        this.validarSessionActive(error);
+                        return error;
                     });
         },
 
-        marcar(){
-
-            console.log(this.form);
-
+        marcar()
+        {
             var title = "Marcar Orden como analizada";
             var text = `¿Esta seguro de Marcar la orden como analizada?`;
 
@@ -184,8 +198,6 @@ export default {
                     this.axios
                     .post(`/api/marcaranalizada`, this.form)
                     .then(res => {
-
-                        console.log(res.data);
 
                         if (res.data) {
                             Swal.fire({
@@ -213,15 +225,14 @@ export default {
                     })
                     .catch(error => {
                         console.log("error", error);
+                        this.validarSessionActive(error);
+                        return error;
                     });
 
                 }
               });
         },
 
-        successmsg(title, message, type) {
-            Swal.fire(title, message, type);
-        }
     }
 
 }

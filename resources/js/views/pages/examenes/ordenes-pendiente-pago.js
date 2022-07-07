@@ -23,6 +23,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             inputPrecio: false,
             ordenPorPagar: "",
             form: { 
@@ -163,7 +164,7 @@ export default {
         this.traerOrden();
 
         this.totalRows = this.items.length;
-
+        this.preloader = false;
 
     },
 

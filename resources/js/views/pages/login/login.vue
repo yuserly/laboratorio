@@ -93,7 +93,7 @@ export default {
 
 } */
 
-@font-face {
+/* @font-face {
     font-family: fuente1;
 
     src: url("/fonts/Gotham-Bold.otf");
@@ -103,14 +103,14 @@ export default {
     font-family: fuente2;
 
     src: url("/fonts/AmazonEmber_Rg.ttf");
-}
-input{
+} */
+/* input{
     font-family: fuente2!important;
     font-size: 17px!important;
 }
 label, p, h1, h2, h3, h4, h5, h6, a, button{
-    font-family:fuente1 !important;
-}
+    font-family:fuente2 !important;
+} */
 .color-primario{
     color:#18A096 !important;
 }

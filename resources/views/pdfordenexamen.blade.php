@@ -14,6 +14,7 @@
                 margin-left: 2cm;
                 margin-right: 2cm;
                 margin-bottom: 2cm;
+                font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             }
             header {
                 position: fixed;
@@ -90,7 +91,6 @@
 
                             <img src="../public/storage/{{$examen->emisor['url_firma']}}" style="margin-left:20px" height="100" width="100" />
 
-
                             <hr style="color: #000; margin-bottom:10px">
 
                             <h5>  {{$examen->emisor['nombres']}} {{$examen->emisor['apellidos']}} </h5>
@@ -110,8 +110,6 @@
         </footer>
 
         <main>
-
-
 
                 <img src="../public/images/isotipo.png" style="opacity: 0.2;
                         position: fixed; width:8cm; height:8cm; bottom: 10cm; left:7cm" height="40%" width="50%" />
@@ -133,41 +131,33 @@
                                         <table style=" width:100%">
                                             <thead style="border-bottom: 1px solid #eee; padding:3px;">
                                                 <tr>
-                                                    <th style="width: 10%"></th>
-                                                    <th style="width: 30%">Tipo de Examén</th>
-                                                    <th style="width: 20%">Codigo</th>
-                                                    <th style="width: 40%">Examén</th>
-
-
+                                                   
+                                                   <th style="width: 30%; text-align: left;"><small><i> CODIGO </i></small></th>
+                                                   <th style="width: 80%; text-align: left;"><small><i> EXAMÉN </i></small></th> 
+                                           
                                                 </tr>
-
 
                                             </thead>
 
 
 
-                                            <tbody style="text-align: center;">
-
+                                            <tbody style="text-align: left;">
+ 
                                                 @foreach ($examen->examenorden as $item)
 
                                                 <tr><td></td> <td></td> <td></td> <td></td></tr>
                                                 <tr><td></td> <td></td> <td></td> <td></td></tr>
 
+                                                <tr>   
 
-
-
-                                                <tr>
-                                                    <td><input type="checkbox" name="" id=""></td>
-                                                <td >  {{$item->examen->tipoexamen->nombre}} </td>
-
-                                                    <td >{{$item->examen->codigo}}</td>
-                                                    <td >{{$item->examen->nombre}}</td>
+                                                   <td style="text-align: left;">{{$item->examen->codigo}}</td>
+                                                   <td style="text-align: left;"> <b> {{$item->examen->nombre}} |</b> {{$item->examen->tipoexamen->nombre}}</td>
 
                                                 </tr>
 
-                                                    <tr><td></td> <td></td> <td></td> <td></td></tr>
+                                                <tr><td></td> <td></td> <td></td> <td></td></tr>
 
-                                                   <tr><td></td> <td></td> <td></td> <td></td></tr>
+                                                <tr><td></td> <td></td> <td></td> <td></td></tr>
 
 
 

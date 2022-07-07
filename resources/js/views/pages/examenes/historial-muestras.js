@@ -21,6 +21,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             examenes: "",
             form: {
                 rut: ""
@@ -102,6 +103,7 @@ export default {
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
         this.getInicial();
+        this.preloader = false;
     },
 
     methods: {

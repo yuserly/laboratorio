@@ -273,6 +273,19 @@ const routes = [
             requiresAuth: false
         }
     },
+
+    {
+        path: "/solicitud_rechazada",
+        name: "solicitud_rechazada",
+
+        component: () =>
+            /* webpackChunkName: "home" */ import(
+                "./views/pages/examenes/solicitud_rechazada.vue"
+            ),
+        meta: {
+            requiresAuth: false
+        }
+    },
 ];
 
 const router = new VueRouter({

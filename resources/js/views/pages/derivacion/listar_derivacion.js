@@ -22,6 +22,8 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
+            btnAccionBuscar: true,
             form: {
                 rut: ""
             },
@@ -107,6 +109,7 @@ export default {
             "Authorization"
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {
@@ -114,6 +117,7 @@ export default {
             // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length;
             this.currentPage = 1;
+           
         },
 
         validarSessionActive(error)
@@ -176,9 +180,11 @@ export default {
             this.$v.form.$touch();
 
             if (!this.$v.form.$invalid) {
+                this.btnAccionBuscar = false;
                 this.axios
                     .get(`/api/derivaciones/${this.form.rut}`)
                     .then(res => {
+                        this.btnAccionBuscar = true;
                         if(res.data == 0)
                         {
                             Swal.fire({
@@ -237,9 +243,11 @@ export default {
         },
 
         envioderivacion(data) {
+            this.preloader = true;
             this.axios
                 .get(`/api/envioderivacion/${data.codigo}`)
                 .then(res => {
+                    this.preloader = false;
                     Swal.fire({
                         icon: 'success',
                         title: 'Derivacion',

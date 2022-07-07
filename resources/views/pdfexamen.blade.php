@@ -14,6 +14,7 @@
                 margin-left: 2cm;
                 margin-right: 2cm;
                 margin-bottom: 2cm;
+                font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
             }
             header {
                 position: fixed;
@@ -88,12 +89,12 @@
 
                         <div style="width: 100%; color: #000" align="center">
 
-                            <img src="../public/storage/{{$examen->profesional['url_firma']}}" style="margin-left:20px" height="100" width="100" />
+                            {{-- <img src="../public/storage/'{{$examen->profesional['url_firma']}}" style="margin-left:20px" height="100" width="100" /> --}}
 
 
                             <hr style="color: #000; margin-bottom:10px">
 
-                            <h5>  {{$examen->profesional['nombres']}} {{$examen->profesional['apellidos']}} </h5>
+                            <h5>  {{$user->nombres}} {{$user->apellidos}} </h5>
 
                         </div>
 
@@ -135,7 +136,7 @@
                                 </tr>
 
                                 <hr style="color:#eee">
-                                <span>{{$examen->profesinal['name']}}</span>
+                                <span>{{$user->name}}</span>
                                     <tr>
 
                                         <table style=" margin-top:5px; width:100%">

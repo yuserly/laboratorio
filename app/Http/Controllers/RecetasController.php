@@ -127,7 +127,7 @@ class RecetasController extends Controller
 
         $pdf = \PDF::loadView('pdfreceta', compact('receta'))->setPaper('a5', 'portrait');
             
-            return $pdf->stream('archivo.pdf');
+        return $pdf->stream('archivo.pdf');
 
 
     }
@@ -139,7 +139,7 @@ class RecetasController extends Controller
 
         if($receta->permite_impresion == 0)
         {
-            return "Nada que hacer";
+            return redirect('/solicitud_rechazada');
         }else{
             Recetas::where('codigo', $codigo)->update(['permite_impresion' => 0]);
 

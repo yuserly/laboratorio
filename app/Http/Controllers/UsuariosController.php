@@ -65,10 +65,21 @@ class UsuariosController extends Controller
     }
 
     public function store(Request $request)
-    {
+    {   
+        
         if($request->imagenCheck == 1)
         {
-            $img        = Storage::disk('public')->putFile('/Firma', new file($request->imagen));
+            if($request->imagen)
+            {
+                $img        = Storage::disk('public')->putFile('/Firma', new file($request->imagen));
+                $user = User::where('id', $request->id)->first();
+                if($user){
+                    if($user->url_firma != null)
+                    {
+                        Storage::disk('public')->delete($user->url_firma);
+                    }
+                }
+            }
         }else{
 
             $img = null;
@@ -113,16 +124,30 @@ class UsuariosController extends Controller
         }
 
 
-            $user = User::updateOrCreate(['id' => $request->id],[
-                                        'name' => $request->nombres ." ".$request->apellidos ,
-                                        'password' => $password,
-                                        'nombres' => $request->nombres,
-                                        'apellidos' => $request->apellidos,
-                                        'email' => $request->email,
-                                        'rut' => $rut,
-                                        'profesion'=> $profesion,
-                                        'url_firma' => ($img != null) ? $img : null,
-                                        ]);
+            if($request->imagen)
+            {
+                $user = User::updateOrCreate(['id' => $request->id],[
+                    'name' => $request->nombres ." ".$request->apellidos ,
+                    'password' => $password,
+                    'nombres' => $request->nombres,
+                    'apellidos' => $request->apellidos,
+                    'email' => $request->email,
+                    'rut' => $rut,
+                    'profesion'=> $profesion,
+                    'url_firma' => ($img != null) ? $img : null,
+                    ]);
+            }else{
+                $user = User::updateOrCreate(['id' => $request->id],[
+                    'name' => $request->nombres ." ".$request->apellidos ,
+                    'password' => $password,
+                    'nombres' => $request->nombres,
+                    'apellidos' => $request->apellidos,
+                    'email' => $request->email,
+                    'rut' => $rut,
+                    'profesion'=> $profesion,
+                    ]);
+            }
+            
 
 
             $user->syncRoles($request->rol);

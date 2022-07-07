@@ -23,7 +23,10 @@ export default {
         return {
 
             urlbackend: this.$urlBackend,
-
+            preloader : true,
+            btnAccionTipo: true,
+            btnAccionExamen: true,
+            btnAccionAnalisis: true,
             // tipo de examen
             formtipo: {
                 nombre: "",
@@ -71,12 +74,12 @@ export default {
             // examen
             formexamen: {
                 nombre: "",
-                precio_lab: 0,
-                precio_pac: 0,
-                precio_par:0,
+                precio_lab: "",
+                precio_pac: "",
+                precio_par:"",
                 kids: false,
                 codigo:"",
-                id_examen:"",
+                id_examen:0,
                 tipoexamen:""
             },
             tipoexamen : [],
@@ -215,6 +218,12 @@ export default {
             precio_par:{
                 required
             },
+            precio_lab:{
+                required
+            },
+            precio_pac:{
+                required
+            },
             codigo:{
                 required
             },
@@ -258,6 +267,7 @@ export default {
         this.traertipoExamen();
         this.traerExamen();
         this.traerAnalisis();
+        this.preloader = false;
     },
 
     methods: {
@@ -276,7 +286,6 @@ export default {
             this.totalRowsAnalisis = filteredItems.length;
             this.currentPageAnalisis = 1;
         },
-
         validarSessionActive(error)
         {
             if (error.response.status === 401) {
@@ -285,9 +294,8 @@ export default {
                 localStorage.removeItem('permisos');
                 this.$router.push({ name: 'login' })
             }
-        },
- 
-        traertipoExamen() {
+        }, 
+        traertipoExamen() {   
             this.axios
                 .get(`/api/obtenertipoexamen`)
                 .then(response => {
@@ -300,9 +308,11 @@ export default {
         },
 
         traerExamen() {
+            
             this.axios
                 .get(`/api/obtenerexamen`)
                 .then(response => {
+                    this.btnAccionExamen = true;
                     this.tableDataExamen = response.data;
                     this.optionsExamen = response.data;
                 }, error => {
@@ -341,9 +351,9 @@ export default {
             this.typeform = "create";
             this.formexamen = {
                 nombre: "",
-                precio_lab:0,
-                precio_pac: 0,
-                precio_par: 0,
+                precio_lab:"",
+                precio_pac: "",
+                precio_par: "",
                 kids: false,
                 codigo:"",
                 id_examen:"",
@@ -426,9 +436,11 @@ export default {
             
 
             if (!this.$v.formtipo.$invalid && !this.nombretipoexist) {
+                this.btnAccionTipo = false;
                 this.axios
                     .post(`/api/creartipoexamen`, this.formtipo)
                     .then(res => {
+                        this.btnAccionTipo = true;
                         if (res.data) {
                             if (this.formtipo.id_tipo_examens == "") {
                                 Swal.fire({
@@ -490,22 +502,18 @@ export default {
         },
 
         formexamenSubmit() {
-            if(this.formexamen.precio_lab.length > 0 || this.formexamen.precio_pac.length > 0)
+            if(this.formexamen.precio_lab.length <= 0 || this.formexamen.precio_pac.length <= 0)
             {   
-                var total = parseInt(this.formexamen.precio_lab)+parseInt(this.formexamen.precio_pac);
-
-                if(total != parseInt(this.formexamen.precio_par))
-                {
-                    Swal.fire({
-                        icon: "warning",
-                        title: "Precio Fonasa",
-                        text: "Precio copago y precio laboratorio son distinto al precio particular ingresado.",
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    return;
-                }
                 
+                Swal.fire({
+                    icon: "warning",
+                    title: "Precio Incompleto",
+                    text: "Hay precios que aun no se han ingresado.",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                return;
+    
             }
             
             this.submitted = true;
@@ -514,15 +522,28 @@ export default {
 
             if (!this.$v.formexamen.$invalid && !this.nombreexamenexist && !this.codigoexiste) {
 
-                this.formexamen.tipoexamen = this.formexamen.tipoexamen.id_tipo_examens;
+                this.btnAccionExamen = false;
                 this.axios
                     .post(`/api/crearexamen`, this.formexamen)
-                    .then(res => {
+                    .then(res => { 
+                        this.btnAccionExamen = true;
+                        if(res.data.estado == 1)
+                        {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Nuevo Examen",
+                                text: "El codigo de examen ya sido ingresado.",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                            return false;
+                        }
+            
                         if (res.data) {
                             if (this.formexamen.id_examen == "") {
                                 Swal.fire({
                                     icon: "success",
-                                    title: "Nuevo Examen",
+                                    title: "Codigo Examen",
                                     text: "Ha sido ingreso exitosamente",
                                     timer: 1500,
                                     showConfirmButton: false
@@ -580,12 +601,29 @@ export default {
         },
 
         editar(data) {
-            console.log(data);
             this.titlemodaltipo = "Actualizar Tipo Examen";
             this.formtipo.nombre = data.nombre;
             this.formtipo.id_tipo_examens = data.id_tipo_examens;
             this.modaltipo = true;
             this.btnCreate = false;
+        },
+
+        filterKey(e) {
+            // Si el código es menor que 48 (0) o mayor que 57 (9)
+            if(e.keyCode < 48 || e.keyCode > 57) {
+                // No se agrega
+                e.preventDefault();
+            }
+        },
+        
+        checaValor(item) {
+            // Obtener valor actual
+            let valor = parseInt(item.value);
+            // Si no es número o es menor de 1
+            if(isNaN(valor) || valor < 1) {
+                // Asignar 1
+                item.value = 1;
+            }
         },
 
         eliminar(data) {
@@ -654,7 +692,7 @@ export default {
           },
 
           editarexamen(data) {
-            console.log(data);
+          
             this.titlemodalexamen = "Actualizar Examen";
             this.formexamen.nombre = data.nombre;
             this.formexamen.id_examen = data.id_examen;
@@ -794,7 +832,7 @@ export default {
                     `/api/eliminaranalisis/${data.id_analisis_examens}`
                   )
                   .then((res) => {
-                    console.log(res);
+                    this.traerAnalisis();
                     if (res.data) {
                       Swal.fire({
                         icon: 'success',
@@ -893,9 +931,11 @@ export default {
 
                 this.formanalisis.valores = this.formvalores;
                 this.formanalisis.examen_id = this.formanalisis.examen_id.id_examen;
+                this.btnAccionAnalisis = false;
                 this.axios
                     .post(`/api/crearanalisis`, this.formanalisis)
                     .then(res => {
+                        this.btnAccionAnalisis = true;
                         if (res.data) {
                             if (this.formanalisis.id_analisis_examens == "") {
                                 Swal.fire({

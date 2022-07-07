@@ -34,6 +34,8 @@ Route::get('imprimirConsulta/{codigo}', [ConsultaController::class, 'imprimirCon
 
 Route::get('verpdf', [OrdenExamenesController::class, 'verpdf']);
 
+Route::get('verOrdenExamen/{codigo}', [OrdenExamenesController::class, 'verOrdenExamen']);
+
 
 
 Route::get('/plantilla/receta', function(){

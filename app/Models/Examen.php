@@ -20,7 +20,8 @@ class Examen extends Model
         'precio_pac',
         'precio_par',
         'kids',
-        'tipo_examens_id'
+        'tipo_examens_id',
+        'existe_analisis'
     ];
 
     public function tipoexamen(){

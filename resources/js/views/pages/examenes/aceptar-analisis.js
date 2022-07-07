@@ -21,6 +21,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             modal:false,
             titlemodal:"",
             orden:"",
@@ -96,6 +97,7 @@ export default {
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.traerOrden();
         this.totalRows = this.items.length;
+        this.preloader = false;
 
     },
 

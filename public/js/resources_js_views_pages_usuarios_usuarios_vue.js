@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2548,6 +2548,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return _ref = {
       img: 'https://images.pexels.com/photos/4323307/pexels-photo-4323307.jpeg',
       urlbackend: this.$urlBackend,
+      btnCargando: true,
       roles: [],
       // form
       rol: "",
@@ -2555,6 +2556,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       rutexist: false,
       FileCropper: false,
       requireFirma: 0,
+      preloader: true,
       formsa: {
         nombres: "",
         apellidos: "",
@@ -2571,7 +2573,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         profesion: "",
         rut: "",
         id: "",
-        imagenCheck: 0
+        imagenCheck: 0,
+        edicion: 0
       },
       submitted: false,
       typeform: "create",
@@ -2686,6 +2689,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.traerAdministradores();
     this.traerProfesionales();
     this.traerSecretaria();
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -2827,9 +2831,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
     },
-    SelectUsuario: function SelectUsuario() {
-      console.log(this.rol);
-    },
     checkRut: function checkRut() {
       var valor = this.formp.rut.replace(".", ""); // Quita Punto
 
@@ -2882,6 +2883,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       jquery__WEBPACK_IMPORTED_MODULE_6___default()(".btnSubmit").prop("disabled", false);
     },
+    SelectUsuario: function SelectUsuario() {
+      this.FileCropper = false;
+      this.imgCr = null;
+      jquery__WEBPACK_IMPORTED_MODULE_6___default()('.inputImg').val(""), this.formp.firma = "";
+      this.formp.edicion = 0;
+    },
     formpSubmit: function formpSubmit() {
       var _this7 = this;
 
@@ -2889,40 +2896,147 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$v.formp.$touch();
 
       if (!this.$v.formp.$invalid && !this.emailexist && !this.rutexist) {
-        if (this.rol.name == "Profesional Laboratorio") {
-          if (typeof this.$refs.file.files[0] == "undefined") {
-            sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
-              icon: "warning",
-              title: "FIRMA",
-              text: "Debes seleccionar una imagen para la firma.",
-              timer: 1500,
-              showConfirmButton: false
-            });
-            return false;
-          }
+        if (this.rol.name == "Profesional Laboratorio" || this.rol.name == "Profesional Box") {
+          if (this.formp.edicion == 0) {
+            if (typeof this.$refs.file.files[0] == "undefined") {
+              sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                icon: "warning",
+                title: "FIRMA",
+                text: "Debes seleccionar una imagen para la firma.",
+                timer: 1500,
+                showConfirmButton: false
+              });
+              return false;
+            }
 
-          var _this$$refs$cropper$g = this.$refs.cropper.getResult(),
-              canvas = _this$$refs$cropper$g.canvas;
+            var _this$$refs$cropper$g = this.$refs.cropper.getResult(),
+                canvas = _this$$refs$cropper$g.canvas;
 
-          var fd = new FormData();
+            var fd = new FormData();
 
-          if (canvas) {
-            canvas.toBlob(function (blob) {
-              fd.append("rut", _this7.formp.rut);
-              fd.append("nombres", _this7.formp.nombres);
-              fd.append("apellidos", _this7.formp.apellidos);
-              fd.append("profesion", _this7.formp.profesion);
-              fd.append("email", _this7.formp.email);
-              fd.append("id", _this7.formp.id);
-              fd.append("rol", _this7.rol.id);
-              fd.append("imagen", blob);
-              fd.append('imagenCheck', 1);
+            if (canvas) {
+              canvas.toBlob(function (blob) {
+                fd.append("rut", _this7.formp.rut);
+                fd.append("nombres", _this7.formp.nombres);
+                fd.append("apellidos", _this7.formp.apellidos);
+                fd.append("profesion", _this7.formp.profesion);
+                fd.append("email", _this7.formp.email);
+                fd.append("id", _this7.formp.id);
+                fd.append("rol", _this7.rol.id);
+                fd.append("imagen", blob);
+                fd.append('imagenCheck', 1);
+                _this7.btnCargando = false;
 
-              _this7.axios.post("/api/crearusuario", fd, {
+                _this7.axios.post("/api/crearusuario", fd, {
+                  headers: {
+                    "content-type": "multipart/form-data"
+                  }
+                }).then(function (res) {
+                  _this7.btnCargando = true;
+
+                  if (res.data == 0) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                      icon: "warning",
+                      title: "RUT",
+                      text: "RUT usuario por otro usuario.",
+                      timer: 1500,
+                      showConfirmButton: false
+                    });
+                    return false;
+                  }
+
+                  if (res.data == 1) {
+                    sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                      icon: "warning",
+                      title: "RUT",
+                      text: "RUT usuado por otro usuario.",
+                      timer: 1500,
+                      showConfirmButton: false
+                    });
+                    return false;
+                  }
+
+                  if (res.data) {
+                    if (_this7.formp.id == "") {
+                      sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                        icon: "success",
+                        title: "Nuevo Usuarios",
+                        text: "Usuarios ingreso con exitosamente",
+                        timer: 1500,
+                        showConfirmButton: false
+                      });
+                    } else {
+                      sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                        icon: "success",
+                        title: "Usuarios Actualizado",
+                        text: "Usuarios actualizado exitosamente",
+                        timer: 1500,
+                        showConfirmButton: false
+                      });
+                    }
+
+                    _this7.modal = false;
+                    _this7.emailexist = false;
+                    _this7.rutexist = false;
+                    _this7.btnCreate = false;
+                    _this7.FileCropper = false;
+                    _this7.imgCr = null;
+                    jquery__WEBPACK_IMPORTED_MODULE_6___default()('.inputImg').val(""), _this7.formp.firma = "";
+
+                    _this7.$v.formp.$reset();
+
+                    _this7.traerAdministradores();
+
+                    _this7.traerProfesionales();
+
+                    _this7.traerSecretaria();
+                  }
+                })["catch"](function (error) {
+                  _this7.validarSessionActive(error);
+
+                  jquery__WEBPACK_IMPORTED_MODULE_6___default().each(error.response.data.errors, function (key, value) {
+                    var Toast = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().mixin({
+                      toast: true,
+                      position: "top-end",
+                      showConfirmButton: false,
+                      timer: 4000,
+                      timerProgressBar: true,
+                      didOpen: function didOpen(toast) {
+                        toast.addEventListener("mouseenter", (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().stopTimer));
+                        toast.addEventListener("mouseleave", (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().resumeTimer));
+                      }
+                    });
+                    Toast.fire({
+                      icon: "warning",
+                      title: value[0]
+                    });
+                  });
+                  _this7.modal = false;
+                  _this7.btnCreate = false;
+
+                  _this7.$v.formp.$reset();
+                });
+              }, "image/png");
+            }
+          } else {
+            if (typeof this.$refs.file.files[0] == "undefined") {
+              var fd = new FormData();
+              fd.append("rut", this.formp.rut);
+              fd.append("nombres", this.formp.nombres);
+              fd.append("apellidos", this.formp.apellidos);
+              fd.append("profesion", this.formp.profesion);
+              fd.append("email", this.formp.email);
+              fd.append("id", this.formp.id);
+              fd.append("rol", this.rol.id);
+              fd.append("imagenCheck", 0);
+              this.btnCargando = false;
+              this.axios.post("/api/crearusuario", fd, {
                 headers: {
                   "content-type": "multipart/form-data"
                 }
               }).then(function (res) {
+                _this7.btnCargando = true;
+
                 if (res.data == 0) {
                   sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
                     icon: "warning",
@@ -2968,9 +3082,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   _this7.emailexist = false;
                   _this7.rutexist = false;
                   _this7.btnCreate = false;
-                  _this7.FileCropper = false;
-                  _this7.imgCr = null;
-                  jquery__WEBPACK_IMPORTED_MODULE_6___default()('.inputImg').val(""), _this7.formp.firma = "";
 
                   _this7.$v.formp.$reset();
 
@@ -3005,7 +3116,117 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _this7.$v.formp.$reset();
               });
-            }, "image/png");
+            } else {
+              var _this$$refs$cropper$g2 = this.$refs.cropper.getResult(),
+                  _canvas = _this$$refs$cropper$g2.canvas;
+
+              var fd = new FormData();
+
+              if (_canvas) {
+                _canvas.toBlob(function (blob) {
+                  fd.append("rut", _this7.formp.rut);
+                  fd.append("nombres", _this7.formp.nombres);
+                  fd.append("apellidos", _this7.formp.apellidos);
+                  fd.append("profesion", _this7.formp.profesion);
+                  fd.append("email", _this7.formp.email);
+                  fd.append("id", _this7.formp.id);
+                  fd.append("rol", _this7.rol.id);
+                  fd.append("imagen", blob);
+                  fd.append('imagenCheck', 1);
+                  _this7.btnCargando = false;
+
+                  _this7.axios.post("/api/crearusuario", fd, {
+                    headers: {
+                      "content-type": "multipart/form-data"
+                    }
+                  }).then(function (res) {
+                    _this7.btnCargando = true;
+
+                    if (res.data == 0) {
+                      sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                        icon: "warning",
+                        title: "RUT",
+                        text: "RUT usuario por otro usuario.",
+                        timer: 1500,
+                        showConfirmButton: false
+                      });
+                      return false;
+                    }
+
+                    if (res.data == 1) {
+                      sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                        icon: "warning",
+                        title: "RUT",
+                        text: "RUT usuado por otro usuario.",
+                        timer: 1500,
+                        showConfirmButton: false
+                      });
+                      return false;
+                    }
+
+                    if (res.data) {
+                      if (_this7.formp.id == "") {
+                        sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                          icon: "success",
+                          title: "Nuevo Usuarios",
+                          text: "Usuarios ingreso con exitosamente",
+                          timer: 1500,
+                          showConfirmButton: false
+                        });
+                      } else {
+                        sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
+                          icon: "success",
+                          title: "Usuarios Actualizado",
+                          text: "Usuarios actualizado exitosamente",
+                          timer: 1500,
+                          showConfirmButton: false
+                        });
+                      }
+
+                      _this7.modal = false;
+                      _this7.emailexist = false;
+                      _this7.rutexist = false;
+                      _this7.btnCreate = false;
+                      _this7.FileCropper = false;
+                      _this7.imgCr = null;
+                      jquery__WEBPACK_IMPORTED_MODULE_6___default()('.inputImg').val(""), _this7.formp.firma = "";
+
+                      _this7.$v.formp.$reset();
+
+                      _this7.traerAdministradores();
+
+                      _this7.traerProfesionales();
+
+                      _this7.traerSecretaria();
+                    }
+                  })["catch"](function (error) {
+                    _this7.validarSessionActive(error);
+
+                    jquery__WEBPACK_IMPORTED_MODULE_6___default().each(error.response.data.errors, function (key, value) {
+                      var Toast = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 4000,
+                        timerProgressBar: true,
+                        didOpen: function didOpen(toast) {
+                          toast.addEventListener("mouseenter", (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().stopTimer));
+                          toast.addEventListener("mouseleave", (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().resumeTimer));
+                        }
+                      });
+                      Toast.fire({
+                        icon: "warning",
+                        title: value[0]
+                      });
+                    });
+                    _this7.modal = false;
+                    _this7.btnCreate = false;
+
+                    _this7.$v.formp.$reset();
+                  });
+                }, "image/png");
+              }
+            }
           }
         } else {
           var fd = new FormData();
@@ -3017,11 +3238,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           fd.append("id", this.formp.id);
           fd.append("rol", this.rol.id);
           fd.append("imagenCheck", 0);
+          this.btnCargando = false;
           this.axios.post("/api/crearusuario", fd, {
             headers: {
               "content-type": "multipart/form-data"
             }
           }).then(function (res) {
+            _this7.btnCargando = true;
+
             if (res.data == 0) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
                 icon: "warning",
@@ -3113,7 +3337,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (!this.$v.formsa.$invalid && !this.emailexist) {
         this.formsa.rol = this.rol.id;
+        this.btnCargando = false;
         this.axios.post("/api/crearusuario", this.formsa).then(function (res) {
+          _this8.btnCargando = true;
+
           if (res.data == 0) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
               icon: "warning",
@@ -3194,6 +3421,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.formp.antfirma = data.firma;
       this.formp.email = data.email;
       this.formsa.email = data.email;
+      this.formp.edicion = 1; //Validamos con edicion si es necesaria la imagen o no para la acutalizacion
+
       this.rol = data.roles[0];
       this.modal = true;
       this.btnCreate = false;
@@ -3221,8 +3450,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         confirmButtonText: "Si"
       }).then(function (result) {
         if (result.value) {
+          _this9.preloader = true;
+
           _this9.axios["delete"]("/api/eliminarusuario/".concat(data.id)).then(function (res) {
-            console.log(res);
+            _this9.preloader = false;
 
             if (res.data) {
               sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -28765,1891 +28996,1983 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("Layout", [
-    _c(
-      "div",
-      { staticClass: "row" },
-      [
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-6" }, [
-                  _c("h4", { staticClass: "card-title" }, [
-                    _vm._v("Gestión Usuarios")
+  return _c(
+    "Layout",
+    [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row" },
+        [
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-6" }, [
+                    _c("h4", { staticClass: "card-title" }, [
+                      _vm._v("Gestión Usuarios")
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-6" }, [
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "b-modal",
+                            rawName: "v-b-modal.crearusuario",
+                            modifiers: { crearusuario: true }
+                          }
+                        ],
+                        staticClass:
+                          "btn btn-primary btn-soft-primary waves-effect waves-light float-end btn-sm",
+                        attrs: { type: "button" },
+                        on: { click: _vm.modalNuevo }
+                      },
+                      [
+                        _c("i", { staticClass: "fas fa-plus-circle" }),
+                        _vm._v(
+                          "\n                                Crear Usuario\n                            "
+                        )
+                      ]
+                    )
                   ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-6" }, [
-                  _c(
-                    "button",
-                    {
-                      directives: [
-                        {
-                          name: "b-modal",
-                          rawName: "v-b-modal.crearusuario",
-                          modifiers: { crearusuario: true }
-                        }
-                      ],
-                      staticClass:
-                        "btn btn-primary btn-soft-primary waves-effect waves-light float-end btn-sm",
-                      attrs: { type: "button" },
-                      on: { click: _vm.modalNuevo }
-                    },
-                    [
-                      _c("i", { staticClass: "fas fa-plus-circle" }),
-                      _vm._v(
-                        "\n                                Crear Usuario\n                            "
-                      )
-                    ]
-                  )
                 ])
               ])
             ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c(
-              "div",
-              { staticClass: "card-body" },
-              [
-                _c(
-                  "b-tabs",
-                  {
-                    attrs: {
-                      justified: "",
-                      "nav-class": "nav-tabs-custom",
-                      "content-class": "p-3 text-muted"
-                    }
-                  },
-                  [
-                    _c(
-                      "b-tab",
-                      {
-                        attrs: { active: "" },
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-users" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Administradores")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options: _vm.pageOptions
-                                                },
-                                                model: {
-                                                  value: _vm.perPage,
-                                                  callback: function($$v) {
-                                                    _vm.perPage = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPage\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filter,
-                                                  callback: function($$v) {
-                                                    _vm.filter = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filter\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableData,
-                                        fields: _vm.fields,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPage,
-                                        "current-page": _vm.currentPage,
-                                        "sort-by": _vm.sortBy,
-                                        "sort-desc": _vm.sortDesc,
-                                        filter: _vm.filter,
-                                        "filter-included-fields": _vm.filterOn
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortBy = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortBy = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDesc = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDesc = $event
-                                        },
-                                        filtered: _vm.onFiltered
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.crearusuario",
-                                                                  modifiers: {
-                                                                    crearusuario: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-crearusuario",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title: "Activar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.activar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows": _vm.rows,
-                                                "per-page": _vm.perPage
-                                              },
-                                              model: {
-                                                value: _vm.currentPage,
-                                                callback: function($$v) {
-                                                  _vm.currentPage = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPage\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-tab",
-                      {
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-users" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Profesionales")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options:
-                                                    _vm.pageOptionsProfesional
-                                                },
-                                                model: {
-                                                  value: _vm.perPageProfesional,
-                                                  callback: function($$v) {
-                                                    _vm.perPageProfesional = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPageProfesional\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filterProfesional,
-                                                  callback: function($$v) {
-                                                    _vm.filterProfesional = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filterProfesional\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableDataProfesional,
-                                        fields: _vm.fieldsProfesional,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPageProfesional,
-                                        "current-page":
-                                          _vm.currentPageProfesional,
-                                        "sort-by": _vm.sortByProfesional,
-                                        "sort-desc": _vm.sortDescProfesional,
-                                        filter: _vm.filterProfesional,
-                                        "filter-included-fields":
-                                          _vm.filterOnProfesional
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortByProfesional = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortByProfesional = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDescProfesional = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDescProfesional = $event
-                                        },
-                                        filtered: _vm.onFilteredProfesional
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.crearusuario",
-                                                                  modifiers: {
-                                                                    crearusuario: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-crearusuario",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title: "Activar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.activar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows":
-                                                  _vm.rowsProfesional,
-                                                "per-page":
-                                                  _vm.perPageProfesional
-                                              },
-                                              model: {
-                                                value:
-                                                  _vm.currentPageProfesional,
-                                                callback: function($$v) {
-                                                  _vm.currentPageProfesional = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPageProfesional\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-tab",
-                      {
-                        scopedSlots: _vm._u([
-                          {
-                            key: "title",
-                            fn: function() {
-                              return [
-                                _c(
-                                  "span",
-                                  { staticClass: "d-inline-block d-sm-none" },
-                                  [_c("i", { staticClass: "fas fa-users" })]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "d-none d-sm-inline-block" },
-                                  [_vm._v("Secretarias")]
-                                )
-                              ]
-                            },
-                            proxy: true
-                          }
-                        ])
-                      },
-                      [
-                        _vm._v(" "),
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-lg-12" }, [
-                            _c("div", { staticClass: "card" }, [
-                              _c("div", { staticClass: "card-body" }, [
-                                _c("div", { staticClass: "row mt-4" }, [
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "dataTables_length",
-                                          attrs: { id: "tickets-table_length" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Mostrar \n                                                            "
-                                              ),
-                                              _c("b-form-select", {
-                                                attrs: {
-                                                  size: "sm",
-                                                  options:
-                                                    _vm.pageOptionsSecretaria
-                                                },
-                                                model: {
-                                                  value: _vm.perPageSecretaria,
-                                                  callback: function($$v) {
-                                                    _vm.perPageSecretaria = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    perPageSecretaria\n                                                                "
-                                                }
-                                              }),
-                                              _vm._v(
-                                                " entradas\n                                                        "
-                                              )
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "div",
-                                    { staticClass: "col-sm-12 col-md-6" },
-                                    [
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass:
-                                            "dataTables_filter text-md-end",
-                                          attrs: { id: "tickets-table_filter" }
-                                        },
-                                        [
-                                          _c(
-                                            "label",
-                                            {
-                                              staticClass:
-                                                "d-inline-flex align-items-center"
-                                            },
-                                            [
-                                              _vm._v(
-                                                "\n                                                            Buscar:\n                                                            "
-                                              ),
-                                              _c("b-form-input", {
-                                                staticClass:
-                                                  "form-control form-control-sm ms-2",
-                                                attrs: {
-                                                  type: "search",
-                                                  placeholder: "Buscar..."
-                                                },
-                                                model: {
-                                                  value: _vm.filterSecretaria,
-                                                  callback: function($$v) {
-                                                    _vm.filterSecretaria = $$v
-                                                  },
-                                                  expression:
-                                                    "\n                                                                    filterSecretaria\n                                                                "
-                                                }
-                                              })
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      )
-                                    ]
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  { staticClass: "table-responsive mb-0" },
-                                  [
-                                    _c("b-table", {
-                                      attrs: {
-                                        items: _vm.tableDataSecretaria,
-                                        fields: _vm.fieldsSecretaria,
-                                        responsive: "sm",
-                                        "per-page": _vm.perPageSecretaria,
-                                        "current-page":
-                                          _vm.currentPageSecretaria,
-                                        "sort-by": _vm.sortBySecretaria,
-                                        "sort-desc": _vm.sortDescSecretaria,
-                                        filter: _vm.filterSecretaria,
-                                        "filter-included-fields":
-                                          _vm.filterOnSecretaria
-                                      },
-                                      on: {
-                                        "update:sortBy": function($event) {
-                                          _vm.sortBySecretaria = $event
-                                        },
-                                        "update:sort-by": function($event) {
-                                          _vm.sortBySecretaria = $event
-                                        },
-                                        "update:sortDesc": function($event) {
-                                          _vm.sortDescSecretaria = $event
-                                        },
-                                        "update:sort-desc": function($event) {
-                                          _vm.sortDescSecretaria = $event
-                                        },
-                                        filtered: _vm.onFilteredSecretaria
-                                      },
-                                      scopedSlots: _vm._u([
-                                        {
-                                          key: "cell(action)",
-                                          fn: function(data) {
-                                            return [
-                                              !data.item.deleted_at
-                                                ? _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-modal",
-                                                                  rawName:
-                                                                    "v-b-modal.crearusuario",
-                                                                  modifiers: {
-                                                                    crearusuario: true
-                                                                  }
-                                                                },
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                "data-toggle":
-                                                                  "modal",
-                                                                "data-target":
-                                                                  ".bs-example-crearusuario",
-                                                                title: "Editar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.editar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-pen font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      ),
-                                                      _vm._v(" "),
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-danger",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title:
-                                                                  "Eliminar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.eliminar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                                : _c(
-                                                    "ul",
-                                                    {
-                                                      staticClass:
-                                                        "list-inline mb-0"
-                                                    },
-                                                    [
-                                                      _c(
-                                                        "li",
-                                                        {
-                                                          staticClass:
-                                                            "list-inline-item"
-                                                        },
-                                                        [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              directives: [
-                                                                {
-                                                                  name:
-                                                                    "b-tooltip",
-                                                                  rawName:
-                                                                    "v-b-tooltip.hover",
-                                                                  modifiers: {
-                                                                    hover: true
-                                                                  }
-                                                                }
-                                                              ],
-                                                              staticClass:
-                                                                "px-2 text-primary",
-                                                              attrs: {
-                                                                href:
-                                                                  "javascript:void(0);",
-                                                                title: "Activar"
-                                                              },
-                                                              on: {
-                                                                click: function(
-                                                                  $event
-                                                                ) {
-                                                                  return _vm.activar(
-                                                                    data.item
-                                                                  )
-                                                                }
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "uil uil-power font-size-18"
-                                                              })
-                                                            ]
-                                                          )
-                                                        ]
-                                                      )
-                                                    ]
-                                                  )
-                                            ]
-                                          }
-                                        }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                ),
-                                _vm._v(" "),
-                                _c("div", { staticClass: "row" }, [
-                                  _c("div", { staticClass: "col" }, [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "dataTables_paginate paging_simple_numbers float-end"
-                                      },
-                                      [
-                                        _c(
-                                          "ul",
-                                          {
-                                            staticClass:
-                                              "pagination pagination-rounded mb-0"
-                                          },
-                                          [
-                                            _c("b-pagination", {
-                                              attrs: {
-                                                "total-rows":
-                                                  _vm.rowsSecretaria,
-                                                "per-page":
-                                                  _vm.perPageSecretaria
-                                              },
-                                              model: {
-                                                value:
-                                                  _vm.currentPageSecretaria,
-                                                callback: function($$v) {
-                                                  _vm.currentPageSecretaria = $$v
-                                                },
-                                                expression:
-                                                  "\n                                                                    currentPageSecretaria\n                                                                "
-                                              }
-                                            })
-                                          ],
-                                          1
-                                        )
-                                      ]
-                                    )
-                                  ])
-                                ])
-                              ])
-                            ])
-                          ])
-                        ])
-                      ]
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _vm.modal
-          ? _c(
-              "b-modal",
-              {
-                attrs: {
-                  id: "crearusuario",
-                  size: "lg",
-                  title: _vm.titlemodal,
-                  "title-class": "font-18",
-                  "hide-footer": ""
-                }
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-12" }, [
-                    _c("div", { staticClass: "col-12 col-lg-6" }, [
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c(
+                "div",
+                { staticClass: "card-body" },
+                [
+                  _c(
+                    "b-tabs",
+                    {
+                      attrs: {
+                        justified: "",
+                        "nav-class": "nav-tabs-custom",
+                        "content-class": "p-3 text-muted"
+                      }
+                    },
+                    [
                       _c(
-                        "div",
-                        { staticClass: "mb-3" },
-                        [
-                          _c("label", [_vm._v("Selecione Tipo Usuario")]),
-                          _vm._v(" "),
-                          _c("multiselect", {
-                            attrs: {
-                              options: _vm.roles,
-                              "track-by": "id",
-                              label: "name"
-                            },
-                            on: {
-                              input: function($event) {
-                                return _vm.SelectUsuario()
-                              }
-                            },
-                            model: {
-                              value: _vm.rol,
-                              callback: function($$v) {
-                                _vm.rol = $$v
+                        "b-tab",
+                        {
+                          attrs: { active: "" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-users" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Administradores")]
+                                  )
+                                ]
                               },
-                              expression: "rol"
+                              proxy: true
                             }
-                          })
-                        ],
-                        1
-                      )
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm.rol.name == "Administrador" || _vm.rol.name == "Secretaria"
-                  ? _c(
-                      "form",
-                      {
-                        staticClass: "needs-validation",
-                        on: {
-                          submit: function($event) {
-                            $event.preventDefault()
-                            return _vm.formsaSubmit.apply(null, arguments)
-                          }
-                        }
-                      },
-                      [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "nombres" } }, [
-                                _vm._v("Nombres")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formsa.nombres,
-                                    expression: "formsa.nombres"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted &&
-                                    _vm.$v.formsa.nombres.$error
-                                },
-                                attrs: { id: "nombres", type: "text" },
-                                domProps: { value: _vm.formsa.nombres },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.formsa,
-                                      "nombres",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formsa.nombres.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formsa.nombres.required
-                                        ? _c("span", [
-                                            _vm._v("Los nombres son requerido.")
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]),
+                          ])
+                        },
+                        [
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "apellidos" } }, [
-                                _vm._v("Apellidos")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formsa.apellidos,
-                                    expression: "formsa.apellidos"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted &&
-                                    _vm.$v.formsa.apellidos.$error
-                                },
-                                attrs: { id: "apellidos", type: "text" },
-                                domProps: { value: _vm.formsa.apellidos },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.formsa,
-                                      "apellidos",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formsa.apellidos.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.form.apellidos.required
-                                        ? _c("span", [
-                                            _vm._v(
-                                              "Los Apellidos son requerido."
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options: _vm.pageOptions
+                                                  },
+                                                  model: {
+                                                    value: _vm.perPage,
+                                                    callback: function($$v) {
+                                                      _vm.perPage = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPage\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
                                             )
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value: _vm.filter,
+                                                    callback: function($$v) {
+                                                      _vm.filter = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filter\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableData,
+                                          fields: _vm.fields,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPage,
+                                          "current-page": _vm.currentPage,
+                                          "sort-by": _vm.sortBy,
+                                          "sort-desc": _vm.sortDesc,
+                                          filter: _vm.filter,
+                                          "filter-included-fields": _vm.filterOn
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortBy = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortBy = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDesc = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDesc = $event
+                                          },
+                                          filtered: _vm.onFiltered
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.crearusuario",
+                                                                    modifiers: {
+                                                                      crearusuario: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-crearusuario",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Activar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.activar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows": _vm.rows,
+                                                  "per-page": _vm.perPage
+                                                },
+                                                model: {
+                                                  value: _vm.currentPage,
+                                                  callback: function($$v) {
+                                                    _vm.currentPage = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPage\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  ])
+                                ])
+                              ])
                             ])
-                          ]),
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-tab",
+                        {
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-users" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Profesionales")]
+                                  )
+                                ]
+                              },
+                              proxy: true
+                            }
+                          ])
+                        },
+                        [
                           _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "email" } }, [
-                                _vm._v("Correo Electronico")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formsa.email,
-                                    expression: "formsa.email"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted && _vm.$v.formsa.email.$error
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options:
+                                                      _vm.pageOptionsProfesional
+                                                  },
+                                                  model: {
+                                                    value:
+                                                      _vm.perPageProfesional,
+                                                    callback: function($$v) {
+                                                      _vm.perPageProfesional = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPageProfesional\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value:
+                                                      _vm.filterProfesional,
+                                                    callback: function($$v) {
+                                                      _vm.filterProfesional = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filterProfesional\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableDataProfesional,
+                                          fields: _vm.fieldsProfesional,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPageProfesional,
+                                          "current-page":
+                                            _vm.currentPageProfesional,
+                                          "sort-by": _vm.sortByProfesional,
+                                          "sort-desc": _vm.sortDescProfesional,
+                                          filter: _vm.filterProfesional,
+                                          "filter-included-fields":
+                                            _vm.filterOnProfesional
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortByProfesional = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortByProfesional = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDescProfesional = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDescProfesional = $event
+                                          },
+                                          filtered: _vm.onFilteredProfesional
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.crearusuario",
+                                                                    modifiers: {
+                                                                      crearusuario: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-crearusuario",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Activar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.activar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows":
+                                                    _vm.rowsProfesional,
+                                                  "per-page":
+                                                    _vm.perPageProfesional
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.currentPageProfesional,
+                                                  callback: function($$v) {
+                                                    _vm.currentPageProfesional = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPageProfesional\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-tab",
+                        {
+                          scopedSlots: _vm._u([
+                            {
+                              key: "title",
+                              fn: function() {
+                                return [
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-inline-block d-sm-none" },
+                                    [_c("i", { staticClass: "fas fa-users" })]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    { staticClass: "d-none d-sm-inline-block" },
+                                    [_vm._v("Secretarias")]
+                                  )
+                                ]
+                              },
+                              proxy: true
+                            }
+                          ])
+                        },
+                        [
+                          _vm._v(" "),
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-lg-12" }, [
+                              _c("div", { staticClass: "card" }, [
+                                _c("div", { staticClass: "card-body" }, [
+                                  _c("div", { staticClass: "row mt-4" }, [
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass: "dataTables_length",
+                                            attrs: {
+                                              id: "tickets-table_length"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Mostrar \n                                                            "
+                                                ),
+                                                _c("b-form-select", {
+                                                  attrs: {
+                                                    size: "sm",
+                                                    options:
+                                                      _vm.pageOptionsSecretaria
+                                                  },
+                                                  model: {
+                                                    value:
+                                                      _vm.perPageSecretaria,
+                                                    callback: function($$v) {
+                                                      _vm.perPageSecretaria = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    perPageSecretaria\n                                                                "
+                                                  }
+                                                }),
+                                                _vm._v(
+                                                  " entradas\n                                                        "
+                                                )
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "div",
+                                      { staticClass: "col-sm-12 col-md-6" },
+                                      [
+                                        _c(
+                                          "div",
+                                          {
+                                            staticClass:
+                                              "dataTables_filter text-md-end",
+                                            attrs: {
+                                              id: "tickets-table_filter"
+                                            }
+                                          },
+                                          [
+                                            _c(
+                                              "label",
+                                              {
+                                                staticClass:
+                                                  "d-inline-flex align-items-center"
+                                              },
+                                              [
+                                                _vm._v(
+                                                  "\n                                                            Buscar:\n                                                            "
+                                                ),
+                                                _c("b-form-input", {
+                                                  staticClass:
+                                                    "form-control form-control-sm ms-2",
+                                                  attrs: {
+                                                    type: "search",
+                                                    placeholder: "Buscar..."
+                                                  },
+                                                  model: {
+                                                    value: _vm.filterSecretaria,
+                                                    callback: function($$v) {
+                                                      _vm.filterSecretaria = $$v
+                                                    },
+                                                    expression:
+                                                      "\n                                                                    filterSecretaria\n                                                                "
+                                                  }
+                                                })
+                                              ],
+                                              1
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "table-responsive mb-0" },
+                                    [
+                                      _c("b-table", {
+                                        attrs: {
+                                          items: _vm.tableDataSecretaria,
+                                          fields: _vm.fieldsSecretaria,
+                                          responsive: "sm",
+                                          "per-page": _vm.perPageSecretaria,
+                                          "current-page":
+                                            _vm.currentPageSecretaria,
+                                          "sort-by": _vm.sortBySecretaria,
+                                          "sort-desc": _vm.sortDescSecretaria,
+                                          filter: _vm.filterSecretaria,
+                                          "filter-included-fields":
+                                            _vm.filterOnSecretaria
+                                        },
+                                        on: {
+                                          "update:sortBy": function($event) {
+                                            _vm.sortBySecretaria = $event
+                                          },
+                                          "update:sort-by": function($event) {
+                                            _vm.sortBySecretaria = $event
+                                          },
+                                          "update:sortDesc": function($event) {
+                                            _vm.sortDescSecretaria = $event
+                                          },
+                                          "update:sort-desc": function($event) {
+                                            _vm.sortDescSecretaria = $event
+                                          },
+                                          filtered: _vm.onFilteredSecretaria
+                                        },
+                                        scopedSlots: _vm._u([
+                                          {
+                                            key: "cell(action)",
+                                            fn: function(data) {
+                                              return [
+                                                !data.item.deleted_at
+                                                  ? _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-modal",
+                                                                    rawName:
+                                                                      "v-b-modal.crearusuario",
+                                                                    modifiers: {
+                                                                      crearusuario: true
+                                                                    }
+                                                                  },
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  "data-toggle":
+                                                                    "modal",
+                                                                  "data-target":
+                                                                    ".bs-example-crearusuario",
+                                                                  title:
+                                                                    "Editar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.editar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-pen font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        ),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-danger",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Eliminar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.eliminar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  : _c(
+                                                      "ul",
+                                                      {
+                                                        staticClass:
+                                                          "list-inline mb-0"
+                                                      },
+                                                      [
+                                                        _c(
+                                                          "li",
+                                                          {
+                                                            staticClass:
+                                                              "list-inline-item"
+                                                          },
+                                                          [
+                                                            _c(
+                                                              "a",
+                                                              {
+                                                                directives: [
+                                                                  {
+                                                                    name:
+                                                                      "b-tooltip",
+                                                                    rawName:
+                                                                      "v-b-tooltip.hover",
+                                                                    modifiers: {
+                                                                      hover: true
+                                                                    }
+                                                                  }
+                                                                ],
+                                                                staticClass:
+                                                                  "px-2 text-primary",
+                                                                attrs: {
+                                                                  href:
+                                                                    "javascript:void(0);",
+                                                                  title:
+                                                                    "Activar"
+                                                                },
+                                                                on: {
+                                                                  click: function(
+                                                                    $event
+                                                                  ) {
+                                                                    return _vm.activar(
+                                                                      data.item
+                                                                    )
+                                                                  }
+                                                                }
+                                                              },
+                                                              [
+                                                                _c("i", {
+                                                                  staticClass:
+                                                                    "uil uil-power font-size-18"
+                                                                })
+                                                              ]
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                              ]
+                                            }
+                                          }
+                                        ])
+                                      })
+                                    ],
+                                    1
+                                  ),
+                                  _vm._v(" "),
+                                  _c("div", { staticClass: "row" }, [
+                                    _c("div", { staticClass: "col" }, [
+                                      _c(
+                                        "div",
+                                        {
+                                          staticClass:
+                                            "dataTables_paginate paging_simple_numbers float-end"
+                                        },
+                                        [
+                                          _c(
+                                            "ul",
+                                            {
+                                              staticClass:
+                                                "pagination pagination-rounded mb-0"
+                                            },
+                                            [
+                                              _c("b-pagination", {
+                                                attrs: {
+                                                  "total-rows":
+                                                    _vm.rowsSecretaria,
+                                                  "per-page":
+                                                    _vm.perPageSecretaria
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.currentPageSecretaria,
+                                                  callback: function($$v) {
+                                                    _vm.currentPageSecretaria = $$v
+                                                  },
+                                                  expression:
+                                                    "\n                                                                    currentPageSecretaria\n                                                                "
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  ])
+                                ])
+                              ])
+                            ])
+                          ])
+                        ]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _vm.modal
+            ? _c(
+                "b-modal",
+                {
+                  attrs: {
+                    id: "crearusuario",
+                    size: "lg",
+                    title: _vm.titlemodal,
+                    "title-class": "font-18",
+                    "hide-footer": ""
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-12" }, [
+                      _c("div", { staticClass: "col-12 col-lg-6" }, [
+                        _c(
+                          "div",
+                          { staticClass: "mb-3" },
+                          [
+                            _c("label", [_vm._v("Selecione Tipo Usuario")]),
+                            _vm._v(" "),
+                            _c("multiselect", {
+                              attrs: {
+                                options: _vm.roles,
+                                "track-by": "id",
+                                label: "name"
+                              },
+                              on: {
+                                input: function($event) {
+                                  return _vm.SelectUsuario()
+                                }
+                              },
+                              model: {
+                                value: _vm.rol,
+                                callback: function($$v) {
+                                  _vm.rol = $$v
                                 },
-                                attrs: { id: "email", type: "text" },
-                                domProps: { value: _vm.formsa.email },
-                                on: {
-                                  input: [
-                                    function($event) {
+                                expression: "rol"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.rol.name == "Administrador" ||
+                  _vm.rol.name == "Secretaria"
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "needs-validation",
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                              return _vm.formsaSubmit.apply(null, arguments)
+                            }
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "nombres" } }, [
+                                  _vm._v("Nombres")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formsa.nombres,
+                                      expression: "formsa.nombres"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formsa.nombres.$error
+                                  },
+                                  attrs: { id: "nombres", type: "text" },
+                                  domProps: { value: _vm.formsa.nombres },
+                                  on: {
+                                    input: function($event) {
                                       if ($event.target.composing) {
                                         return
                                       }
                                       _vm.$set(
                                         _vm.formsa,
-                                        "email",
+                                        "nombres",
                                         $event.target.value
                                       )
-                                    },
-                                    function($event) {
-                                      return _vm.validarEmail($event)
                                     }
-                                  ]
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formsa.email.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formsa.email.required
-                                        ? _c("span", [
-                                            _vm._v("Email es requerido.")
-                                          ])
-                                        : _vm._e()
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formsa.nombres.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formsa.nombres.required
+                                          ? _c("span", [
+                                              _vm._v(
+                                                "Los nombres son requerido."
+                                              )
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "apellidos" } }, [
+                                  _vm._v("Apellidos")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formsa.apellidos,
+                                      expression: "formsa.apellidos"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formsa.apellidos.$error
+                                  },
+                                  attrs: { id: "apellidos", type: "text" },
+                                  domProps: { value: _vm.formsa.apellidos },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formsa,
+                                        "apellidos",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formsa.apellidos.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.form.apellidos.required
+                                          ? _c("span", [
+                                              _vm._v(
+                                                "Los Apellidos son requerido."
+                                              )
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "email" } }, [
+                                  _vm._v("Correo Electronico")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formsa.email,
+                                      expression: "formsa.email"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formsa.email.$error
+                                  },
+                                  attrs: { id: "email", type: "text" },
+                                  domProps: { value: _vm.formsa.email },
+                                  on: {
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          _vm.formsa,
+                                          "email",
+                                          $event.target.value
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.validarEmail($event)
+                                      }
                                     ]
-                                  )
-                                : _vm._e(),
-                              _vm._v(" "),
-                              _vm.emailexist
-                                ? _c("span", { staticClass: "text-danger" }, [
-                                    _vm._v("Email ya en uso.")
-                                  ])
-                                : _vm._e()
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formsa.email.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formsa.email.required
+                                          ? _c("span", [
+                                              _vm._v("Email es requerido.")
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.emailexist
+                                  ? _c("span", { staticClass: "text-danger" }, [
+                                      _vm._v("Email ya en uso.")
+                                    ])
+                                  : _vm._e()
+                              ])
                             ])
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("hr"),
-                        _vm._v(" "),
-                        _vm.btnCreate === true
-                          ? _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end ",
-                                attrs: { type: "submit" }
-                              },
-                              [
-                                _c("i", { staticClass: "far fa-save" }),
-                                _vm._v(" Crear Usuario\n                ")
-                              ]
-                            )
-                          : _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                                attrs: { type: "submit" }
-                              },
-                              [
-                                _c("i", { staticClass: "fas fa-sync" }),
-                                _vm._v(" Actualizar Usuario\n                ")
-                              ]
-                            )
-                      ]
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.rol.name == "Profesional Box" ||
-                _vm.rol.name == "Profesional Laboratorio" ||
-                _vm.rol.name == "Profesional Ejecutor"
-                  ? _c(
-                      "form",
-                      {
-                        staticClass: "needs-validation",
-                        attrs: { enctype: "multipart/form-data" },
-                        on: {
-                          submit: function($event) {
-                            $event.preventDefault()
-                            return _vm.formpSubmit.apply(null, arguments)
+                          ]),
+                          _vm._v(" "),
+                          _c("hr"),
+                          _vm._v(" "),
+                          _vm.btnCreate === true
+                            ? _c("div", [
+                                _vm.btnCargando == true
+                                  ? _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn btn-success btn-soft-success btn-sm float-end ",
+                                        attrs: { type: "submit" }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "far fa-save" }),
+                                        _vm._v(
+                                          " Crear Usuario\n                    "
+                                        )
+                                      ]
+                                    )
+                                  : _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn btn-warning btn-soft-warning btn-sm float-end ",
+                                        attrs: { type: "button", disabled: "" }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "far fa-save" }),
+                                        _vm._v(
+                                          " Espere...\n                    "
+                                        )
+                                      ]
+                                    )
+                              ])
+                            : _c("div", [
+                                _vm.btnCargando == true
+                                  ? _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                        attrs: { type: "submit" }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "fas fa-sync" }),
+                                        _vm._v(
+                                          " Actualizar Usuario\n                    "
+                                        )
+                                      ]
+                                    )
+                                  : _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn btn-warning btn-soft-warning btn-sm float-end",
+                                        attrs: { type: "button", disabled: "" }
+                                      },
+                                      [
+                                        _c("i", { staticClass: "fas fa-sync" }),
+                                        _vm._v(
+                                          " Espere...\n                    "
+                                        )
+                                      ]
+                                    )
+                              ])
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.rol.name == "Profesional Box" ||
+                  _vm.rol.name == "Profesional Laboratorio" ||
+                  _vm.rol.name == "Profesional Ejecutor"
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "needs-validation",
+                          attrs: { enctype: "multipart/form-data" },
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                              return _vm.formpSubmit.apply(null, arguments)
+                            }
                           }
-                        }
-                      },
-                      [
-                        _c("div", { staticClass: "row" }, [
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "nombres" } }, [
-                                _vm._v("Nombres")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formp.nombres,
-                                    expression: "formp.nombres"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted && _vm.$v.formp.nombres.$error
-                                },
-                                attrs: { id: "nombres", type: "text" },
-                                domProps: { value: _vm.formp.nombres },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
+                        },
+                        [
+                          _c("div", { staticClass: "row" }, [
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "nombres" } }, [
+                                  _vm._v("Nombres")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formp.nombres,
+                                      expression: "formp.nombres"
                                     }
-                                    _vm.$set(
-                                      _vm.formp,
-                                      "nombres",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formp.nombres.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formp.nombres.required
-                                        ? _c("span", [
-                                            _vm._v("Los nombres son requerido.")
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "apellidos" } }, [
-                                _vm._v("Apellidos")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formp.apellidos,
-                                    expression: "formp.apellidos"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted &&
-                                    _vm.$v.formp.apellidos.$error
-                                },
-                                attrs: { id: "apellidos", type: "text" },
-                                domProps: { value: _vm.formp.apellidos },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.formp,
-                                      "apellidos",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formp.apellidos.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formp.apellidos.required
-                                        ? _c("span", [
-                                            _vm._v(
-                                              "Los Apellidos son requerido."
-                                            )
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "email" } }, [
-                                _vm._v("Correo Electronico")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formp.email,
-                                    expression: "formp.email"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted && _vm.$v.formp.email.$error
-                                },
-                                attrs: { id: "email", type: "email" },
-                                domProps: { value: _vm.formp.email },
-                                on: {
-                                  input: [
-                                    function($event) {
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formp.nombres.$error
+                                  },
+                                  attrs: { id: "nombres", type: "text" },
+                                  domProps: { value: _vm.formp.nombres },
+                                  on: {
+                                    input: function($event) {
                                       if ($event.target.composing) {
                                         return
                                       }
                                       _vm.$set(
                                         _vm.formp,
-                                        "email",
+                                        "nombres",
                                         $event.target.value
                                       )
-                                    },
-                                    function($event) {
-                                      return _vm.validarEmail($event)
                                     }
-                                  ]
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formp.email.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formp.email.required
-                                        ? _c("span", [
-                                            _vm._v("Email es requerido.")
-                                          ])
-                                        : _vm._e()
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formp.nombres.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formp.nombres.required
+                                          ? _c("span", [
+                                              _vm._v(
+                                                "Los nombres son requerido."
+                                              )
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "apellidos" } }, [
+                                  _vm._v("Apellidos")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formp.apellidos,
+                                      expression: "formp.apellidos"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formp.apellidos.$error
+                                  },
+                                  attrs: { id: "apellidos", type: "text" },
+                                  domProps: { value: _vm.formp.apellidos },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formp,
+                                        "apellidos",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formp.apellidos.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formp.apellidos.required
+                                          ? _c("span", [
+                                              _vm._v(
+                                                "Los Apellidos son requerido."
+                                              )
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "email" } }, [
+                                  _vm._v("Correo Electronico")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formp.email,
+                                      expression: "formp.email"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted && _vm.$v.formp.email.$error
+                                  },
+                                  attrs: { id: "email", type: "email" },
+                                  domProps: { value: _vm.formp.email },
+                                  on: {
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          _vm.formp,
+                                          "email",
+                                          $event.target.value
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.validarEmail($event)
+                                      }
                                     ]
-                                  )
-                                : _vm._e(),
-                              _vm._v(" "),
-                              _vm.emailexist
-                                ? _c("span", { staticClass: "text-danger" }, [
-                                    _vm._v("Email ya en uso.")
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formp.email.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formp.email.required
+                                          ? _c("span", [
+                                              _vm._v("Email es requerido.")
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                _vm.emailexist
+                                  ? _c("span", { staticClass: "text-danger" }, [
+                                      _vm._v("Email ya en uso.")
+                                    ])
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "rut" } }, [
+                                  _vm._v("RUT")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formp.rut,
+                                      expression: "formp.rut"
+                                    }
+                                  ],
+                                  staticClass: "form-control inputRUT",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted && _vm.$v.formp.rut.$error
+                                  },
+                                  attrs: { id: "rut", type: "text" },
+                                  domProps: { value: _vm.formp.rut },
+                                  on: {
+                                    input: [
+                                      function($event) {
+                                        if ($event.target.composing) {
+                                          return
+                                        }
+                                        _vm.$set(
+                                          _vm.formp,
+                                          "rut",
+                                          $event.target.value
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.checkRut(this)
+                                      }
+                                    ]
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formp.rut.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formp.rut.required
+                                          ? _c("span", [
+                                              _vm._v("RUT es requerido.")
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-12 col-lg-6" }, [
+                              _c("div", { staticClass: "mb-3" }, [
+                                _c("label", { attrs: { for: "profesion" } }, [
+                                  _vm._v("Profesión")
+                                ]),
+                                _vm._v(" "),
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.formp.profesion,
+                                      expression: "formp.profesion"
+                                    }
+                                  ],
+                                  staticClass: "form-control",
+                                  class: {
+                                    "is-invalid":
+                                      _vm.submitted &&
+                                      _vm.$v.formp.profesion.$error
+                                  },
+                                  attrs: { id: "profesion", type: "text" },
+                                  domProps: { value: _vm.formp.profesion },
+                                  on: {
+                                    input: function($event) {
+                                      if ($event.target.composing) {
+                                        return
+                                      }
+                                      _vm.$set(
+                                        _vm.formp,
+                                        "profesion",
+                                        $event.target.value
+                                      )
+                                    }
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _vm.submitted && _vm.$v.formp.profesion.$error
+                                  ? _c(
+                                      "div",
+                                      { staticClass: "invalid-feedback" },
+                                      [
+                                        !_vm.$v.formp.profesion.required
+                                          ? _c("span", [
+                                              _vm._v("Profesión es requerido.")
+                                            ])
+                                          : _vm._e()
+                                      ]
+                                    )
+                                  : _vm._e()
+                              ])
+                            ]),
+                            _vm._v(" "),
+                            _vm.rol.name == "Profesional Laboratorio" ||
+                            _vm.rol.name == "Profesional Box"
+                              ? _c("div", { staticClass: "col-12 col-lg-6" }, [
+                                  _c("div", { staticClass: "mb-3" }, [
+                                    _c("label", [_vm._v("Buscar Firma (PNG)")]),
+                                    _vm._v(" "),
+                                    _c("input", {
+                                      ref: "file",
+                                      staticClass: "form-control inputImg",
+                                      attrs: {
+                                        type: "file",
+                                        accept: "image/*"
+                                      },
+                                      on: {
+                                        change: function($event) {
+                                          return _vm.uploadImage($event)
+                                        }
+                                      }
+                                    })
                                   ])
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "rut" } }, [
-                                _vm._v("RUT")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formp.rut,
-                                    expression: "formp.rut"
-                                  }
-                                ],
-                                staticClass: "form-control inputRUT",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted && _vm.$v.formp.rut.$error
-                                },
-                                attrs: { id: "rut", type: "text" },
-                                domProps: { value: _vm.formp.rut },
-                                on: {
-                                  input: [
-                                    function($event) {
-                                      if ($event.target.composing) {
-                                        return
-                                      }
-                                      _vm.$set(
-                                        _vm.formp,
-                                        "rut",
-                                        $event.target.value
-                                      )
-                                    },
-                                    function($event) {
-                                      return _vm.checkRut(this)
-                                    }
-                                  ]
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formp.rut.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formp.rut.required
-                                        ? _c("span", [
-                                            _vm._v("RUT es requerido.")
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", { attrs: { for: "profesion" } }, [
-                                _vm._v("Profesión")
-                              ]),
-                              _vm._v(" "),
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.formp.profesion,
-                                    expression: "formp.profesion"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid":
-                                    _vm.submitted &&
-                                    _vm.$v.formp.profesion.$error
-                                },
-                                attrs: { id: "profesion", type: "text" },
-                                domProps: { value: _vm.formp.profesion },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.formp,
-                                      "profesion",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _vm.submitted && _vm.$v.formp.profesion.$error
-                                ? _c(
-                                    "div",
-                                    { staticClass: "invalid-feedback" },
-                                    [
-                                      !_vm.$v.formp.profesion.required
-                                        ? _c("span", [
-                                            _vm._v("Profesión es requerido.")
-                                          ])
-                                        : _vm._e()
-                                    ]
-                                  )
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "col-12 col-lg-6" }, [
-                            _c("div", { staticClass: "mb-3" }, [
-                              _c("label", [_vm._v("Buscar Firma (PNG)")]),
-                              _vm._v(" "),
-                              _vm.rol.name == "Profesional Laboratorio"
-                                ? _c("input", {
-                                    ref: "file",
-                                    staticClass: "form-control inputImg",
-                                    attrs: { type: "file", accept: "image/*" },
-                                    on: {
-                                      change: function($event) {
-                                        return _vm.uploadImage($event)
-                                      }
-                                    }
-                                  })
-                                : _vm._e()
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "col-12" },
-                            [
-                              _vm.FileCropper
-                                ? _c("cropper", {
-                                    ref: "cropper",
-                                    staticClass: "cropper",
-                                    attrs: {
-                                      src: _vm.imgCr,
-                                      "stencil-props": { aspectRatio: 10 / 6 }
-                                    }
-                                  })
-                                : _vm._e()
-                            ],
-                            1
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("hr"),
-                        _vm._v(" "),
-                        _vm.btnCreate === true
-                          ? _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                                attrs: { type: "submit" }
-                              },
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "col-12" },
                               [
-                                _c("i", { staticClass: "far fa-save" }),
-                                _vm._v(" Crear Usuario\n                ")
-                              ]
+                                _vm.FileCropper
+                                  ? _c("cropper", {
+                                      ref: "cropper",
+                                      staticClass: "cropper",
+                                      attrs: {
+                                        src: _vm.imgCr,
+                                        "stencil-props": { aspectRatio: 10 / 6 }
+                                      }
+                                    })
+                                  : _vm._e()
+                              ],
+                              1
                             )
-                          : _c(
-                              "button",
-                              {
-                                staticClass:
-                                  "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
-                                attrs: { type: "submit" }
-                              },
-                              [
-                                _c("i", { staticClass: "fas fa-sync" }),
-                                _vm._v(" Actualizar Usuario\n                ")
-                              ]
-                            )
-                      ]
-                    )
-                  : _vm._e()
-              ]
-            )
-          : _vm._e()
-      ],
-      1
-    )
-  ])
+                          ]),
+                          _vm._v(" "),
+                          _c("hr"),
+                          _vm._v(" "),
+                          _vm.btnCreate === true
+                            ? _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                  attrs: { type: "submit" }
+                                },
+                                [
+                                  _c("i", { staticClass: "far fa-save" }),
+                                  _vm._v(" Crear Usuario\n                ")
+                                ]
+                              )
+                            : _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "btn btn-success btn-soft-success btn-sm float-end btnSubmit",
+                                  attrs: { type: "submit" }
+                                },
+                                [
+                                  _c("i", { staticClass: "fas fa-sync" }),
+                                  _vm._v(
+                                    " Actualizar Usuario\n                "
+                                  )
+                                ]
+                              )
+                        ]
+                      )
+                    : _vm._e()
+                ]
+              )
+            : _vm._e()
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

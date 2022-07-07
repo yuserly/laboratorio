@@ -22,6 +22,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             modal:false,
             examenes:[],
             titlemodal:"",
@@ -104,6 +105,7 @@ export default {
         window.addEventListener('scroll', this.handleScroll);
         this.traerOrden();
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {

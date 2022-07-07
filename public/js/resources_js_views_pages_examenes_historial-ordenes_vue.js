@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2534,11 +2534,14 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       urlbackend: this.$urlBackend,
+      preloader: true,
+      btnAccionBuscar: true,
       form: {
         rut: ""
       },
       submitted: false,
       existeexamen: false,
+      examenes: "",
       modal: false,
       // tabla
       tableData: [],
@@ -2549,6 +2552,7 @@ __webpack_require__.r(__webpack_exports__);
         text: "Examenes",
         active: true
       }],
+      rol: "",
       totalRows: 1,
       currentPage: 1,
       perPage: 10,
@@ -2597,6 +2601,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     this.axios.defaults.headers.common["Authorization"] = "Bearer ".concat(localStorage.getItem("token"));
     this.totalRows = this.items.length;
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -2673,7 +2678,11 @@ __webpack_require__.r(__webpack_exports__);
       this.$v.form.$touch();
 
       if (!this.$v.form.$invalid) {
+        this.btnAccionBuscar = false;
         this.axios.get("/api/historialordenrut/".concat(this.form.rut)).then(function (res) {
+          _this.btnAccionBuscar = true;
+          _this.rol = res.data.rol;
+
           if (res.data.valor == 0) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
               icon: 'warning',
@@ -2686,7 +2695,7 @@ __webpack_require__.r(__webpack_exports__);
             _this.existeexamen = false;
           }
 
-          if (res.data.length > 0) {
+          if (res.data.examenes.length > 0) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
               icon: 'success',
               title: 'Orden de Examenes',
@@ -2694,7 +2703,7 @@ __webpack_require__.r(__webpack_exports__);
               timer: 1500,
               showConfirmButton: false
             });
-            _this.tableData = res.data;
+            _this.tableData = res.data.examenes;
             _this.existeexamen = true;
           } else {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -28131,6 +28140,22 @@ var render = function() {
   return _c(
     "Layout",
     [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
       _c("div", { staticClass: "row" }, [
         _c("div", { staticClass: "col-lg-12" }, [
           _c("div", { staticClass: "card" }, [
@@ -28207,22 +28232,39 @@ var render = function() {
                         ])
                       ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "col-12 col-lg-4 mt-4" }, [
-                        _c(
-                          "button",
-                          {
-                            staticClass:
-                              "mt-1 btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-star btnSubmit",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-search" }),
-                            _vm._v(
-                              "\n                                            Buscar Examen\n                                        "
+                      _vm.btnAccionBuscar == true
+                        ? _c("div", { staticClass: "col-12 col-lg-4 mt-4" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "mt-1 btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-star btnSubmit",
+                                attrs: { type: "submit" }
+                              },
+                              [
+                                _c("i", { staticClass: "fa fa-search" }),
+                                _vm._v(
+                                  "\n                                            Buscar Examen\n                                        "
+                                )
+                              ]
                             )
-                          ]
-                        )
-                      ])
+                          ])
+                        : _c("div", { staticClass: "col-12 col-lg-4 mt-4" }, [
+                            _c(
+                              "button",
+                              {
+                                staticClass:
+                                  "mt-1 btn btn-warning btn-soft-warning btn-sm waves-effect waves-light float-star",
+                                attrs: { type: "button", disabled: "" }
+                              },
+                              [
+                                _c("i", { staticClass: "fa fa-search" }),
+                                _vm._v(
+                                  "\n                                            Buscar Examen\n                                        "
+                                )
+                              ]
+                            )
+                          ])
                     ])
                   ]
                 )
@@ -28391,7 +28433,45 @@ var render = function() {
                                             ]
                                           )
                                         ]
-                                      )
+                                      ),
+                                      _vm._v(" "),
+                                      _vm.rol != "Secretaria"
+                                        ? _c(
+                                            "li",
+                                            { staticClass: "list-inline-item" },
+                                            [
+                                              _c(
+                                                "a",
+                                                {
+                                                  directives: [
+                                                    {
+                                                      name: "b-tooltip",
+                                                      rawName:
+                                                        "v-b-tooltip.hover",
+                                                      modifiers: { hover: true }
+                                                    }
+                                                  ],
+                                                  staticClass:
+                                                    "px-2 text-warning",
+                                                  attrs: {
+                                                    href:
+                                                      "/verOrdenExamen/" +
+                                                      data.item.codigo,
+                                                    target: "_blank",
+                                                    rel: "noopener noreferrer",
+                                                    title: "Ver PDF"
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "uil-parcel font-size-18"
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
                                     ]
                                   )
                                 ]
@@ -28400,7 +28480,7 @@ var render = function() {
                           ],
                           null,
                           false,
-                          2252899960
+                          1686751633
                         )
                       })
                     ],

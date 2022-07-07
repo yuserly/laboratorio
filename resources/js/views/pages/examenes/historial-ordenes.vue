@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -52,10 +65,20 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-lg-4 mt-4">
+                                        <div class="col-12 col-lg-4 mt-4" v-if="btnAccionBuscar == true">
                                             <button
                                                 type="submit"
                                                 class="mt-1 btn btn-primary btn-soft-primary btn-sm waves-effect waves-light float-star btnSubmit"
+                                            >
+                                                <i class="fa fa-search"></i>
+                                                Buscar Examen
+                                            </button>
+                                        </div>
+                                        <div class="col-12 col-lg-4 mt-4" v-else>
+                                            <button
+                                                type="button" 
+                                                disabled
+                                                class="mt-1 btn btn-warning btn-soft-warning btn-sm waves-effect waves-light float-star"
                                             >
                                                 <i class="fa fa-search"></i>
                                                 Buscar Examen
@@ -147,6 +170,19 @@
                                                 ></i>
                                             </a>
                                         </li>
+                                        <li class="list-inline-item" v-if="rol != 'Secretaria'">
+                                            <a
+                                                :href="'/verOrdenExamen/'+data.item.codigo"
+                                                target="_blank" rel="noopener noreferrer"
+                                                class="px-2 text-warning"
+                                                v-b-tooltip.hover
+                                                title="Ver PDF"
+                                            >
+
+                                            <i class="uil-parcel font-size-18"></i>
+
+                                            </a>
+                                        </li> 
                                         
                                     </ul>
                                 </template>

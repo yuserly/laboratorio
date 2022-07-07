@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2538,6 +2538,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       urlbackend: this.$urlBackend,
       urlImprimirReceta: "",
+      preloader: true,
+      btnAccionBuscar: true,
       form: {
         rut: ""
       },
@@ -2604,6 +2606,7 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     this.axios.defaults.headers.common["Authorization"] = "Bearer ".concat(localStorage.getItem("token"));
     this.totalRows = this.items.length;
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -2680,8 +2683,9 @@ __webpack_require__.r(__webpack_exports__);
       this.$v.form.$touch();
 
       if (!this.$v.form.$invalid) {
+        this.btnAccionBuscar = false;
         this.axios.get("/api/recetas/".concat(this.form.rut)).then(function (res) {
-          console.log(res.data.valor);
+          _this.btnAccionBuscar = true;
 
           if (res.data.valor == 1) {
             sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
@@ -2742,7 +2746,9 @@ __webpack_require__.r(__webpack_exports__);
     envioreceta: function envioreceta(data) {
       var _this2 = this;
 
+      this.preloader = true;
       this.axios.get("/api/envioreceta/".concat(data.codigo)).then(function (res) {
+        _this2.preloader = false;
         sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().fire({
           icon: 'success',
           title: 'Recetas',
@@ -28159,266 +28165,276 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("Layout", [
-    _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-lg-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-body row" }, [
-            _c("div", { staticClass: "col-8" }, [
-              _c("h4", { staticClass: "card-title" }, [
-                _vm._v("Listado Recetas")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-4" }, [
-              _c(
-                "form",
-                {
-                  staticClass: "needs-validation",
-                  on: {
-                    submit: function($event) {
-                      $event.preventDefault()
-                      return _vm.formSubmit.apply(null, arguments)
+  return _c(
+    "Layout",
+    [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-lg-12" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-body row" }, [
+              _c("div", { staticClass: "col-8" }, [
+                _c("h4", { staticClass: "card-title" }, [
+                  _vm._v("Listado Recetas")
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-4" }, [
+                _c(
+                  "form",
+                  {
+                    staticClass: "needs-validation",
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.formSubmit.apply(null, arguments)
+                      }
                     }
-                  }
-                },
-                [
-                  _c("div", { staticClass: "row" }, [
-                    _c("div", { staticClass: "col-8" }, [
-                      _c("div", { staticClass: "mb-3" }, [
-                        _c("label", { attrs: { for: "rut" } }, [
-                          _vm._v("RUT DEL PACIENTE")
-                        ]),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.rut,
-                              expression: "form.rut"
-                            }
-                          ],
-                          staticClass: "form-control form-control-sm inputRUT",
-                          class: {
-                            "is-invalid":
-                              _vm.submitted && _vm.$v.form.rut.$error
-                          },
-                          attrs: { id: "rut", type: "text" },
-                          domProps: { value: _vm.form.rut },
-                          on: {
-                            input: [
-                              function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(_vm.form, "rut", $event.target.value)
-                              },
-                              function($event) {
-                                return _vm.checkRut(this)
+                  },
+                  [
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-8" }, [
+                        _c("div", { staticClass: "mb-3" }, [
+                          _c("label", { attrs: { for: "rut" } }, [
+                            _vm._v("RUT DEL PACIENTE")
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.rut,
+                                expression: "form.rut"
                               }
-                            ]
-                          }
-                        }),
-                        _vm._v(" "),
-                        _vm.submitted && _vm.$v.form.rut.$error
-                          ? _c("div", { staticClass: "invalid-feedback" }, [
-                              !_vm.$v.form.rut.required
-                                ? _c("span", [
-                                    _vm._v(
-                                      "El Rut es\n                                                    requerido."
-                                    )
-                                  ])
-                                : _vm._e()
-                            ])
-                          : _vm._e()
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass: "col-3",
-                        staticStyle: { "margin-top": "1.8rem !important" }
-                      },
-                      [
-                        _c(
-                          "button",
-                          {
+                            ],
                             staticClass:
-                              "btn btn-success btn-soft-success btn-sm waves-effect waves-light float-star btnSubmit",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-search" }),
-                            _vm._v(
-                              "Buscar\n                                        "
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
+                              "form-control form-control-sm inputRUT",
+                            class: {
+                              "is-invalid":
+                                _vm.submitted && _vm.$v.form.rut.$error
+                            },
+                            attrs: { id: "rut", type: "text" },
+                            domProps: { value: _vm.form.rut },
+                            on: {
+                              input: [
+                                function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(_vm.form, "rut", $event.target.value)
+                                },
+                                function($event) {
+                                  return _vm.checkRut(this)
+                                }
+                              ]
+                            }
+                          }),
+                          _vm._v(" "),
+                          _vm.submitted && _vm.$v.form.rut.$error
+                            ? _c("div", { staticClass: "invalid-feedback" }, [
+                                !_vm.$v.form.rut.required
+                                  ? _c("span", [
+                                      _vm._v(
+                                        "El Rut es\n                                                    requerido."
+                                      )
+                                    ])
+                                  : _vm._e()
+                              ])
+                            : _vm._e()
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _vm.btnAccionBuscar == true
+                        ? _c(
+                            "div",
+                            {
+                              staticClass: "col-3",
+                              staticStyle: { "margin-top": "1.8rem !important" }
+                            },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "btn btn-success btn-soft-success btn-sm waves-effect waves-light float-star btnSubmit",
+                                  attrs: { type: "submit" }
+                                },
+                                [
+                                  _c("i", { staticClass: "fa fa-search" }),
+                                  _vm._v(
+                                    "Buscar\n                                        "
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        : _c(
+                            "div",
+                            {
+                              staticClass: "col-3",
+                              staticStyle: { "margin-top": "1.8rem !important" }
+                            },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass:
+                                    "btn btn-warning btn-soft-warning btn-sm waves-effect waves-light float-star",
+                                  attrs: { type: "button", disabled: "" }
+                                },
+                                [
+                                  _c("i", { staticClass: "fa fa-search" }),
+                                  _vm._v(
+                                    "Espere...\n                                        "
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                    ])
+                  ]
+                )
+              ])
             ])
           ])
-        ])
-      ]),
-      _vm._v(" "),
-      _vm.existereceta
-        ? _c("div", { staticClass: "col-lg-12" }, [
-            _c("div", { staticClass: "card" }, [
-              _c("div", { staticClass: "card-body" }, [
-                _c("div", { staticClass: "row mt-4" }, [
-                  _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "dataTables_length",
-                        attrs: { id: "tickets-table_length" }
-                      },
-                      [
-                        _c(
-                          "label",
-                          { staticClass: "d-inline-flex align-items-center" },
-                          [
-                            _vm._v(
-                              "\n                                    Mostrar \n                                    "
-                            ),
-                            _c("b-form-select", {
-                              attrs: { size: "sm", options: _vm.pageOptions },
-                              model: {
-                                value: _vm.perPage,
-                                callback: function($$v) {
-                                  _vm.perPage = $$v
+        ]),
+        _vm._v(" "),
+        _vm.existereceta
+          ? _c("div", { staticClass: "col-lg-12" }, [
+              _c("div", { staticClass: "card" }, [
+                _c("div", { staticClass: "card-body" }, [
+                  _c("div", { staticClass: "row mt-4" }, [
+                    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "dataTables_length",
+                          attrs: { id: "tickets-table_length" }
+                        },
+                        [
+                          _c(
+                            "label",
+                            { staticClass: "d-inline-flex align-items-center" },
+                            [
+                              _vm._v(
+                                "\n                                    Mostrar \n                                    "
+                              ),
+                              _c("b-form-select", {
+                                attrs: { size: "sm", options: _vm.pageOptions },
+                                model: {
+                                  value: _vm.perPage,
+                                  callback: function($$v) {
+                                    _vm.perPage = $$v
+                                  },
+                                  expression: "perPage"
+                                }
+                              }),
+                              _vm._v(
+                                " entradas\n                                "
+                              )
+                            ],
+                            1
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "dataTables_filter text-md-end",
+                          attrs: { id: "tickets-table_filter" }
+                        },
+                        [
+                          _c(
+                            "label",
+                            { staticClass: "d-inline-flex align-items-center" },
+                            [
+                              _vm._v(
+                                "\n                                    Buscar:\n                                    "
+                              ),
+                              _c("b-form-input", {
+                                staticClass:
+                                  "form-control form-control-sm ms-2",
+                                attrs: {
+                                  type: "search",
+                                  placeholder: "Buscar..."
                                 },
-                                expression: "perPage"
-                              }
-                            }),
-                            _vm._v(
-                              " entradas\n                                "
-                            )
-                          ],
-                          1
-                        )
-                      ]
-                    )
+                                model: {
+                                  value: _vm.filter,
+                                  callback: function($$v) {
+                                    _vm.filter = $$v
+                                  },
+                                  expression: "filter"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]
+                      )
+                    ])
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "dataTables_filter text-md-end",
-                        attrs: { id: "tickets-table_filter" }
-                      },
-                      [
-                        _c(
-                          "label",
-                          { staticClass: "d-inline-flex align-items-center" },
+                  _c(
+                    "div",
+                    { staticClass: "table-responsive mb-0" },
+                    [
+                      _c("b-table", {
+                        attrs: {
+                          items: _vm.tableData,
+                          fields: _vm.fields,
+                          responsive: "sm",
+                          "per-page": _vm.perPage,
+                          "current-page": _vm.currentPage,
+                          "sort-by": _vm.sortBy,
+                          "sort-desc": _vm.sortDesc,
+                          filter: _vm.filter,
+                          "filter-included-fields": _vm.filterOn
+                        },
+                        on: {
+                          "update:sortBy": function($event) {
+                            _vm.sortBy = $event
+                          },
+                          "update:sort-by": function($event) {
+                            _vm.sortBy = $event
+                          },
+                          "update:sortDesc": function($event) {
+                            _vm.sortDesc = $event
+                          },
+                          "update:sort-desc": function($event) {
+                            _vm.sortDesc = $event
+                          },
+                          filtered: _vm.onFiltered
+                        },
+                        scopedSlots: _vm._u(
                           [
-                            _vm._v(
-                              "\n                                    Buscar:\n                                    "
-                            ),
-                            _c("b-form-input", {
-                              staticClass: "form-control form-control-sm ms-2",
-                              attrs: {
-                                type: "search",
-                                placeholder: "Buscar..."
-                              },
-                              model: {
-                                value: _vm.filter,
-                                callback: function($$v) {
-                                  _vm.filter = $$v
-                                },
-                                expression: "filter"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "table-responsive mb-0" },
-                  [
-                    _c("b-table", {
-                      attrs: {
-                        items: _vm.tableData,
-                        fields: _vm.fields,
-                        responsive: "sm",
-                        "per-page": _vm.perPage,
-                        "current-page": _vm.currentPage,
-                        "sort-by": _vm.sortBy,
-                        "sort-desc": _vm.sortDesc,
-                        filter: _vm.filter,
-                        "filter-included-fields": _vm.filterOn
-                      },
-                      on: {
-                        "update:sortBy": function($event) {
-                          _vm.sortBy = $event
-                        },
-                        "update:sort-by": function($event) {
-                          _vm.sortBy = $event
-                        },
-                        "update:sortDesc": function($event) {
-                          _vm.sortDesc = $event
-                        },
-                        "update:sort-desc": function($event) {
-                          _vm.sortDesc = $event
-                        },
-                        filtered: _vm.onFiltered
-                      },
-                      scopedSlots: _vm._u(
-                        [
-                          {
-                            key: "cell(action)",
-                            fn: function(data) {
-                              return [
-                                _c("ul", { staticClass: "list-inline mb-0" }, [
+                            {
+                              key: "cell(action)",
+                              fn: function(data) {
+                                return [
                                   _c(
-                                    "li",
-                                    { staticClass: "list-inline-item" },
+                                    "ul",
+                                    { staticClass: "list-inline mb-0" },
                                     [
                                       _c(
-                                        "a",
-                                        {
-                                          directives: [
-                                            {
-                                              name: "b-tooltip",
-                                              rawName: "v-b-tooltip.hover",
-                                              modifiers: { hover: true }
-                                            }
-                                          ],
-                                          staticClass: "px-2 text-primary",
-                                          attrs: {
-                                            href:
-                                              "/" +
-                                              _vm.urlImprimirReceta +
-                                              "/" +
-                                              data.item.codigo,
-                                            target: "_blank",
-                                            rel: "noopener noreferrer",
-                                            title: "Editar"
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass:
-                                              "uil-print font-size-18"
-                                          })
-                                        ]
-                                      )
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _vm.urlImprimirReceta == "receta"
-                                    ? _c(
                                         "li",
                                         { staticClass: "list-inline-item" },
                                         [
@@ -28432,82 +28448,133 @@ var render = function() {
                                                   modifiers: { hover: true }
                                                 }
                                               ],
-                                              staticClass: "px-2 text-danger",
+                                              staticClass: "px-2 text-primary",
                                               attrs: {
-                                                href: "javascript:void(0);",
-                                                title: "Enviar Impresion"
-                                              },
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.ImpresionSecretaria(
-                                                    data.item
-                                                  )
-                                                }
+                                                href:
+                                                  "/" +
+                                                  _vm.urlImprimirReceta +
+                                                  "/" +
+                                                  data.item.codigo,
+                                                target: "_blank",
+                                                rel: "noopener noreferrer",
+                                                title: "Editar"
                                               }
                                             },
                                             [
                                               _c("i", {
                                                 staticClass:
-                                                  "uil-fast-mail font-size-18"
+                                                  "uil-print font-size-18"
                                               })
                                             ]
                                           )
                                         ]
-                                      )
-                                    : _vm._e()
-                                ])
-                              ]
-                            }
-                          }
-                        ],
-                        null,
-                        false,
-                        852393311
-                      )
-                    })
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "dataTables_paginate paging_simple_numbers float-end"
-                      },
-                      [
-                        _c(
-                          "ul",
-                          { staticClass: "pagination pagination-rounded mb-0" },
-                          [
-                            _c("b-pagination", {
-                              attrs: {
-                                "total-rows": _vm.rows,
-                                "per-page": _vm.perPage
-                              },
-                              model: {
-                                value: _vm.currentPage,
-                                callback: function($$v) {
-                                  _vm.currentPage = $$v
-                                },
-                                expression: "currentPage"
+                                      ),
+                                      _vm._v(" "),
+                                      _vm.urlImprimirReceta == "receta"
+                                        ? _c(
+                                            "li",
+                                            { staticClass: "list-inline-item" },
+                                            [
+                                              _c(
+                                                "a",
+                                                {
+                                                  directives: [
+                                                    {
+                                                      name: "b-tooltip",
+                                                      rawName:
+                                                        "v-b-tooltip.hover",
+                                                      modifiers: { hover: true }
+                                                    }
+                                                  ],
+                                                  staticClass:
+                                                    "px-2 text-danger",
+                                                  attrs: {
+                                                    href: "javascript:void(0);",
+                                                    title: "Enviar Impresion"
+                                                  },
+                                                  on: {
+                                                    click: function($event) {
+                                                      return _vm.ImpresionSecretaria(
+                                                        data.item
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                [
+                                                  _c("i", {
+                                                    staticClass:
+                                                      "uil-fast-mail font-size-18"
+                                                  })
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    ]
+                                  )
+                                ]
                               }
-                            })
+                            }
                           ],
-                          1
+                          null,
+                          false,
+                          852393311
                         )
-                      ]
-                    )
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "dataTables_paginate paging_simple_numbers float-end"
+                        },
+                        [
+                          _c(
+                            "ul",
+                            {
+                              staticClass: "pagination pagination-rounded mb-0"
+                            },
+                            [
+                              _c("b-pagination", {
+                                attrs: {
+                                  "total-rows": _vm.rows,
+                                  "per-page": _vm.perPage
+                                },
+                                model: {
+                                  value: _vm.currentPage,
+                                  callback: function($$v) {
+                                    _vm.currentPage = $$v
+                                  },
+                                  expression: "currentPage"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ]
+                      )
+                    ])
                   ])
                 ])
               ])
             ])
-          ])
-        : _vm._e()
-    ])
-  ])
+          : _c(
+              "div",
+              {
+                staticClass: "col-12 d-flex justify-content-center",
+                staticStyle: { "margin-bottom": "10px" }
+              },
+              [_c("img", { attrs: { src: "images/no-found.png", alt: "" } })]
+            )
+      ])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

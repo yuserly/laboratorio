@@ -1755,16 +1755,16 @@ __webpack_require__.r(__webpack_exports__);
         if (res.data == 1) {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "success",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
         } else {
           sweetalert2__WEBPACK_IMPORTED_MODULE_1___default().fire({
             icon: "error",
-            title: "Cambio de Contraseña",
-            text: 'ok',
+            title: "Contraseña",
+            text: 'Contraseña actualiada exitosamente',
             timer: 1500,
             showConfirmButton: false
           });
@@ -2537,6 +2537,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       urlbackend: this.$urlBackend,
+      preloader: true,
       modal: false,
       examenes: [],
       titlemodal: "",
@@ -2597,6 +2598,7 @@ __webpack_require__.r(__webpack_exports__);
     window.addEventListener('scroll', this.handleScroll);
     this.traerOrden();
     this.totalRows = this.items.length;
+    this.preloader = false;
   },
   methods: {
     onFiltered: function onFiltered(filteredItems) {
@@ -28086,278 +28088,303 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("Layout", [
-    _c(
-      "div",
-      { staticClass: "row" },
-      [
-        _c("div", { staticClass: "col-lg-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("h4", { staticClass: "card-title" }, [
-                _vm._v("Toma de Muestras Pendientes")
-              ])
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-body" }, [
-              _c("div", { staticClass: "row mt-4" }, [
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dataTables_length",
-                      attrs: { id: "tickets-table_length" }
-                    },
-                    [
-                      _c(
-                        "label",
-                        { staticClass: "d-inline-flex align-items-center" },
-                        [
-                          _vm._v(
-                            "\n                                    Mostrar \n                                    "
-                          ),
-                          _c("b-form-select", {
-                            attrs: { size: "sm", options: _vm.pageOptions },
-                            model: {
-                              value: _vm.perPage,
-                              callback: function($$v) {
-                                _vm.perPage = $$v
-                              },
-                              expression: "perPage"
-                            }
-                          }),
-                          _vm._v(" entradas\n                                ")
-                        ],
-                        1
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dataTables_filter text-md-end",
-                      attrs: { id: "tickets-table_filter" }
-                    },
-                    [
-                      _c(
-                        "label",
-                        { staticClass: "d-inline-flex align-items-center" },
-                        [
-                          _vm._v(
-                            "\n                                    Buscar:\n                                    "
-                          ),
-                          _c("b-form-input", {
-                            staticClass: "form-control form-control-sm ms-2",
-                            attrs: { type: "search", placeholder: "Buscar..." },
-                            model: {
-                              value: _vm.filter,
-                              callback: function($$v) {
-                                _vm.filter = $$v
-                              },
-                              expression: "filter"
-                            }
-                          })
-                        ],
-                        1
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "table-responsive mb-0" },
-                [
-                  _c("b-table", {
-                    attrs: {
-                      items: _vm.tableData,
-                      fields: _vm.fields,
-                      responsive: "sm",
-                      "per-page": _vm.perPage,
-                      "current-page": _vm.currentPage,
-                      "sort-by": _vm.sortBy,
-                      "sort-desc": _vm.sortDesc,
-                      filter: _vm.filter,
-                      "filter-included-fields": _vm.filterOn
-                    },
-                    on: {
-                      "update:sortBy": function($event) {
-                        _vm.sortBy = $event
-                      },
-                      "update:sort-by": function($event) {
-                        _vm.sortBy = $event
-                      },
-                      "update:sortDesc": function($event) {
-                        _vm.sortDesc = $event
-                      },
-                      "update:sort-desc": function($event) {
-                        _vm.sortDesc = $event
-                      },
-                      filtered: _vm.onFiltered
-                    },
-                    scopedSlots: _vm._u([
-                      {
-                        key: "cell(action)",
-                        fn: function(data) {
-                          return [
-                            _c("ul", { staticClass: "list-inline mb-0" }, [
-                              _c("li", { staticClass: "list-inline-item" }, [
-                                _c(
-                                  "a",
-                                  {
-                                    directives: [
-                                      {
-                                        name: "b-modal",
-                                        rawName: "v-b-modal.verorden",
-                                        modifiers: { verorden: true }
-                                      },
-                                      {
-                                        name: "b-tooltip",
-                                        rawName: "v-b-tooltip.hover",
-                                        modifiers: { hover: true }
-                                      }
-                                    ],
-                                    staticClass: "px-2 text-info",
-                                    attrs: {
-                                      href: "javascript:void(0);",
-                                      "data-toggle": "modal",
-                                      "data-target": ".bs-example-verorden",
-                                      title: "ver orden"
-                                    },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.verorden(data.item)
-                                      }
-                                    }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass: "uil-eye font-size-18"
-                                    })
-                                  ]
-                                )
-                              ])
-                            ])
-                          ]
-                        }
-                      }
-                    ])
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "dataTables_paginate paging_simple_numbers float-end"
-                    },
-                    [
-                      _c(
-                        "ul",
-                        { staticClass: "pagination pagination-rounded mb-0" },
-                        [
-                          _c("b-pagination", {
-                            attrs: {
-                              "total-rows": _vm.rows,
-                              "per-page": _vm.perPage
-                            },
-                            model: {
-                              value: _vm.currentPage,
-                              callback: function($$v) {
-                                _vm.currentPage = $$v
-                              },
-                              expression: "currentPage"
-                            }
-                          })
-                        ],
-                        1
-                      )
-                    ]
-                  )
+  return _c(
+    "Layout",
+    [
+      _vm.preloader == true
+        ? _c("loader", {
+            attrs: {
+              object: "#622181",
+              color1: "#18a096",
+              color2: "#93117e",
+              size: "5",
+              speed: "2",
+              bg: "#343a40",
+              objectbg: "#999793",
+              opacity: "80",
+              name: "circular"
+            }
+          })
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row" },
+        [
+          _c("div", { staticClass: "col-lg-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("h4", { staticClass: "card-title" }, [
+                  _vm._v("Toma de Muestras Pendientes")
                 ])
               ])
             ])
-          ])
-        ]),
-        _vm._v(" "),
-        _vm.modal
-          ? _c(
-              "b-modal",
-              {
-                attrs: {
-                  id: "verorden",
-                  size: "md",
-                  title: _vm.titlemodal,
-                  "title-class": "font-18",
-                  "hide-footer": ""
-                }
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-12" }, [
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-12" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "row mt-4" }, [
+                  _c("div", { staticClass: "col-sm-12 col-md-6" }, [
                     _c(
-                      "ul",
-                      _vm._l(_vm.examenes, function(item) {
-                        return _c(
-                          "li",
-                          {
-                            key: item.id_orden_examenes,
-                            staticStyle: { "list-style": "none" }
-                          },
+                      "div",
+                      {
+                        staticClass: "dataTables_length",
+                        attrs: { id: "tickets-table_length" }
+                      },
+                      [
+                        _c(
+                          "label",
+                          { staticClass: "d-inline-flex align-items-center" },
                           [
-                            _c("i", { staticClass: "fa fa-check-square" }),
-                            _vm._v(" " + _vm._s(item.nombre))
-                          ]
+                            _vm._v(
+                              "\n                                    Mostrar \n                                    "
+                            ),
+                            _c("b-form-select", {
+                              attrs: { size: "sm", options: _vm.pageOptions },
+                              model: {
+                                value: _vm.perPage,
+                                callback: function($$v) {
+                                  _vm.perPage = $$v
+                                },
+                                expression: "perPage"
+                              }
+                            }),
+                            _vm._v(
+                              " entradas\n                                "
+                            )
+                          ],
+                          1
                         )
-                      }),
-                      0
+                      ]
                     )
                   ]),
                   _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "col-12 d-flex justify-content-center" },
-                    [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-primary ",
-                          attrs: { type: "button" },
-                          on: {
-                            click: function($event) {
-                              return _vm.marcar()
-                            }
-                          }
+                  _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "dataTables_filter text-md-end",
+                        attrs: { id: "tickets-table_filter" }
+                      },
+                      [
+                        _c(
+                          "label",
+                          { staticClass: "d-inline-flex align-items-center" },
+                          [
+                            _vm._v(
+                              "\n                                    Buscar:\n                                    "
+                            ),
+                            _c("b-form-input", {
+                              staticClass: "form-control form-control-sm ms-2",
+                              attrs: {
+                                type: "search",
+                                placeholder: "Buscar..."
+                              },
+                              model: {
+                                value: _vm.filter,
+                                callback: function($$v) {
+                                  _vm.filter = $$v
+                                },
+                                expression: "filter"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "table-responsive mb-0" },
+                  [
+                    _c("b-table", {
+                      attrs: {
+                        items: _vm.tableData,
+                        fields: _vm.fields,
+                        responsive: "sm",
+                        "per-page": _vm.perPage,
+                        "current-page": _vm.currentPage,
+                        "sort-by": _vm.sortBy,
+                        "sort-desc": _vm.sortDesc,
+                        filter: _vm.filter,
+                        "filter-included-fields": _vm.filterOn
+                      },
+                      on: {
+                        "update:sortBy": function($event) {
+                          _vm.sortBy = $event
                         },
-                        [
-                          _c("i", { staticClass: "fas fa-check" }),
-                          _vm._v(
-                            " Marcar como muestra tomada\n                        "
-                          )
-                        ]
-                      )
-                    ]
-                  )
+                        "update:sort-by": function($event) {
+                          _vm.sortBy = $event
+                        },
+                        "update:sortDesc": function($event) {
+                          _vm.sortDesc = $event
+                        },
+                        "update:sort-desc": function($event) {
+                          _vm.sortDesc = $event
+                        },
+                        filtered: _vm.onFiltered
+                      },
+                      scopedSlots: _vm._u([
+                        {
+                          key: "cell(action)",
+                          fn: function(data) {
+                            return [
+                              _c("ul", { staticClass: "list-inline mb-0" }, [
+                                _c("li", { staticClass: "list-inline-item" }, [
+                                  _c(
+                                    "a",
+                                    {
+                                      directives: [
+                                        {
+                                          name: "b-modal",
+                                          rawName: "v-b-modal.verorden",
+                                          modifiers: { verorden: true }
+                                        },
+                                        {
+                                          name: "b-tooltip",
+                                          rawName: "v-b-tooltip.hover",
+                                          modifiers: { hover: true }
+                                        }
+                                      ],
+                                      staticClass: "px-2 text-info",
+                                      attrs: {
+                                        href: "javascript:void(0);",
+                                        "data-toggle": "modal",
+                                        "data-target": ".bs-example-verorden",
+                                        title: "ver orden"
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.verorden(data.item)
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "uil-eye font-size-18"
+                                      })
+                                    ]
+                                  )
+                                ])
+                              ])
+                            ]
+                          }
+                        }
+                      ])
+                    })
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col" }, [
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "dataTables_paginate paging_simple_numbers float-end"
+                      },
+                      [
+                        _c(
+                          "ul",
+                          { staticClass: "pagination pagination-rounded mb-0" },
+                          [
+                            _c("b-pagination", {
+                              attrs: {
+                                "total-rows": _vm.rows,
+                                "per-page": _vm.perPage
+                              },
+                              model: {
+                                value: _vm.currentPage,
+                                callback: function($$v) {
+                                  _vm.currentPage = $$v
+                                },
+                                expression: "currentPage"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      ]
+                    )
+                  ])
                 ])
-              ]
-            )
-          : _vm._e()
-      ],
-      1
-    )
-  ])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _vm.modal
+            ? _c(
+                "b-modal",
+                {
+                  attrs: {
+                    id: "verorden",
+                    size: "md",
+                    title: _vm.titlemodal,
+                    "title-class": "font-18",
+                    "hide-footer": ""
+                  }
+                },
+                [
+                  _c("div", { staticClass: "row" }, [
+                    _c("div", { staticClass: "col-12" }, [
+                      _c(
+                        "ul",
+                        _vm._l(_vm.examenes, function(item) {
+                          return _c(
+                            "li",
+                            {
+                              key: item.id_orden_examenes,
+                              staticStyle: { "list-style": "none" }
+                            },
+                            [
+                              _c("i", { staticClass: "fa fa-check-square" }),
+                              _vm._v(" " + _vm._s(item.nombre))
+                            ]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "col-12 d-flex justify-content-center" },
+                      [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-primary ",
+                            attrs: { type: "button" },
+                            on: {
+                              click: function($event) {
+                                return _vm.marcar()
+                              }
+                            }
+                          },
+                          [
+                            _c("i", { staticClass: "fas fa-check" }),
+                            _vm._v(
+                              " Marcar como muestra tomada\n                        "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ])
+                ]
+              )
+            : _vm._e()
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

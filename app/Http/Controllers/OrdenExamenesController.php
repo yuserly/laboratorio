@@ -38,11 +38,9 @@ class OrdenExamenesController extends Controller
         $user = Auth::user();
 
         if($user->hasRole('Profesional Box')){ //Estado 7 es para todo lo emitido por el profesional de box;
-            return OrdenExamenes::where([['estado_id','=', null]])->latest()->take(30)->with('examenorden.examen','paciente')->get();
+            return ['rol' => $user->getRoleNames(),  'examenes' => OrdenExamenes::where([['estado_id','=', null]])->latest()->take(30)->with('examenorden.examen','paciente')->get()];
         }else if($user->hasRole('Secretaria')){ //Estado 1 es para todo lo emitido por el profesional de box;
-            return OrdenExamenes::where([['estado_id','=',1]])->latest()->take(30)->with('examenorden.examen','paciente')->get();
-        }else if($user->hasRole('Profesional Laboratorio')){
-
+            return ['rol' => $user->getRoleNames(),  'examenes' => OrdenExamenes::where([['estado_id','=',1]])->latest()->take(30)->with('examenorden.examen','paciente')->get()];
         }
     }
 
@@ -164,7 +162,7 @@ class OrdenExamenesController extends Controller
 
             // enviamos el email con la orden de examen
 
-            if($request->enviar){
+            if($request->enviar){ 
 
                 $examen =  OrdenExamenes::where('codigo', $orden->codigo)->with('examenorden.examen.tipoexamen','paciente','emisor')->first();
 
@@ -194,6 +192,15 @@ class OrdenExamenesController extends Controller
 
     }
 
+    public function verOrdenExamen($codigo)
+    {
+        $examen =  OrdenExamenes::where('codigo', $codigo)->with('examenorden.examen','paciente','profesionalOrden','examenorden.resultados.analisis.valoresreferenciales')->first();
+        //return $examen->emisor;
+        $pdf = \PDF::loadView('pdfordenver', compact('examen'));
+
+        return $pdf->stream('archivo.pdf');
+    }
+
     public function guardarresultado(Request $request){
 
         $datos = $request->datos;
@@ -219,7 +226,7 @@ class OrdenExamenesController extends Controller
 
         $examen =  OrdenExamenes::where('id_orden_examenes', $idorden)->with('examenorden.examen','paciente','profesional','examenorden.resultados.analisis.valoresreferenciales')->first();
 
-        $pdf = \PDF::loadView('pdfexamen', compact('examen'));
+        $pdf = \PDF::loadView('pdfexamen', compact('examen', 'user'));
         $pdf->setEncryption(substr(substr($examen->paciente['rut'], 0, -2),-4), "novakimenpdf");
 
         Mail::to($examen->paciente['email'])->send(new EnvioExamen($examen->paciente['nombres'], $examen->paciente['apellidos'], $pdf));
@@ -282,20 +289,20 @@ class OrdenExamenesController extends Controller
     public function historialordenrut($rut)
     {
         $user = Auth::user();
-
+    
         $paciente = Pacientes::where('rut',$rut)->first();
 
         if($paciente)
         {
             if($user->hasRole('Profesional Box')){ //Estado 7 es para todo lo emitido por el profesional de box;
-                return OrdenExamenes::where([['paciente_id', $paciente->id_paciente], ['exec', 0]])->with('examenorden.examen', 'emisor','paciente')->get();
+                return ['rol' => $user->getRoleNames(),  'examenes' => OrdenExamenes::where([['paciente_id', $paciente->id_paciente], ['exec', 0]])->with('examenorden.examen', 'emisor','paciente')->get()];
             }else if($user->hasRole('Secretaria')){ //Estado 1 es para todo lo emitido por el profesional de box;
-                return OrdenExamenes::where([['paciente_id', $paciente->id_paciente],['estado_id','=',1], ['exec', 1]])->with('examenorden.examen','paciente', 'emisor')->get();
+                return ['rol' => $user->getRoleNames(), 'examenes' => OrdenExamenes::where([['paciente_id', $paciente->id_paciente],['estado_id','=',1], ['exec', 1]])->with('examenorden.examen','paciente', 'emisor')->get()];
             }else if($user->hasRole('Profesional Laboratorio')){
-                return OrdenExamenes::where([['paciente_id', $paciente->id_paciente],['estado_id','=',3], ['exec', 1]])->with('examenorden.examen','paciente')->get();
+                return ['rol' => $user->getRoleNames(), 'examenes' => OrdenExamenes::where([['paciente_id', $paciente->id_paciente],['estado_id','=',3], ['exec', 1]])->with('examenorden.examen','paciente')->get()];
             }
             else if($user->hasRole('Administrador')){
-                return OrdenExamenes::where([['paciente_id', $paciente->id_paciente]])->with('examenorden.examen','paciente')->get();
+                return ['rol' => $user->getRoleNames(), 'examenes' => OrdenExamenes::where([['paciente_id', $paciente->id_paciente]])->with('examenorden.examen','paciente')->get()];
             }
         }else{
             return ['valo' => 0];

@@ -24,6 +24,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader: true,
             form: {
                 nombres: "",
                 apellidos: "",
@@ -78,6 +79,10 @@ export default {
                 required
             }
         }
+    },
+
+    mounted() {
+        this.preloader = false;
     },
 
 
@@ -141,6 +146,7 @@ export default {
         },
 
         validarrut() {
+            this.preloader = true;
             this.axios
                 .get(`/api/validarrutpaciente/${this.form.rut}`)
                 .then(response => {
@@ -151,6 +157,7 @@ export default {
                         this.form.fecha_nacimiento = response.data.fecha_nacimiento;
                         this.form.email = response.data.email;
                         this.form.telefono = response.data.telefono;
+                        this.preloader = false;
                     }
                 }, error => {
                      this.validarSessionActive(error);
@@ -163,11 +170,11 @@ export default {
             this.$v.form.$touch();
 
             if (!this.$v.form.$invalid) {
-
+                this.preloader = true;
                 this.axios
                     .post(`/api/crearconsultas`, this.form)
                     .then(res => {
-                        
+                        this.preloader = false;
                         if (res.data) {
                             Swal.fire({
                                 icon: 'success',

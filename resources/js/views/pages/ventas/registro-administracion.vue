@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+        
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">

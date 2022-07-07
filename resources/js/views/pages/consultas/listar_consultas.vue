@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+        
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -56,8 +69,7 @@
                                             <button
                                                 type="submit"
                                                 class="btn btn-success btn-soft-success btn-sm waves-effect waves-light float-star btnSubmit"
-                                            >   <i class="fa fa-search"></i>
-                                                Buscar
+                                            > <i class="fa fa-search"></i>Buscar
                                             </button>
                                         </div>
                                     </div>
@@ -135,7 +147,7 @@
                                                 target="_blank" rel="noopener noreferrer"
                                                 class="px-2 text-primary"
                                                 v-b-tooltip.hover
-                                                title="Editar"
+                                                title="Imprimir"
                                             >
 
                                             <i class="uil-print font-size-18"></i>
@@ -146,7 +158,7 @@
                                             <a
                                                 href="javascript:void(0);"
                                                 rel="noopener noreferrer"
-                                                class="px-2 text-primary"
+                                                class="px-2 text-warning"
                                                 v-b-tooltip.hover
                                                 title="Ver Anamnesis"
                                                 v-b-modal.verDetalle

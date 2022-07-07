@@ -22,6 +22,7 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
             modal:false,
             modalPago: false,
             inputPrecio: true,
@@ -115,6 +116,7 @@ export default {
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
         this.getVentas();
+        this.preloader = false;
     },
 
     methods: {

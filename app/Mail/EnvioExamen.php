@@ -13,8 +13,8 @@ class EnvioExamen extends Mailable
 
     public $title = "RESEVAS NOVAKIMEN - EXAMEN MEDICO";
     public $nombres;
-    public $apellidos;
-    protected $pdf;
+    public $apellidos; 
+    protected $pdf; 
 
     /**
      * Create a new message instance.

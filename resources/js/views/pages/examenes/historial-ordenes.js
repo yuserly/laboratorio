@@ -21,11 +21,14 @@ export default {
     data() {
         return {
             urlbackend: this.$urlBackend,
+            preloader : true,
+            btnAccionBuscar: true,
             form: {
                 rut: ""
             },
             submitted: false,
             existeexamen: false,
+            examenes: "",
             modal:false,
             // tabla
 
@@ -41,6 +44,7 @@ export default {
                     active: true
                 }
             ],
+            rol: "",
             totalRows: 1,
             currentPage: 1,
             perPage: 10,
@@ -102,6 +106,7 @@ export default {
             "Authorization"
         ] = `Bearer ${localStorage.getItem("token")}`;
         this.totalRows = this.items.length;
+        this.preloader = false;
     },
 
     methods: {
@@ -171,10 +176,12 @@ export default {
             this.$v.form.$touch();
 
             if (!this.$v.form.$invalid) {
+                this.btnAccionBuscar = false;
                 this.axios
                     .get(`/api/historialordenrut/${this.form.rut}`)
                     .then(res => {
-
+                        this.btnAccionBuscar = true;
+                        this.rol = res.data.rol;
                         if(res.data.valor == 0){
                             Swal.fire({
                                 icon: 'warning',
@@ -187,7 +194,7 @@ export default {
                             this.existeexamen = false;
                         }
 
-                        if (res.data.length > 0) {
+                        if (res.data.examenes.length > 0) {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Orden de Examenes',
@@ -196,7 +203,7 @@ export default {
                                 showConfirmButton: false
                             });
 
-                            this.tableData = res.data;
+                            this.tableData = res.data.examenes;
                             this.existeexamen = true;
                         }else{
                             Swal.fire({
@@ -245,9 +252,9 @@ export default {
         },
 
         verorden(data) {
-
+            
             let examenes = [];
-
+    
             data.examenorden.forEach(element => {
                 examenes.push(element.examen);
             });

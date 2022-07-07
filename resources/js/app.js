@@ -13,8 +13,11 @@ import VueApexCharts from "vue-apexcharts";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import { perfil } from "./perfil";
+import loader from "vue-ui-preloader";
+
 
 import Permissions from './Permissions.vue';
+Vue.use(loader);
 Vue.mixin(Permissions);
 Vue.config.productionTip = false;
 Vue.component("VueSlideBar", VueSlideBar);

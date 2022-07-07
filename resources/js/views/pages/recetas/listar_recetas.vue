@@ -2,6 +2,19 @@
 
 <template>
     <Layout>
+        
+        <loader  v-if="preloader == true"
+            object="#622181" 
+            color1="#18a096" 
+            color2="#93117e" 
+            size="5" 
+            speed="2" 
+            bg="#343a40" 
+            objectbg="#999793" 
+            opacity="80" 
+            name="circular">
+        </loader>
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
@@ -52,11 +65,19 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-3" style="margin-top: 1.8rem !important;">
+                                        <div class="col-3" v-if="btnAccionBuscar == true" style="margin-top: 1.8rem !important;">
                                             <button
                                                 type="submit"
                                                 class="btn btn-success btn-soft-success btn-sm waves-effect waves-light float-star btnSubmit"
                                             ><i class="fa fa-search"></i>Buscar
+                                            </button>
+                                        </div>
+                                        <div class="col-3" v-else style="margin-top: 1.8rem !important;">
+                                            <button
+                                                type="button"
+                                                disabled
+                                                class="btn btn-warning btn-soft-warning btn-sm waves-effect waves-light float-star"
+                                            ><i class="fa fa-search"></i>Espere...
                                             </button>
                                         </div>
                                     </div>
@@ -178,6 +199,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="col-12 d-flex justify-content-center" style="margin-bottom: 10px" v-else>
+                <img src="images/no-found.png" alt="">
             </div>
 
            
